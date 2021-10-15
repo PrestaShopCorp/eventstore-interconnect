@@ -31,5 +31,9 @@
       }
     ]
   },
-  "projects": {}
+  "projects": {
+    "eventstore-interconnect": {
+      "tags": []
+    }
+  }
 }

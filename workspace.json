@@ -1,6 +1,50 @@
 {
   "version": 2,
-  "projects": {},
+  "projects": {
+    "eventstore-interconnect": {
+      "root": "libs/eventstore-interconnect",
+      "sourceRoot": "libs/eventstore-interconnect/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/libs/eventstore-interconnect",
+            "tsConfig": "libs/eventstore-interconnect/tsconfig.lib.json",
+            "packageJson": "libs/eventstore-interconnect/package.json",
+            "main": "libs/eventstore-interconnect/src/index.ts",
+            "assets": [
+              "libs/eventstore-interconnect/*.md"
+            ]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": [
+            "{options.outputFile}"
+          ],
+          "options": {
+            "lintFilePatterns": [
+              "libs/eventstore-interconnect/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/eventstore-interconnect"
+          ],
+          "options": {
+            "jestConfig": "libs/eventstore-interconnect/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    }
+  },
   "cli": {
     "defaultCollection": "@nrwl/workspace"
   }
