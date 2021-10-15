@@ -104,6 +104,49 @@
           }
         }
       }
+    },
+    "nestjs-geteventstore-legacy-proxy": {
+      "root": "libs/nestjs-geteventstore-legacy-proxy",
+      "sourceRoot": "libs/nestjs-geteventstore-legacy-proxy/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/libs/nestjs-geteventstore-legacy-proxy",
+            "tsConfig": "libs/nestjs-geteventstore-legacy-proxy/tsconfig.lib.json",
+            "packageJson": "libs/nestjs-geteventstore-legacy-proxy/package.json",
+            "main": "libs/nestjs-geteventstore-legacy-proxy/src/index.ts",
+            "assets": [
+              "libs/nestjs-geteventstore-legacy-proxy/*.md"
+            ]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": [
+            "{options.outputFile}"
+          ],
+          "options": {
+            "lintFilePatterns": [
+              "libs/nestjs-geteventstore-legacy-proxy/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/nestjs-geteventstore-legacy-proxy"
+          ],
+          "options": {
+            "jestConfig": "libs/nestjs-geteventstore-legacy-proxy/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

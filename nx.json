@@ -37,6 +37,9 @@
     },
     "examples": {
       "tags": []
+    },
+    "nestjs-geteventstore-legacy-proxy": {
+      "tags": []
     }
   }
 }

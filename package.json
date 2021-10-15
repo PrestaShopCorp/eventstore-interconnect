@@ -6,7 +6,9 @@
     "start:examples": "nx serve examples",
     "test:examples": "nx test examples",
     "build:lib": "nx build eventstore-interconnect",
-    "test:lib": "nx test eventstore-interconnect"
+    "test:lib": "nx test eventstore-interconnect",
+    "build:lib-legacy": "nx build nestjs-geteventstore-legacy-proxy",
+    "test:lib-legacy": "nx test nestjs-geteventstore-legacy-proxy"
   },
   "private": true,
   "dependencies": {

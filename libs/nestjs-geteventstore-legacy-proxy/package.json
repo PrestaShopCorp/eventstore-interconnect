@@ -1,0 +1,7 @@
+{
+  "name": "@eventstore-interconnect/nestjs-geteventstore-legacy-proxy",
+  "version": "0.0.1",
+  "dependencies": {
+    "nestjs-geteventstore": "4.0.1"
+  }
+}
