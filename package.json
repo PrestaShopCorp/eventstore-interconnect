@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "nx serve",
+    "start:examples": "nx serve examples",
+    "test:examples": "nx test examples",
     "build:lib": "nx build eventstore-interconnect",
     "test:lib": "nx test eventstore-interconnect"
   },

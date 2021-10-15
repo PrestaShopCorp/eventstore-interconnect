@@ -34,6 +34,9 @@
   "projects": {
     "eventstore-interconnect": {
       "tags": []
+    },
+    "examples": {
+      "tags": []
     }
   }
 }
