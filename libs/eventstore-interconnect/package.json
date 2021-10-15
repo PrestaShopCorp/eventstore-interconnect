@@ -1,4 +1,7 @@
 {
   "name": "@eventstore-interconnect/eventstore-interconnect",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "nestjs-geteventstore": "5.0.1"
+  }
 }
