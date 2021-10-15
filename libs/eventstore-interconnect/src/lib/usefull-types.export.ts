@@ -7,9 +7,7 @@ import {
   IWriteEventBusConfig,
 } from 'nestjs-geteventstore'
 import {EventStoreConnectionConfig, IEventStoreSubsystems} from 'nestjs-geteventstore/dist/event-store/config';
-/**
- * eventBusConfig
- */
+
 export {
   IPersistentSubscriptionConfig,
   EventStoreConnectionConfig,

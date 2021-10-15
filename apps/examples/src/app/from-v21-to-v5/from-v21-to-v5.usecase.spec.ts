@@ -10,7 +10,7 @@ describe('FromV21ToV5', () => {
   const interconnector = mock<EventStoreInterconnector>();
 
   beforeEach(() => {
-    useCase = new FromV21ToV5();
+    useCase = new FromV21ToV5(interconnector);
   });
 
   it(`should connect to v21 and v5 with the given conf`, () => {
@@ -19,9 +19,9 @@ describe('FromV21ToV5', () => {
 
     jest.spyOn(interconnector, 'connectToV21x');
 
-    useCase.checkConnectionsWithBothVersions(interconnector, conf);
+    useCase.checkConnectionsWithBothVersions(conf);
 
-    expect(interconnector.connectToV21x).toHaveBeenCalled();
+    expect(interconnector.connectToV21x).toHaveBeenCalledWith(conf);
   });
 
   /**
