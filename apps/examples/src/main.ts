@@ -1,1 +1,3 @@
-console.log('Hello World!');
+import {eventstoreInterconnect} from '@eventstore-interconnect/eventstore-interconnect';
+
+console.log(eventstoreInterconnect());
