@@ -18,10 +18,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@eventstore-interconnect/eventstore-interconnect": [
+      "@eventstore-interconnect": [
         "libs/eventstore-interconnect/src/index.ts"
       ],
-      "@eventstore-interconnect/nestjs-geteventstore-legacy-proxy": [
+      "@nestjs-geteventstore-legacy-proxy": [
         "libs/nestjs-geteventstore-legacy-proxy/src/index.ts"
       ]
     }
