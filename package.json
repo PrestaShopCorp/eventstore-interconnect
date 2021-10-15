@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "start": "nx serve",
-    "build": "nx build",
-    "test": "nx test"
+    "build:lib": "nx build eventstore-interconnect",
+    "test:lib": "nx test eventstore-interconnect"
   },
   "private": true,
   "dependencies": {
