@@ -2,6 +2,8 @@
   "name": "nestjs-geteventstore-legacy-proxy",
   "version": "0.0.1",
   "dependencies": {
+    "inversify": "^6.0.1",
+    "reflect-metadata": "^0.1.13",
     "nestjs-geteventstore": "4.0.1"
   }
 }
