@@ -1,4 +1,18 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src"
+  "sourceRoot": "src",
+  "projects": {
+    "eventstore-interconnect": {
+      "type": "library",
+      "root": "libs/eventstore-interconnect",
+      "entryFile": "index",
+      "sourceRoot": "libs/eventstore-interconnect/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/eventstore-interconnect/tsconfig.lib.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "webpack": true
+  }
 }

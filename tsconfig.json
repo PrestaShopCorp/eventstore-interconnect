@@ -16,6 +16,14 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@eventstore-interconnect/eventstore-interconnect": [
+        "libs/eventstore-interconnect/src"
+      ],
+      "@eventstore-interconnect/eventstore-interconnect/*": [
+        "libs/eventstore-interconnect/src/*"
+      ]
+    }
   }
 }
