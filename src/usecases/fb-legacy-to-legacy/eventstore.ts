@@ -15,8 +15,8 @@ export default registerAs(
   () =>
     ({
       credentials: {
-        username: process.env.EVENTSTORE_CREDENTIALS_USERNAME,
-        password: process.env.EVENTSTORE_CREDENTIALS_PASSWORD,
+        username: process.env.EVENTSTORE_CREDENTIALS_USERNAME || 'admin',
+        password: process.env.EVENTSTORE_CREDENTIALS_PASSWORD || 'changeit',
       },
       tcp: {
         host: process.env.EVENTSTORE_TCP_HOST || 'localhost',

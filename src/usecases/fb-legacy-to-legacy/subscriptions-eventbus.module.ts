@@ -1,16 +1,17 @@
 import {EventStoreCqrsModule} from 'nestjs-geteventstore-1.6.4';
-import {Module} from '@nestjs/common';
+import {Logger, Module} from '@nestjs/common';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import SentryFacebookConfig from './sentry-facebook';
 import EventstoreConfig from './eventstore';
 import EventbusConfig from './eventbus';
 import {EventHandlersEventbus} from './events/handlers';
-import { eventMapper } from './event-mapper-eventbus';
+import {eventMapper} from './event-mapper-eventbus';
 import {persistentSubscriptionsEventbus} from './subscriptions';
 import {EventstoreSecondaryConnectionModule} from './secondary-connection.module';
-import { SentryModule } from '@ntegral/nestjs-sentry';
+import {SentryModule} from '@ntegral/nestjs-sentry';
+import {nanoid} from 'nanoid';
 
-const randomId = 'nanoid(11)';
+const randomId = nanoid(11);
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ const randomId = 'nanoid(11)';
       isGlobal: true,
       load: [
         SentryFacebookConfig,
-        EventstoreConfig, // eventstore Facebook
+        EventstoreConfig, // eventstore Facebook≤
         EventbusConfig, // eventstore Eventbus
       ],
     }),
@@ -51,6 +52,7 @@ const randomId = 'nanoid(11)';
     }),
   ],
   providers: [
+    Logger,
     ...EventHandlersEventbus,
   ],
 })

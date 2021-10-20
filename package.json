@@ -11,6 +11,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "start:usecase": "ts-node ./src/usecases/fb-legacy-to-legacy/eventbus.subscriptions.usecase.ts",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -21,14 +22,16 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/common": "^8.0.0",
-    "@nestjs/config": "^1.0.2",
-    "@nestjs/core": "^8.0.0",
-    "@nestjs/cqrs": "^8.0.0",
-    "@nestjs/platform-express": "^8.0.0",
-    "@ntegral/nestjs-sentry": "^1.0.4",
-    "nestjs-geteventstore-4.0.1": "npm:nestjs-geteventstore@4.0.1",
+    "@nestjs/common": "^7.0.0",
+    "@nestjs/config": "^0.5.0",
+    "@nestjs/core": "^7.0.0",
+    "@nestjs/cqrs": "^7.0.1",
+    "@nestjs/platform-express": "^7.0.0",
+    "@sentry/node": "^6.13.3",
+    "@ntegral/nestjs-sentry": "1.0.4",
+    "nanoid": "^3.1.30",
     "nestjs-geteventstore-1.6.4": "npm:nestjs-geteventstore@1.6.4",
+    "nestjs-geteventstore-4.0.1": "npm:nestjs-geteventstore@4.0.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"
@@ -37,6 +40,7 @@
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
+    "@sentry/types": "^6.13.3",
     "@types/express": "^4.17.13",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.0.0",
@@ -53,9 +57,7 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.10.1",
-    "typescript": "^4.3.5",
-    "@sentry/types": "^6.13.3",
-    "@sentry/node": "^6.13.3"
+    "typescript": "^4.3.5"
   },
   "jest": {
     "moduleFileExtensions": [
