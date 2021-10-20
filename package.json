@@ -4,10 +4,10 @@
   "description": "",
   "author": "Alexandre Decollas <alexandre.decollas.pro@gmail.com>",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build:lib": "nest build eventstore-interconnect",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -22,8 +22,13 @@
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
+    "@nestjs/config": "^1.0.2",
     "@nestjs/core": "^8.0.0",
+    "@nestjs/cqrs": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@ntegral/nestjs-sentry": "^1.0.4",
+    "nestjs-geteventstore-4.0.1": "npm:nestjs-geteventstore@4.0.1",
+    "nestjs-geteventstore-1.6.4": "npm:nestjs-geteventstore@1.6.4",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"
@@ -49,7 +54,8 @@
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.10.1",
     "typescript": "^4.3.5",
-    "nestjs-geteventstore-4.0.1": "npm:nestjs-geteventstore@4.0.1"
+    "@sentry/types": "^6.13.3",
+    "@sentry/node": "^6.13.3"
   },
   "jest": {
     "moduleFileExtensions": [
