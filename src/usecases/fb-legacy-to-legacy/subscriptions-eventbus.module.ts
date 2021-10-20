@@ -1,12 +1,12 @@
 import {EventStoreCqrsModule} from 'nestjs-geteventstore-1.6.4';
 import {Logger, Module} from '@nestjs/common';
 import {ConfigModule, ConfigService} from '@nestjs/config';
-import SentryFacebookConfig from './sentry-facebook';
-import EventstoreConfig from './eventstore';
-import EventbusConfig from './eventbus';
+import SentryFacebookConfig from './configuration/sentry-facebook';
+import EventstoreConfig from './configuration/eventstore';
+import EventbusConfig from './configuration/eventbus';
 import {EventHandlersEventbus} from './events/handlers';
-import {eventMapper} from './event-mapper-eventbus';
-import {persistentSubscriptionsEventbus} from './subscriptions';
+import {eventMapper} from './configuration/event-mapper-eventbus';
+import {persistentSubscriptionsEventbus} from './configuration/subscriptions';
 import {EventstoreSecondaryConnectionModule} from './secondary-connection.module';
 import {SentryModule} from '@ntegral/nestjs-sentry';
 import {nanoid} from 'nanoid';

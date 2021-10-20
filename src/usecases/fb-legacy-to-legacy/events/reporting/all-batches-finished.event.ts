@@ -2,7 +2,7 @@ import {
   AcknowledgeableEventStoreEvent,
   IEventStoreEventOptions,
 } from 'nestjs-geteventstore-1.6.4';
-import {FacebookSyncInterface} from '../../facebook-sync.interface';
+import {FacebookSyncInterface} from '../../models/facebook-sync.interface';
 
 export class AllBatchesFinishedEvent extends AcknowledgeableEventStoreEvent {
   constructor(
