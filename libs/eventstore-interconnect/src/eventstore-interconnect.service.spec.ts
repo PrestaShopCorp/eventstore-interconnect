@@ -9,7 +9,9 @@ describe('EventstoreInterconnectService', () => {
       providers: [EventstoreInterconnectService],
     }).compile();
 
-    service = module.get<EventstoreInterconnectService>(EventstoreInterconnectService);
+    service = module.get<EventstoreInterconnectService>(
+      EventstoreInterconnectService,
+    );
   });
 
   it('should be defined', () => {

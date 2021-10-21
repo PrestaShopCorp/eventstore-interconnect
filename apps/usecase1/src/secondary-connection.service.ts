@@ -6,9 +6,7 @@ import { IEventStoreConfig } from 'nestjs-geteventstore-1.6.4';
 export class SecondaryConnectionService {
   private client: EventStore.TCPClient;
 
-  constructor(
-    private readonly settings: IEventStoreConfig,
-  ) {
+  constructor(private readonly settings: IEventStoreConfig) {
     this.client = null;
     this.getClient();
   }

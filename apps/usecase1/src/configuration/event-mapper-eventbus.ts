@@ -5,9 +5,9 @@ import { GoogleTaxonomiesSyncEndedEvent } from '../events/eventbus/google-taxono
 import { ProductsSyncEndedEvent } from '../events/eventbus/products-sync-ended.event';
 
 const eventsToMapEventbus = {
-  'CategoriesSyncEndedEvent': CategoriesSyncEndedEvent,
-  'GoogleTaxonomiesSyncEndedEvent': GoogleTaxonomiesSyncEndedEvent,
-  'ProductsSyncEndedEvent': ProductsSyncEndedEvent,
+  CategoriesSyncEndedEvent: CategoriesSyncEndedEvent,
+  GoogleTaxonomiesSyncEndedEvent: GoogleTaxonomiesSyncEndedEvent,
+  ProductsSyncEndedEvent: ProductsSyncEndedEvent,
 };
 
 export const eventMapper = (data, options: IEventStoreEventOptions) => {

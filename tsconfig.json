@@ -18,12 +18,9 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@eventstore-interconnect/eventstore-interconnect": [
-        "libs/eventstore-interconnect/src"
+      "@eventstore-interconnect": [
+        "libs/eventstore-interconnect/src/index"
       ],
-      "@eventstore-interconnect/eventstore-interconnect/*": [
-        "libs/eventstore-interconnect/src/*"
-      ]
     }
   }
 }

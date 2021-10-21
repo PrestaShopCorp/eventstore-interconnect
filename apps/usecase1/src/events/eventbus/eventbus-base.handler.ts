@@ -3,11 +3,12 @@ import { IEventHandler } from '@nestjs/cqrs';
 import { InjectSentry, SentryService } from '@ntegral/nestjs-sentry';
 import * as Sentry from '@sentry/node';
 import { AcknowledgeableEventStoreEvent } from 'nestjs-geteventstore-1.6.4';
-import {SecondaryConnectionService} from '../../secondary-connection.service';
+import { SecondaryConnectionService } from '../../secondary-connection.service';
 
 export abstract class EventbusBaseHandler<
-  E extends AcknowledgeableEventStoreEvent
-> implements IEventHandler<E> {
+  E extends AcknowledgeableEventStoreEvent,
+> implements IEventHandler<E>
+{
   private Sentry: any;
 
   constructor(
