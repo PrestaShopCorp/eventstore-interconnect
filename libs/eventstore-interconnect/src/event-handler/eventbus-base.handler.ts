@@ -1,50 +1,48 @@
 import { Logger } from '@nestjs/common';
 import { IEventHandler } from '@nestjs/cqrs';
 import { InjectSentry, SentryService } from '@ntegral/nestjs-sentry';
-import * as Sentry from '@sentry/node';
-import { SecondaryConnectionService } from '../../secondary-connection.service';
+import Sentry from '@sentry/node';
 import { EventStoreAcknowledgeableEvent } from 'nestjs-geteventstore-4.0.1';
+import { HTTPClient } from 'geteventstore-promise';
 
 export abstract class EventbusBaseHandler<
   E extends EventStoreAcknowledgeableEvent,
 > implements IEventHandler<E>
 {
-  private Sentry: any;
+  private sentry;
 
   constructor(
     private readonly logger: Logger,
     @InjectSentry() private readonly sentryService: SentryService,
-    private readonly secondaryConnectionService: SecondaryConnectionService,
+    private readonly client: HTTPClient,
   ) {
     this.sentryService.app = 'Subscriptions:';
-    this.Sentry = Sentry;
+    this.sentry = Sentry;
   }
 
-  hasToBeCopied(event: E): boolean {
+  public hasToBeCopied(event: E): boolean {
     // some extending subclass should decide to copy event or not.
     return true;
   }
 
-  async handle(event: E): Promise<void> {
+  public async handle(event: E): Promise<void> {
     if (!this.hasToBeCopied(event)) {
       return;
     }
 
-    const data: any = event.data;
-    const metadata: any = event.metadata;
-    const stream: string = event.eventStreamId;
-    const eventType: string = event.eventType;
+    const { data, metadata, eventStreamId, eventType } = event;
     this.logger.log(
-      'An event has been caught: ' + eventType + ' for stream : ' + stream,
+      'An event has been caught: ' +
+        eventType +
+        ' for stream : ' +
+        eventStreamId,
     );
 
     try {
-      this.secondaryConnectionService
-        .getClient()
-        .writeEvent(stream, eventType, data, metadata);
+      await this.client.writeEvent(eventStreamId, eventType, data, metadata);
     } catch (err) {
       this.logger.error(err.toString());
-      this.Sentry.withScope((scope: Sentry.Scope) => {
+      this.sentry.withScope((scope: Sentry.Scope) => {
         scope.setUser({
           id: data?.shopId,
           username: `shop ${data?.shopId}`,

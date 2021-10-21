@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "resolveJsonModule": true,
+
+
+
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -19,7 +23,10 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@eventstore-interconnect": [
-        "libs/eventstore-interconnect/src/index"
+        "libs/eventstore-interconnect/src"
+      ],
+      "@eventstore-interconnect/*": [
+        "libs/eventstore-interconnect/src/*"
       ],
     }
   }

@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import { EventStoreVolatileSubscriptionConfig } from 'nestjs-geteventstore-1.6.4';
 
 const onSubscriptionDropped = (sub, reason, error) => {
   Logger.error(
@@ -56,14 +55,6 @@ export const persistentSubscriptionsSegment = [
     },
     onSubscriptionDropped,
   },
-];
-
-export const volatileSubscriptionsEventbus = [
-  {
-    stream: '$ce-eventbus_sync',
-    resolveLinkTos: true,
-    onSubscriptionDropped,
-  } as EventStoreVolatileSubscriptionConfig,
 ];
 
 export const persistentSubscriptionsEventbus = [

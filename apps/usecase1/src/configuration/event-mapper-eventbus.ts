@@ -1,8 +1,7 @@
-import { IEventStoreEventOptions } from 'nestjs-geteventstore-1.6.4';
-
 import { CategoriesSyncEndedEvent } from '../events/eventbus/categories-sync-ended.event';
 import { GoogleTaxonomiesSyncEndedEvent } from '../events/eventbus/google-taxonomies-sync-ended.event';
 import { ProductsSyncEndedEvent } from '../events/eventbus/products-sync-ended.event';
+import { IEventStoreEventOptions } from 'nestjs-geteventstore-1.6.4';
 
 const eventsToMapEventbus = {
   CategoriesSyncEndedEvent: CategoriesSyncEndedEvent,

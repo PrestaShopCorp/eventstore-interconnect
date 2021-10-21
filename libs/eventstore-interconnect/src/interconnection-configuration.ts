@@ -1,14 +1,19 @@
-import { IEventStoreConfig } from 'nestjs-geteventstore-4.0.1';
-import { IEventStoreBusConfig } from 'nestjs-geteventstore-1.6.4/dist/interfaces/event-store-bus-config.interface';
+import {
+  EventBusConfigType,
+  IEventStoreConfig,
+  IEventStoreServiceConfig,
+} from 'nestjs-geteventstore-4.0.1';
 
 export interface LegacyEventStoreConfiguration {
   connectionConfig: IEventStoreConfig;
-  eventStoreBusConfig: IEventStoreBusConfig;
+  eventStoreServiceConfig: IEventStoreServiceConfig;
+  eventBusConfig: EventBusConfigType;
 }
 
 export interface LatestEventStoreConfiguration {
   connectionConfig: IEventStoreConfig;
-  eventStoreBusConfig: IEventStoreBusConfig;
+  eventStoreServiceConfig: IEventStoreServiceConfig;
+  eventBusConfig: EventBusConfigType;
 
   // temp, coming soon
 }
