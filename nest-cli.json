@@ -8,15 +8,6 @@
     "tsConfigPath": "apps/eventstore-interconnect-project/tsconfig.app.json"
   },
   "projects": {
-    "eventstore-interconnect-project": {
-      "type": "application",
-      "root": "apps/eventstore-interconnect-project",
-      "entryFile": "main",
-      "sourceRoot": "apps/eventstore-interconnect-project/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/eventstore-interconnect-project/tsconfig.app.json"
-      }
-    },
     "usecase1": {
       "type": "application",
       "root": "apps/usecase1",

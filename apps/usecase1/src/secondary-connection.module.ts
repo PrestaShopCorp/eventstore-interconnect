@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { IEventStoreConfig } from 'nestjs-geteventstore-1.6.4';
+import { IEventStoreConfig } from 'nestjs-geteventstore-4.0.1';
 
 import { SecondaryConnectionService } from './secondary-connection.service';
 

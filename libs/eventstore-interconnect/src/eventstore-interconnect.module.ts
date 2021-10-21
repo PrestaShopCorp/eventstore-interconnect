@@ -1,12 +1,16 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Logger, Module } from '@nestjs/common';
 import { EventstoreInterconnectService } from './eventstore-interconnect.service';
-import { EventStoreCqrsModule } from 'nestjs-geteventstore-1.6.4';
 import InterconnectionConfiguration, {
   LatestEventStoreConfiguration,
   LegacyEventStoreConfiguration,
 } from './interconnection-configuration';
+import { CqrsEventStoreModule } from 'nestjs-geteventstore-4.0.1';
+import { SentryModule } from '@ntegral/nestjs-sentry';
+import { sentryForFacebookConfiguration } from '../../../apps/usecase1/src/configuration/sentry-facebook';
+import { SecondaryConnectionService } from '../../../apps/usecase1/src/secondary-connection.service';
 
 @Module({
+  imports: [Logger, SentryModule.forRoot(sentryForFacebookConfiguration)],
   providers: [EventstoreInterconnectService],
   exports: [EventstoreInterconnectService],
 })
@@ -18,11 +22,11 @@ export class EventstoreInterconnectModule {
       EventstoreInterconnectModule.isLegacyConf(
         configuration.sourceEventStoreConfiguration,
       )
-        ? EventStoreCqrsModule.register(
+        ? CqrsEventStoreModule.register(
             configuration.sourceEventStoreConfiguration.connectionConfig,
             configuration.sourceEventStoreConfiguration.eventStoreBusConfig,
           )
-        : EventStoreCqrsModule.register(
+        : CqrsEventStoreModule.register(
             // @ts-ignore
             configuration.sourceEventStoreConfiguration.connectionConfig,
             // @ts-ignore
@@ -32,18 +36,31 @@ export class EventstoreInterconnectModule {
       EventstoreInterconnectModule.isLegacyConf(
         configuration.destEventStoreConfiguration,
       )
-        ? EventStoreCqrsModule.register(
+        ? CqrsEventStoreModule.register(
             configuration.destEventStoreConfiguration.connectionConfig,
             configuration.sourceEventStoreConfiguration.eventStoreBusConfig,
           )
-        : EventStoreCqrsModule.register(
+        : CqrsEventStoreModule.register(
             // @ts-ignore
             configuration.destEventStoreConfiguration.connectionConfig,
             configuration.sourceEventStoreConfiguration.eventStoreBusConfig,
           );
     return {
       module: EventstoreInterconnectModule,
+      providers: [
+        {
+          provide: SecondaryConnectionService,
+          useValue: new SecondaryConnectionService(
+            configuration.sourceEventStoreConfiguration.connectionConfig,
+          ),
+        },
+      ],
       imports: [eventStoreModuleSource, eventStoreModuleDest],
+      exports: [
+        eventStoreModuleSource,
+        eventStoreModuleDest,
+        SecondaryConnectionService,
+      ],
     };
   }
 

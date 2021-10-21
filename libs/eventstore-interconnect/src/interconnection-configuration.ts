@@ -1,4 +1,4 @@
-import { IEventStoreConfig } from 'nestjs-geteventstore-1.6.4';
+import { IEventStoreConfig } from 'nestjs-geteventstore-4.0.1';
 import { IEventStoreBusConfig } from 'nestjs-geteventstore-1.6.4/dist/interfaces/event-store-bus-config.interface';
 
 export interface LegacyEventStoreConfiguration {

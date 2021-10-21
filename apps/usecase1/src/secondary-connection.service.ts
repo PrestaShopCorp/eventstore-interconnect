@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as EventStore from 'geteventstore-promise';
-import { IEventStoreConfig } from 'nestjs-geteventstore-1.6.4';
+import { IEventStoreConfig } from 'nestjs-geteventstore-4.0.1';
 
 @Injectable()
 export class SecondaryConnectionService {
