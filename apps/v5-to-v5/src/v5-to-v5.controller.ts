@@ -4,11 +4,11 @@ import { CategoriesSyncEndedEvent } from './events/eventbus/categories-sync-ende
 import { GoogleTaxonomiesSyncEndedEvent } from './events/eventbus/google-taxonomies-sync-ended.event';
 import { ProductsSyncEndedEvent } from './events/eventbus/products-sync-ended.event';
 
-@Controller('/usecase1/')
-export default class Usecase1Controller {
+@Controller('/v5ToV5/')
+export default class v5ToV5Controller {
   constructor(private readonly writeEventBus: WriteEventBus) {}
 
-  @Get('emit')
+  @Get('start')
   public emitEvents(): Promise<void> {
     return this.writeEventBus.publishAll([
       new CategoriesSyncEndedEvent({}),

@@ -9,4 +9,4 @@ These usecases are listed here :
 
 
 ### Usecase1 (v5 -> v5):
-[Usecase 1 documentation](./apps/usecase1/README.md)
+[Usecase 1 documentation](apps/v5-to-v5/README.md)

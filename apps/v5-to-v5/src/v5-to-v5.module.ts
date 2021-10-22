@@ -11,12 +11,12 @@ import {
   EventstoreInterconnectModule,
   LegacyEventStoreConfiguration,
 } from '@eventstore-interconnect';
-import Usecase1Controller from './usecase1.controller';
+import v5ToV5Controller from './v5-to-v5.controller';
 
 const projections: EventStoreProjectionType[] = [
   {
     name: 'hero-dragon2',
-    file: resolve(`apps/usecase1/src/projections/hero-dragon.js`),
+    file: resolve(`apps/v5-to-v5/src/projections/hero-dragon.js`),
     mode: 'continuous',
     enabled: true,
     checkPointsEnabled: true,
@@ -65,7 +65,7 @@ const legacyDstConf: LegacyEventStoreConfiguration = {
 };
 
 @Module({
-  controllers: [Usecase1Controller],
+  controllers: [v5ToV5Controller],
   imports: [
     EventstoreInterconnectModule.connectToSrcAndDest({
       sourceEventStoreConfiguration: legacySrcConf,
@@ -74,4 +74,4 @@ const legacyDstConf: LegacyEventStoreConfiguration = {
   ],
   providers: [Logger, ...EventHandlersEventbus],
 })
-export class Usecase1Module {}
+export class v5ToV5Module {}

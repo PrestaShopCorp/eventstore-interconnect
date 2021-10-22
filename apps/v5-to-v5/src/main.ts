@@ -1,12 +1,12 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Usecase1Module } from './usecase1.module';
+import { v5ToV5Module } from './v5-to-v5.module';
 
 async function bootstrap() {
   const logger = new Logger();
 
   try {
-    const app = await NestFactory.create(Usecase1Module, {
+    const app = await NestFactory.create(v5ToV5Module, {
       logger,
     });
     const port = 3000;
