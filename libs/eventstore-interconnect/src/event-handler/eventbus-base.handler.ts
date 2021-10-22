@@ -1,18 +1,17 @@
-import { Logger } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { IEventHandler } from '@nestjs/cqrs';
 import { EventStoreAcknowledgeableEvent } from 'nestjs-geteventstore-legacy';
-import { HTTPClient } from 'geteventstore-promise';
+import { Driver, DRIVER } from '../driver/service';
 
-export abstract class EventbusBaseHandler<
-  E extends EventStoreAcknowledgeableEvent,
-> implements IEventHandler<E>
+export class EventbusBaseHandler<E extends EventStoreAcknowledgeableEvent>
+  implements IEventHandler<E>
 {
   constructor(
     private readonly logger: Logger,
-    private readonly client: HTTPClient,
+    @Inject(DRIVER) private readonly driver: Driver,
   ) {}
 
-  public hasToBeCopied(event: E): boolean {
+  protected hasToBeCopied(event: E): boolean {
     // some extending subclass should decide to copy event or not.
     return true;
   }
@@ -31,7 +30,7 @@ export abstract class EventbusBaseHandler<
     );
 
     try {
-      await this.client.writeEvent(eventStreamId, eventType, data, metadata);
+      await this.driver.writeEvent(eventStreamId, eventType, data, metadata);
     } catch (err) {
       this.logger.error(err.toString());
       // this.sentry.withScope((scope: Sentry.Scope) => {

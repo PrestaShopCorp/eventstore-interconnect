@@ -17,6 +17,15 @@
         "tsConfigPath": "apps/v5-to-v5/tsconfig.app.json"
       }
     },
+    "v5-to-v21": {
+      "type": "application",
+      "root": "apps/v5-to-v21",
+      "entryFile": "main",
+      "sourceRoot": "apps/v5-to-v21/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/v5-to-v21/tsconfig.app.json"
+      }
+    },
     "eventstore-interconnect": {
       "type": "library",
       "root": "libs/eventstore-interconnect",
