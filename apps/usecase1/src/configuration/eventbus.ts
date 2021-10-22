@@ -9,7 +9,7 @@ const onTcpDisconnected = () => {
 
 const randomId = 'nanoid(11)';
 
-export const eventBusConfiguration: IEventStoreConfig = {
+export const sourceEventStoreConfiguration: IEventStoreConfig = {
   credentials: {
     username: process.env.EVENTSTORE_CREDENTIALS_USERNAME || 'admin',
     password: process.env.EVENTSTORE_CREDENTIALS_PASSWORD || 'changeit',
@@ -44,4 +44,4 @@ export const eventBusConfiguration: IEventStoreConfig = {
   },
 };
 
-export default registerAs('eventbus', () => eventBusConfiguration);
+export default registerAs('eventbus', () => sourceEventStoreConfiguration);

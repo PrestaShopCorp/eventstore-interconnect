@@ -1,41 +1,22 @@
-import { Logger, Module, OnApplicationBootstrap } from '@nestjs/common';
-import { eventBusConfiguration } from './configuration/eventbus';
+import { Logger, Module } from '@nestjs/common';
+import { sourceEventStoreConfiguration } from './configuration/eventbus';
 import { ProductsSyncEndedEvent } from './events/eventbus/products-sync-ended.event';
 import { GoogleTaxonomiesSyncEndedEvent } from './events/eventbus/google-taxonomies-sync-ended.event';
 import { CategoriesSyncEndedEvent } from './events/eventbus/categories-sync-ended.event';
 import { EventStoreProjectionType } from 'nestjs-geteventstore-4.0.1/dist/interfaces';
-import { eventStoreConfiguration } from './configuration/eventstore';
+import { destEventStoreConfiguration } from './configuration/eventstore';
 import { EventHandlersEventbus } from './events/handlers';
+import { resolve } from 'path';
 import {
   EventstoreInterconnectModule,
   LegacyEventStoreConfiguration,
 } from '@eventstore-interconnect';
+import Usecase1Controller from './usecase1.controller';
 
 const projections: EventStoreProjectionType[] = [
   {
-    name: 'hero-dragon',
-    // file: resolve(`${__dirname}/src/projections/hero-dragon.js`),
-    content: `
-    fromCategory('$et-hero')
-  .partitionBy((ev) => ev.data.dragonId)
-  .when({
-    HeroKilledDragonEvent: (state, event) => {
-      emit(\`dragon-\${event.data.dragonId}\`, 'KilledEvent', event.data, {
-        specversion: event.metadata.specversion,
-        type: event.metadata.type.replace(
-          'HeroKilledDragonEvent',
-          'KilledEvent',
-        ),
-        source: event.metadata.source,
-        correlation_id: event.metadata.correlation_id,
-        time: event.metadata.time,
-        version: 1,
-      });
-      return state;
-    },
-  });
-
-    `,
+    name: 'hero-dragon2',
+    file: resolve(`apps/usecase1/src/projections/hero-dragon.js`),
     mode: 'continuous',
     enabled: true,
     checkPointsEnabled: true,
@@ -73,17 +54,18 @@ const eventBusConfig = {
 };
 
 const legacySrcConf: LegacyEventStoreConfiguration = {
-  connectionConfig: eventBusConfiguration,
+  connectionConfig: sourceEventStoreConfiguration,
   eventStoreServiceConfig: { subscriptions, projections },
   eventBusConfig,
 };
 const legacyDstConf: LegacyEventStoreConfiguration = {
-  connectionConfig: eventStoreConfiguration,
+  connectionConfig: destEventStoreConfiguration,
   eventStoreServiceConfig: { subscriptions, projections },
   eventBusConfig,
 };
 
 @Module({
+  controllers: [Usecase1Controller],
   imports: [
     EventstoreInterconnectModule.connectToSrcAndDest({
       sourceEventStoreConfiguration: legacySrcConf,

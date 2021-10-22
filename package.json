@@ -8,8 +8,9 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build eventstore-interconnect",
+    "build:usecase1": "nest build usecase1",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
-    "start:usecase": "nest start usecase1",
+    "start:usecase1": "nest start usecase1",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch usecase1",
     "start:prod": "node dist/main",
