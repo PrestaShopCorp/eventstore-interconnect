@@ -2,7 +2,7 @@ import {
   EventBusConfigType,
   IEventStoreConfig,
   IEventStoreServiceConfig,
-} from 'nestjs-geteventstore-4.0.1';
+} from 'nestjs-geteventstore-legacy';
 
 export interface LegacyEventStoreConfiguration {
   connectionConfig: IEventStoreConfig;

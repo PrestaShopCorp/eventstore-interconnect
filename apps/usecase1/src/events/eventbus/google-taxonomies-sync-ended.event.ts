@@ -1,7 +1,7 @@
 import {
   EventOptionsType,
   EventStoreAcknowledgeableEvent,
-} from 'nestjs-geteventstore-4.0.1';
+} from 'nestjs-geteventstore-legacy';
 
 export class GoogleTaxonomiesSyncEndedEvent extends EventStoreAcknowledgeableEvent {
   constructor(public readonly data: any, options?: EventOptionsType) {

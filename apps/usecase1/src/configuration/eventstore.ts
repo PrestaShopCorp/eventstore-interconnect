@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import { IEventStoreConfig } from 'nestjs-geteventstore-4.0.1';
+import { IEventStoreConfig } from 'nestjs-geteventstore-legacy';
 import { nanoid } from 'nanoid';
 import { Logger } from '@nestjs/common';
 

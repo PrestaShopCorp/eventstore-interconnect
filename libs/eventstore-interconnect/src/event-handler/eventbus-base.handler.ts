@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { IEventHandler } from '@nestjs/cqrs';
-import { EventStoreAcknowledgeableEvent } from 'nestjs-geteventstore-4.0.1';
+import { EventStoreAcknowledgeableEvent } from 'nestjs-geteventstore-legacy';
 import { HTTPClient } from 'geteventstore-promise';
 
 export abstract class EventbusBaseHandler<

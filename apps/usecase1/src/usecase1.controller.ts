@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { WriteEventBus } from 'nestjs-geteventstore-4.0.1';
+import { WriteEventBus } from 'nestjs-geteventstore-legacy';
 import { CategoriesSyncEndedEvent } from './events/eventbus/categories-sync-ended.event';
 import { GoogleTaxonomiesSyncEndedEvent } from './events/eventbus/google-taxonomies-sync-ended.event';
 import { ProductsSyncEndedEvent } from './events/eventbus/products-sync-ended.event';

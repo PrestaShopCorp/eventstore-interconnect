@@ -1,12 +1,10 @@
-import { DynamicModule, Logger, Module } from '@nestjs/common';
-import { EventstoreInterconnectService } from './interconnect-service/eventstore-interconnect.service';
+import { DynamicModule, Module } from '@nestjs/common';
 import InterconnectionConfiguration, {
   LatestEventStoreConfiguration,
   LegacyEventStoreConfiguration,
 } from './interconnection-configuration';
-import { CqrsEventStoreModule } from 'nestjs-geteventstore-4.0.1';
+import { CqrsEventStoreModule } from 'nestjs-geteventstore-legacy';
 import { HTTPClient } from 'geteventstore-promise';
-import { CqrsModule } from '@nestjs/cqrs';
 import { ContextModule } from 'nestjs-context';
 
 @Module({})
@@ -15,44 +13,14 @@ export class EventstoreInterconnectModule {
     configuration: InterconnectionConfiguration,
   ): DynamicModule {
     const eventStoreModuleSource: DynamicModule =
-      EventstoreInterconnectModule.isLegacyConf(
-        configuration.sourceEventStoreConfiguration,
-      )
-        ? CqrsEventStoreModule.register(
-            configuration.sourceEventStoreConfiguration.connectionConfig,
-            configuration.sourceEventStoreConfiguration.eventStoreServiceConfig,
-            configuration.sourceEventStoreConfiguration.eventBusConfig,
-          )
-        : CqrsEventStoreModule.register(
-            // @ts-ignore
-            configuration.sourceEventStoreConfiguration.connectionConfig,
-            // @ts-ignore
-            configuration.sourceEventStoreConfiguration.eventStoreServiceConfig,
-            // @ts-ignore
-            configuration.sourceEventStoreConfiguration.eventBusConfig,
-          );
+      this.getSourceEventStoreConfiguration(configuration);
 
     const eventStoreModuleDest: DynamicModule =
-      EventstoreInterconnectModule.isLegacyConf(
-        configuration.destEventStoreConfiguration,
-      )
-        ? CqrsEventStoreModule.register(
-            configuration.destEventStoreConfiguration.connectionConfig,
-            configuration.destEventStoreConfiguration.eventStoreServiceConfig,
-            configuration.destEventStoreConfiguration.eventBusConfig,
-          )
-        : CqrsEventStoreModule.register(
-            // @ts-ignore
-            configuration.destEventStoreConfiguration.connectionConfig,
-            // @ts-ignore
-            configuration.destEventStoreConfiguration.eventStoreServiceConfig,
-            // @ts-ignore
-            configuration.destEventStoreConfiguration.eventBusConfig,
-          );
+      this.getDestinationEventStoreConfiguration(configuration);
+
     return {
       module: EventstoreInterconnectModule,
       providers: [
-        EventstoreInterconnectService,
         {
           provide: HTTPClient,
           useValue: new HTTPClient({
@@ -68,21 +36,54 @@ export class EventstoreInterconnectModule {
         },
       ],
       imports: [
-        CqrsModule,
-        Logger,
         ContextModule.register(),
-
         eventStoreModuleSource,
         eventStoreModuleDest,
       ],
-      exports: [
-        eventStoreModuleSource,
-        eventStoreModuleDest,
-        HTTPClient,
-        CqrsModule,
-        EventstoreInterconnectService,
-      ],
+      exports: [eventStoreModuleSource, eventStoreModuleDest, HTTPClient],
     };
+  }
+
+  private static getDestinationEventStoreConfiguration(
+    configuration: InterconnectionConfiguration,
+  ): DynamicModule {
+    return EventstoreInterconnectModule.isLegacyConf(
+      configuration.destEventStoreConfiguration,
+    )
+      ? CqrsEventStoreModule.register(
+          configuration.destEventStoreConfiguration.connectionConfig,
+          configuration.destEventStoreConfiguration.eventStoreServiceConfig,
+          configuration.destEventStoreConfiguration.eventBusConfig,
+        )
+      : CqrsEventStoreModule.register(
+          // @ts-ignore
+          configuration.destEventStoreConfiguration.connectionConfig,
+          // @ts-ignore
+          configuration.destEventStoreConfiguration.eventStoreServiceConfig,
+          // @ts-ignore
+          configuration.destEventStoreConfiguration.eventBusConfig,
+        );
+  }
+
+  private static getSourceEventStoreConfiguration(
+    configuration: InterconnectionConfiguration,
+  ): DynamicModule {
+    return EventstoreInterconnectModule.isLegacyConf(
+      configuration.sourceEventStoreConfiguration,
+    )
+      ? CqrsEventStoreModule.register(
+          configuration.sourceEventStoreConfiguration.connectionConfig,
+          configuration.sourceEventStoreConfiguration.eventStoreServiceConfig,
+          configuration.sourceEventStoreConfiguration.eventBusConfig,
+        )
+      : CqrsEventStoreModule.register(
+          // @ts-ignore
+          configuration.sourceEventStoreConfiguration.connectionConfig,
+          // @ts-ignore
+          configuration.sourceEventStoreConfiguration.eventStoreServiceConfig,
+          // @ts-ignore
+          configuration.sourceEventStoreConfiguration.eventBusConfig,
+        );
   }
 
   private static isLegacyConf(
