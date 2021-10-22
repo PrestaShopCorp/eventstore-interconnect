@@ -1,12 +1,10 @@
 import { Logger, Module, OnApplicationBootstrap } from '@nestjs/common';
 import { eventBusConfiguration } from './configuration/eventbus';
-import { resolve } from 'path';
 import { ProductsSyncEndedEvent } from './events/eventbus/products-sync-ended.event';
 import { GoogleTaxonomiesSyncEndedEvent } from './events/eventbus/google-taxonomies-sync-ended.event';
 import { CategoriesSyncEndedEvent } from './events/eventbus/categories-sync-ended.event';
 import { EventStoreProjectionType } from 'nestjs-geteventstore-4.0.1/dist/interfaces';
 import { eventStoreConfiguration } from './configuration/eventstore';
-import { ContextModule } from 'nestjs-context';
 import { EventHandlersEventbus } from './events/handlers';
 import {
   EventstoreInterconnectModule,
@@ -16,7 +14,28 @@ import {
 const projections: EventStoreProjectionType[] = [
   {
     name: 'hero-dragon',
-    file: resolve(`./projections/hero-dragon.js`),
+    // file: resolve(`${__dirname}/src/projections/hero-dragon.js`),
+    content: `
+    fromCategory('$et-hero')
+  .partitionBy((ev) => ev.data.dragonId)
+  .when({
+    HeroKilledDragonEvent: (state, event) => {
+      emit(\`dragon-\${event.data.dragonId}\`, 'KilledEvent', event.data, {
+        specversion: event.metadata.specversion,
+        type: event.metadata.type.replace(
+          'HeroKilledDragonEvent',
+          'KilledEvent',
+        ),
+        source: event.metadata.source,
+        correlation_id: event.metadata.correlation_id,
+        time: event.metadata.time,
+        version: 1,
+      });
+      return state;
+    },
+  });
+
+    `,
     mode: 'continuous',
     enabled: true,
     checkPointsEnabled: true,
@@ -73,8 +92,4 @@ const legacyDstConf: LegacyEventStoreConfiguration = {
   ],
   providers: [Logger, ...EventHandlersEventbus],
 })
-export class Usecase1Module implements OnApplicationBootstrap {
-  public onApplicationBootstrap(): any {
-    console.log('App bootstrapped');
-  }
-}
+export class Usecase1Module {}

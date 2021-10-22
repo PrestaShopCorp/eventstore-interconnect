@@ -10,7 +10,6 @@
     "build": "nest build eventstore-interconnect",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start:usecase": "nest start usecase1",
-    "start:usecase2": "ts-node-dev -r tsconfig-paths/register apps/usecase1/src/usecase1.module.ts",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch usecase1",
     "start:prod": "node dist/main",

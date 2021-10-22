@@ -10,6 +10,7 @@ import { sentryForFacebookConfiguration } from '../../../apps/usecase1/src/confi
 import { HTTPClient } from 'geteventstore-promise';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ContextModule } from 'nestjs-context';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({})
 export class EventstoreInterconnectModule {
@@ -70,7 +71,6 @@ export class EventstoreInterconnectModule {
       imports: [
         CqrsModule,
         Logger,
-        SentryModule.forRoot(sentryForFacebookConfiguration),
         ContextModule.register(),
 
         eventStoreModuleSource,
