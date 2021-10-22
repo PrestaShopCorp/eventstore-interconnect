@@ -1,7 +1,7 @@
 import {
   LegacyEventStoreConfiguration,
   NextEventStoreConfiguration,
-} from './interconnection-configuration';
+} from '../interconnection-configuration';
 
 export class ConfigurationsHelper {
   public static isLegacyConf(

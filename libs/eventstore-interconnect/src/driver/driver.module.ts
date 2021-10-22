@@ -3,7 +3,7 @@ import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { HTTPClient } from 'geteventstore-promise';
 import { LegacyEventStoreConfiguration, NextEventStoreConfiguration } from '..';
 import { DRIVER, GrpcDriverService, HttpDriverService } from './service';
-import { ConfigurationsHelper as legal } from '../configurations.helper';
+import { ConfigurationsHelper as legal } from '../module/configurations.helper';
 
 @Module({})
 export class DriverModule {

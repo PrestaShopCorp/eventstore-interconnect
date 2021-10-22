@@ -13,6 +13,7 @@ import {
   NextEventStoreConfiguration,
 } from '@eventstore-interconnect';
 import v5ToV21Controller from './v5-to-v21.controller';
+import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
 
 const projections: EventStoreProjectionType[] = [
   {
@@ -41,6 +42,19 @@ const subscriptions = {
   ],
 };
 
+const destEventStorePersSub: IPersistentSubscriptionConfig = {
+  // Event stream category (before the -)
+  stream: '$ce-hero',
+  group: 'data',
+  settingsForCreation: {
+    subscriptionSettings: {
+      resolveLinkTos: true,
+      minCheckpointCount: 1,
+    },
+  },
+  onError: (err: Error) => console.log(`An error occurred : ${err.message}`),
+};
+
 const eventBusConfig = {
   read: {
     allowedEvents: {
@@ -62,7 +76,9 @@ const legacySrcConf: LegacyEventStoreConfiguration = {
 const nextDstConf: NextEventStoreConfiguration = {
   eventStoreConfig: destEventStoreConfiguration,
   eventStoreSubsystems: {
-    subscriptions,
+    subscriptions: {
+      persistent: [destEventStorePersSub],
+    },
     onConnectionFail: () => {},
     onEvent: () => {},
   },

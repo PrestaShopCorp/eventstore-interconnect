@@ -4,7 +4,7 @@ import { CategoriesSyncEndedEvent } from './events/eventbus/categories-sync-ende
 import { GoogleTaxonomiesSyncEndedEvent } from './events/eventbus/google-taxonomies-sync-ended.event';
 import { ProductsSyncEndedEvent } from './events/eventbus/products-sync-ended.event';
 
-@Controller('/v5ToV5/')
+@Controller('/v5ToV21/')
 export default class v5ToV21Controller {
   constructor(private readonly writeEventBus: WriteEventBus) {}
 

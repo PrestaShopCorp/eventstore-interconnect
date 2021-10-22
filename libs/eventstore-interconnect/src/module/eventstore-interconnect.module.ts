@@ -1,9 +1,9 @@
 import { DynamicModule, Logger, Module } from '@nestjs/common';
-import InterconnectionConfiguration from './interconnection-configuration';
+import InterconnectionConfiguration from '../interconnection-configuration';
 import { ContextModule } from 'nestjs-context';
 import EventstoreInterconnectModuleHelper from './eventstore-interconnect.module.helper';
-import { DriverModule } from './driver/driver.module';
-import { EventbusBaseHandler } from './event-handler/eventbus-base.handler';
+import { DriverModule } from '../driver/driver.module';
+import { EventbusBaseHandler } from '../event-handler/eventbus-base.handler';
 
 @Module({})
 export class EventstoreInterconnectModule {

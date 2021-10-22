@@ -1,7 +1,7 @@
 import InterconnectionConfiguration, {
   LegacyEventStoreConfiguration,
   NextEventStoreConfiguration,
-} from './interconnection-configuration';
+} from '../interconnection-configuration';
 import { DynamicModule } from '@nestjs/common';
 import { CqrsEventStoreModule as CqrsEventStoreModuleLegacy } from 'nestjs-geteventstore-legacy/dist/cqrs-event-store.module';
 import { CqrsEventStoreModule as CqrsEventStoreModuleNext } from 'nestjs-geteventstore-next/dist/cqrs-event-store.module';
