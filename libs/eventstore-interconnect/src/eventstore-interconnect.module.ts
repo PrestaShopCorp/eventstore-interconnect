@@ -1,11 +1,9 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import InterconnectionConfiguration, {
-  LatestEventStoreConfiguration,
-  LegacyEventStoreConfiguration,
-} from './interconnection-configuration';
-import { CqrsEventStoreModule } from 'nestjs-geteventstore-legacy';
+import InterconnectionConfiguration from './interconnection-configuration';
 import { HTTPClient } from 'geteventstore-promise';
 import { ContextModule } from 'nestjs-context';
+import EventstoreInterconnectModuleHelper from '@eventstore-interconnect/eventstore-interconnect.module.helper';
+import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 
 @Module({})
 export class EventstoreInterconnectModule {
@@ -13,28 +11,21 @@ export class EventstoreInterconnectModule {
     configuration: InterconnectionConfiguration,
   ): DynamicModule {
     const eventStoreModuleSource: DynamicModule =
-      this.getSourceEventStoreConfiguration(configuration);
+      EventstoreInterconnectModuleHelper.getSourceEventStoreModule(
+        configuration,
+      );
 
     const eventStoreModuleDest: DynamicModule =
-      this.getDestinationEventStoreConfiguration(configuration);
+      EventstoreInterconnectModuleHelper.getDestinationEventStoreModule(
+        configuration,
+      );
+
+    const clientProvider: Provider =
+      EventstoreInterconnectModuleHelper.getHttpClientProvider(configuration);
 
     return {
       module: EventstoreInterconnectModule,
-      providers: [
-        {
-          provide: HTTPClient,
-          useValue: new HTTPClient({
-            hostname:
-              configuration.destEventStoreConfiguration.connectionConfig.http
-                .host,
-            port: configuration.destEventStoreConfiguration.connectionConfig
-              .http.port,
-            credentials:
-              configuration.destEventStoreConfiguration.connectionConfig
-                .credentials,
-          }),
-        },
-      ],
+      providers: [clientProvider],
       imports: [
         ContextModule.register(),
         eventStoreModuleSource,
@@ -42,58 +33,5 @@ export class EventstoreInterconnectModule {
       ],
       exports: [eventStoreModuleSource, eventStoreModuleDest, HTTPClient],
     };
-  }
-
-  private static getDestinationEventStoreConfiguration(
-    configuration: InterconnectionConfiguration,
-  ): DynamicModule {
-    return EventstoreInterconnectModule.isLegacyConf(
-      configuration.destEventStoreConfiguration,
-    )
-      ? CqrsEventStoreModule.register(
-          configuration.destEventStoreConfiguration.connectionConfig,
-          configuration.destEventStoreConfiguration.eventStoreServiceConfig,
-          configuration.destEventStoreConfiguration.eventBusConfig,
-        )
-      : CqrsEventStoreModule.register(
-          // @ts-ignore
-          configuration.destEventStoreConfiguration.connectionConfig,
-          // @ts-ignore
-          configuration.destEventStoreConfiguration.eventStoreServiceConfig,
-          // @ts-ignore
-          configuration.destEventStoreConfiguration.eventBusConfig,
-        );
-  }
-
-  private static getSourceEventStoreConfiguration(
-    configuration: InterconnectionConfiguration,
-  ): DynamicModule {
-    return EventstoreInterconnectModule.isLegacyConf(
-      configuration.sourceEventStoreConfiguration,
-    )
-      ? CqrsEventStoreModule.register(
-          configuration.sourceEventStoreConfiguration.connectionConfig,
-          configuration.sourceEventStoreConfiguration.eventStoreServiceConfig,
-          configuration.sourceEventStoreConfiguration.eventBusConfig,
-        )
-      : CqrsEventStoreModule.register(
-          // @ts-ignore
-          configuration.sourceEventStoreConfiguration.connectionConfig,
-          // @ts-ignore
-          configuration.sourceEventStoreConfiguration.eventStoreServiceConfig,
-          // @ts-ignore
-          configuration.sourceEventStoreConfiguration.eventBusConfig,
-        );
-  }
-
-  private static isLegacyConf(
-    configuration:
-      | LegacyEventStoreConfiguration
-      | LatestEventStoreConfiguration,
-  ): configuration is LegacyEventStoreConfiguration {
-    return (
-      (configuration as LegacyEventStoreConfiguration).connectionConfig.http !==
-      undefined
-    );
   }
 }

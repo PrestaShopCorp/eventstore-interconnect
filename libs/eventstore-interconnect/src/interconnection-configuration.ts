@@ -1,28 +1,31 @@
 import {
-  EventBusConfigType,
+  EventBusConfigType as LegacyEventBusConfigType,
   IEventStoreConfig,
   IEventStoreServiceConfig,
 } from 'nestjs-geteventstore-legacy';
+import {
+  EventStoreConnectionConfig,
+  IEventStoreSubsystems,
+  EventBusConfigType,
+} from 'nestjs-geteventstore-next';
 
 export interface LegacyEventStoreConfiguration {
   connectionConfig: IEventStoreConfig;
   eventStoreServiceConfig: IEventStoreServiceConfig;
-  eventBusConfig: EventBusConfigType;
+  eventBusConfig: LegacyEventBusConfigType;
 }
 
-export interface LatestEventStoreConfiguration {
-  connectionConfig: IEventStoreConfig;
-  eventStoreServiceConfig: IEventStoreServiceConfig;
-  eventBusConfig: EventBusConfigType;
-
-  // temp, coming soon
+export interface NextEventStoreConfiguration {
+  eventStoreConfig: EventStoreConnectionConfig;
+  eventStoreSubsystems?: IEventStoreSubsystems;
+  eventBusConfig?: EventBusConfigType;
 }
 
 export default interface InterconnectionConfiguration {
   sourceEventStoreConfiguration:
     | LegacyEventStoreConfiguration
-    | LatestEventStoreConfiguration;
+    | NextEventStoreConfiguration;
   destEventStoreConfiguration:
     | LegacyEventStoreConfiguration
-    | LatestEventStoreConfiguration;
+    | NextEventStoreConfiguration;
 }
