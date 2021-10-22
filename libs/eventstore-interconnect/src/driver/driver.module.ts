@@ -24,7 +24,7 @@ export class DriverModule {
   private static getNextEventStoreDriver() {
     return {
       provide: DRIVER,
-      useValue: GrpcDriverService,
+      useClass: GrpcDriverService,
     };
   }
 
@@ -34,7 +34,7 @@ export class DriverModule {
     return [
       {
         provide: DRIVER,
-        useValue: HttpDriverService,
+        useClass: HttpDriverService,
       },
       {
         provide: HTTPClient,

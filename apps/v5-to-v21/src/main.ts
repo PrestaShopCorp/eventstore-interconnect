@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { v5ToV21Module } from './v5-to-v21.module';
+import { v5ToV21Module } from './usecase/v5-to-v21.module';
 
 async function bootstrap() {
   const logger = new Logger();

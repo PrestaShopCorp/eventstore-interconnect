@@ -1,11 +1,10 @@
 import { Logger, Module } from '@nestjs/common';
-import { sourceEventStoreConfiguration } from './configuration/eventbus';
-import { ProductsSyncEndedEvent } from './events/eventbus/products-sync-ended.event';
-import { GoogleTaxonomiesSyncEndedEvent } from './events/eventbus/google-taxonomies-sync-ended.event';
-import { CategoriesSyncEndedEvent } from './events/eventbus/categories-sync-ended.event';
+import { sourceEventStoreConfiguration } from '../configuration/eventbus';
+import { ProductsSyncEndedEvent } from '../events/eventbus/products-sync-ended.event';
+import { GoogleTaxonomiesSyncEndedEvent } from '../events/eventbus/google-taxonomies-sync-ended.event';
+import { CategoriesSyncEndedEvent } from '../events/eventbus/categories-sync-ended.event';
 import { EventStoreProjectionType } from 'nestjs-geteventstore-legacy';
-import { destEventStoreConfiguration } from './configuration/eventstore';
-import { EventHandlersEventbus } from './events/handlers';
+import { destEventStoreConfiguration } from '../configuration/eventstore';
 import { resolve } from 'path';
 import {
   EventstoreInterconnectModule,
@@ -14,6 +13,7 @@ import {
 } from '@eventstore-interconnect';
 import v5ToV21Controller from './v5-to-v21.controller';
 import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
+import { EventHandlersEventbus } from '../events/handlers';
 
 const projections: EventStoreProjectionType[] = [
   {

@@ -3,11 +3,12 @@ import { IEventHandler } from '@nestjs/cqrs';
 import { EventStoreAcknowledgeableEvent } from 'nestjs-geteventstore-legacy';
 import { Driver, DRIVER } from '../driver/service';
 
-export class EventbusBaseHandler<E extends EventStoreAcknowledgeableEvent>
-  implements IEventHandler<E>
+export abstract class EventbusBaseHandler<
+  E extends EventStoreAcknowledgeableEvent,
+> implements IEventHandler<E>
 {
   constructor(
-    private readonly logger: Logger,
+    protected readonly logger: Logger,
     @Inject(DRIVER) private readonly driver: Driver,
   ) {}
 
@@ -28,7 +29,6 @@ export class EventbusBaseHandler<E extends EventStoreAcknowledgeableEvent>
         ' for stream : ' +
         eventStreamId,
     );
-
     try {
       await this.driver.writeEvent(eventStreamId, eventType, data, metadata);
     } catch (err) {
