@@ -11,14 +11,14 @@ import {
   LegacyEventStoreConfiguration,
   NextEventStoreConfiguration,
 } from '@eventstore-interconnect';
-import v5ToV21Controller from './v5-to-v21.controller';
+import usecaseController from './usecase.controller';
 import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
 import { EventHandlersEventbus } from '../events/handlers';
 
 const projections: EventStoreProjectionType[] = [
   {
     name: 'hero-dragon2',
-    file: resolve(`apps/v5-to-v21/src/projections/hero-dragon.js`),
+    file: resolve(`apps/usecase/src/projections/hero-dragon.js`),
     mode: 'continuous',
     enabled: true,
     checkPointsEnabled: true,
@@ -85,7 +85,7 @@ const nextDstConf: NextEventStoreConfiguration = {
 };
 
 @Module({
-  controllers: [v5ToV21Controller],
+  controllers: [usecaseController],
   imports: [
     EventstoreInterconnectModule.connectToSrcAndDest({
       sourceEventStoreConfiguration: legacySrcConf,
@@ -94,4 +94,4 @@ const nextDstConf: NextEventStoreConfiguration = {
   ],
   providers: [Logger, ...EventHandlersEventbus],
 })
-export class v5ToV21Module {}
+export class usecaseModule {}

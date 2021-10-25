@@ -4,8 +4,7 @@
 
 The aim of this project is to provide a lib able to interconnect 2 eventstores, that have 2 different versions. These version are : v5.0.1 and v21.2.0 (also working with 2 eventstores with same version)
 
-These usecases are listed here :
-- [Client connects to 5.x, create/connect to persistent subscription, and write the events red on a v5.x stream](apps/v5-to-v5/README.md)
+A usecase has been prepared in order to test the different possibilities :
+- [Given a specific configuration](apps/usecase/README.md), the system should automaticcally detect the version of the source and dest eventstore, and connect to it. 
 
-- [Client connects to v21.x, create/connect to persistent subscription, and write the events red on a v5.x stream](apps/v5-to-v21/README.md)
-
+After that, it should automatically create/connect to subscriptions into the source, and write events into the destination one, after checking that the events are allowed and valid.
