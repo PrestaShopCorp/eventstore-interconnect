@@ -1,70 +1,56 @@
-import InterconnectionConfiguration, {
-  LegacyEventStoreConfiguration,
-  NextEventStoreConfiguration,
-} from '../interconnection-configuration';
 import { DynamicModule } from '@nestjs/common';
 import { CqrsEventStoreModule as CqrsEventStoreModuleLegacy } from 'nestjs-geteventstore-legacy/dist/cqrs-event-store.module';
 import { CqrsEventStoreModule as CqrsEventStoreModuleNext } from 'nestjs-geteventstore-next/dist/cqrs-event-store.module';
 import { ConfigurationsHelper } from './configurations.helper';
+import { InterconnectionConfiguration } from '../interconnection-configuration';
 
 export default class EventstoreInterconnectModuleHelper {
   public static getSourceEventStoreModule(
     configuration: InterconnectionConfiguration,
   ): DynamicModule {
-    return ConfigurationsHelper.isLegacyConf(
-      configuration.sourceEventStoreConfiguration,
-    )
-      ? this.registerToLegacyEventStoreModuleWithConf(
-          configuration.sourceEventStoreConfiguration,
-        )
-      : this.registerToNextEventStoreModuleWithConf(
-          configuration.sourceEventStoreConfiguration,
-        );
+    return ConfigurationsHelper.isLegacyConf(configuration.source)
+      ? this.registerToLegacyEventStoreModuleWithConf(configuration, 'source')
+      : this.registerToNextEventStoreModuleWithConf(configuration, 'source');
   }
 
   public static getDestinationEventStoreModule(
     configuration: InterconnectionConfiguration,
   ): DynamicModule {
-    return ConfigurationsHelper.isLegacyConf(
-      configuration.destEventStoreConfiguration,
-    )
-      ? this.registerToLegacyEventStoreModuleWithConf({
-          connectionConfig:
-            configuration.destEventStoreConfiguration.connectionConfig,
-          eventStoreServiceConfig:
-            configuration.destEventStoreConfiguration.eventStoreServiceConfig,
-          eventBusConfig: {},
-        })
-      : this.registerToNextEventStoreModuleWithConf({
-          eventStoreConfig:
-            configuration.destEventStoreConfiguration.eventStoreConfig,
-          eventStoreSubsystems:
-            configuration.destEventStoreConfiguration.eventStoreSubsystems,
-          eventBusConfig: { read: { allowedEvents: {} } },
-        });
+    return ConfigurationsHelper.isLegacyConf(configuration.destination)
+      ? this.registerToLegacyEventStoreModuleWithConf(configuration, 'dest')
+      : this.registerToNextEventStoreModuleWithConf(configuration, 'dest');
   }
 
   private static registerToLegacyEventStoreModuleWithConf(
-    configuration: LegacyEventStoreConfiguration,
+    configuration: InterconnectionConfiguration,
+    entry: 'source' | 'dest',
   ): DynamicModule {
-    const { connectionConfig, eventStoreServiceConfig, eventBusConfig } =
-      configuration;
+    const { tcp, http, credentials } =
+      entry === 'source' ? configuration.source : configuration.destination;
     return CqrsEventStoreModuleLegacy.register(
-      connectionConfig,
-      eventStoreServiceConfig,
-      eventBusConfig,
+      {
+        tcp,
+        http,
+        credentials,
+      },
+      configuration.eventStoreServiceConfig,
     );
   }
 
   private static registerToNextEventStoreModuleWithConf(
-    configuration: NextEventStoreConfiguration,
+    configuration: InterconnectionConfiguration,
+    entry: 'source' | 'dest',
   ): DynamicModule {
-    const { eventStoreConfig, eventStoreSubsystems, eventBusConfig } =
-      configuration;
+    const { connectionString, credentials } =
+      entry === 'source' ? configuration.source : configuration.destination;
+    const { eventStoreSubsystems } = configuration;
     return CqrsEventStoreModuleNext.register(
-      eventStoreConfig,
+      {
+        connectionSettings: { connectionString },
+        defaultUserCredentials: credentials,
+      },
       eventStoreSubsystems,
-      eventBusConfig,
+      { read: { allowedEvents: {} }, write: { serviceName: 'test' } },
     );
   }
 }

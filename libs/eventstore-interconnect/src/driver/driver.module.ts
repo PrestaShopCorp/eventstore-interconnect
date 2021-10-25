@@ -1,18 +1,20 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { HTTPClient } from 'geteventstore-promise';
-import { LegacyEventStoreConfiguration, NextEventStoreConfiguration } from '..';
+import { ConnectionConfiguration, InterconnectionConfiguration } from '..';
 import { DRIVER, GrpcDriverService, HttpDriverService } from './service';
 import { ConfigurationsHelper as legal } from '../module/configurations.helper';
 
 @Module({})
 export class DriverModule {
   public static get(
-    configuration: LegacyEventStoreConfiguration | NextEventStoreConfiguration,
+    configuration: InterconnectionConfiguration,
   ): DynamicModule {
-    const driverProviders: Provider[] = legal.isLegacyConf(configuration)
-      ? this.getLegacyEventStoreDriver(configuration)
-      : [this.getNextEventStoreDriver()];
+    const driverProviders: Provider[] = legal.isLegacyConf(
+      configuration.destination,
+    )
+      ? this.getLegacyEventStoreDriver(configuration.destination)
+      : this.getNextEventStoreDriver();
 
     return {
       module: DriverModule,
@@ -22,14 +24,20 @@ export class DriverModule {
   }
 
   private static getNextEventStoreDriver() {
-    return {
-      provide: DRIVER,
-      useClass: GrpcDriverService,
-    };
+    return [
+      {
+        provide: DRIVER,
+        useClass: GrpcDriverService,
+      },
+      // {
+      //   provide: DRIVER,
+      //   useClass: GrpcDriverService,
+      // },
+    ];
   }
 
   private static getLegacyEventStoreDriver(
-    configuration: LegacyEventStoreConfiguration,
+    configuration: ConnectionConfiguration,
   ) {
     return [
       {
@@ -39,9 +47,9 @@ export class DriverModule {
       {
         provide: HTTPClient,
         useValue: new HTTPClient({
-          hostname: configuration.connectionConfig.http.host,
-          port: configuration.connectionConfig.http.port,
-          credentials: configuration.connectionConfig.credentials,
+          hostname: configuration.http.host,
+          port: configuration.http.port,
+          credentials: configuration.credentials,
         }),
       },
     ];

@@ -1,97 +1,48 @@
 import { Logger, Module } from '@nestjs/common';
-import { sourceEventStoreConfiguration } from '../configuration/eventbus';
-import { ProductsSyncEndedEvent } from '../events/eventbus/products-sync-ended.event';
-import { GoogleTaxonomiesSyncEndedEvent } from '../events/eventbus/google-taxonomies-sync-ended.event';
-import { CategoriesSyncEndedEvent } from '../events/eventbus/categories-sync-ended.event';
-import { EventStoreProjectionType } from 'nestjs-geteventstore-legacy';
-import { destEventStoreConfiguration } from '../configuration/eventstore';
-import { resolve } from 'path';
 import {
   EventstoreInterconnectModule,
-  LegacyEventStoreConfiguration,
-  NextEventStoreConfiguration,
+  InterconnectionConfiguration,
 } from '@eventstore-interconnect';
 import usecaseController from './usecase.controller';
-import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
 import { EventHandlersEventbus } from '../events/handlers';
+import { legSrcLegDestConfiguration } from '../configuration/eventstore-connections/legacy-src/legacy-dest/leg-src-leg-dest.configuration';
+import { legSrcNextDestConfiguration } from '../configuration/eventstore-connections/legacy-src/next-dest/leg-src-next-dest.configuration';
+import { nextSrcNextDestConfiguration } from '../configuration/eventstore-connections/next-src/next-dest/next-src-next-dest.configuration';
+import { nextSrcLegDestConfiguration } from '../configuration/eventstore-connections/next-src/legacy-dest/next-src-leg-dest.configuration';
 
-const projections: EventStoreProjectionType[] = [
-  {
-    name: 'hero-dragon2',
-    file: resolve(`apps/usecase/src/projections/hero-dragon.js`),
-    mode: 'continuous',
-    enabled: true,
-    checkPointsEnabled: true,
-    emitEnabled: true,
-  },
-];
-const subscriptions = {
-  persistent: [
-    {
-      // Event stream category (before the -)
-      stream: '$ce-hero',
-      group: 'data',
-      autoAck: false,
-      bufferSize: 1,
-      // Subscription is created with this options
-      options: {
-        resolveLinkTos: true,
-        minCheckPointCount: 1,
-      },
-    },
-  ],
-};
+// const projections: EventStoreProjectionType[] = [
+//   {
+//     name: 'hero-dragon2',
+//     file: resolve(`apps/usecase/src/projections/hero-dragon.js`),
+//     mode: 'continuous',
+//     enabled: true,
+//     checkPointsEnabled: true,
+//     emitEnabled: true,
+//   },
+// ];
 
-const destEventStorePersSub: IPersistentSubscriptionConfig = {
-  // Event stream category (before the -)
-  stream: '$ce-hero',
-  group: 'data',
-  settingsForCreation: {
-    subscriptionSettings: {
-      resolveLinkTos: true,
-      minCheckpointCount: 1,
-    },
-  },
-  onError: (err: Error) => console.log(`An error occurred : ${err.message}`),
-};
+console.log('process.env.TOTO : ', process.env.TOTO);
 
-const eventBusConfig = {
-  read: {
-    allowedEvents: {
-      ProductsSyncEndedEvent,
-      GoogleTaxonomiesSyncEndedEvent,
-      CategoriesSyncEndedEvent,
-    },
-  },
-  write: {
-    serviceName: 'test',
-  },
-};
+let configuration: InterconnectionConfiguration;
 
-const legacySrcConf: LegacyEventStoreConfiguration = {
-  connectionConfig: sourceEventStoreConfiguration,
-  eventStoreServiceConfig: { subscriptions, projections },
-  eventBusConfig,
-};
-const nextDstConf: NextEventStoreConfiguration = {
-  eventStoreConfig: destEventStoreConfiguration,
-  eventStoreSubsystems: {
-    subscriptions: {
-      persistent: [destEventStorePersSub],
-    },
-    onConnectionFail: () => {},
-    onEvent: () => {},
-  },
-};
+switch (process.env.CASE) {
+  case 'LEGLEG':
+    configuration = legSrcLegDestConfiguration;
+    break;
+  case 'LEGNEXT':
+    configuration = legSrcNextDestConfiguration;
+    break;
+  case 'NEXTLEG':
+    configuration = nextSrcLegDestConfiguration;
+    break;
+  case 'NEXTNEXT':
+    configuration = nextSrcNextDestConfiguration;
+    break;
+}
 
 @Module({
   controllers: [usecaseController],
-  imports: [
-    EventstoreInterconnectModule.connectToSrcAndDest({
-      sourceEventStoreConfiguration: legacySrcConf,
-      destEventStoreConfiguration: nextDstConf,
-    }),
-  ],
+  imports: [EventstoreInterconnectModule.connectToSrcAndDest(configuration)],
   providers: [Logger, ...EventHandlersEventbus],
 })
 export class usecaseModule {}

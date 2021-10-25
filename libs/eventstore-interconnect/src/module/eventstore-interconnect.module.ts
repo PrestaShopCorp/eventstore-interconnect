@@ -1,5 +1,5 @@
 import { DynamicModule, Logger, Module } from '@nestjs/common';
-import InterconnectionConfiguration from '../interconnection-configuration';
+import { InterconnectionConfiguration } from '../interconnection-configuration';
 import { ContextModule } from 'nestjs-context';
 import EventstoreInterconnectModuleHelper from './eventstore-interconnect.module.helper';
 import { DriverModule } from '../driver/driver.module';
@@ -26,7 +26,7 @@ export class EventstoreInterconnectModule {
         eventStoreModuleSource,
         eventStoreModuleDest,
 
-        DriverModule.get(configuration.destEventStoreConfiguration),
+        DriverModule.get(configuration),
       ],
       providers: [Logger],
       exports: [eventStoreModuleSource, eventStoreModuleDest, DriverModule],

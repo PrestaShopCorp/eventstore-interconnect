@@ -1,14 +1,7 @@
-import {
-  LegacyEventStoreConfiguration,
-  NextEventStoreConfiguration,
-} from '../interconnection-configuration';
+import { ConnectionConfiguration } from '../interconnection-configuration';
 
 export class ConfigurationsHelper {
-  public static isLegacyConf(
-    configuration: LegacyEventStoreConfiguration | NextEventStoreConfiguration,
-  ): configuration is LegacyEventStoreConfiguration {
-    const confAsLegacy = (configuration as LegacyEventStoreConfiguration)
-      .connectionConfig;
-    return confAsLegacy && confAsLegacy.http !== undefined;
+  public static isLegacyConf(configuration: ConnectionConfiguration): boolean {
+    return !!configuration.http;
   }
 }
