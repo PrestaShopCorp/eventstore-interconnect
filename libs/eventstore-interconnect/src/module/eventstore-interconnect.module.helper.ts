@@ -28,12 +28,20 @@ export default class EventstoreInterconnectModuleHelper {
     return ConfigurationsHelper.isLegacyConf(
       configuration.destEventStoreConfiguration,
     )
-      ? this.registerToLegacyEventStoreModuleWithConf(
-          configuration.destEventStoreConfiguration,
-        )
-      : this.registerToNextEventStoreModuleWithConf(
-          configuration.destEventStoreConfiguration,
-        );
+      ? this.registerToLegacyEventStoreModuleWithConf({
+          connectionConfig:
+            configuration.destEventStoreConfiguration.connectionConfig,
+          eventStoreServiceConfig:
+            configuration.destEventStoreConfiguration.eventStoreServiceConfig,
+          eventBusConfig: {},
+        })
+      : this.registerToNextEventStoreModuleWithConf({
+          eventStoreConfig:
+            configuration.destEventStoreConfiguration.eventStoreConfig,
+          eventStoreSubsystems:
+            configuration.destEventStoreConfiguration.eventStoreSubsystems,
+          eventBusConfig: { read: { allowedEvents: {} } },
+        });
   }
 
   private static registerToLegacyEventStoreModuleWithConf(

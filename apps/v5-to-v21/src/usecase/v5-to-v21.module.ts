@@ -18,7 +18,7 @@ import { EventHandlersEventbus } from '../events/handlers';
 const projections: EventStoreProjectionType[] = [
   {
     name: 'hero-dragon2',
-    file: resolve(`apps/v5-to-v5/src/projections/hero-dragon.js`),
+    file: resolve(`apps/v5-to-v21/src/projections/hero-dragon.js`),
     mode: 'continuous',
     enabled: true,
     checkPointsEnabled: true,
@@ -82,7 +82,6 @@ const nextDstConf: NextEventStoreConfiguration = {
     onConnectionFail: () => {},
     onEvent: () => {},
   },
-  eventBusConfig,
 };
 
 @Module({

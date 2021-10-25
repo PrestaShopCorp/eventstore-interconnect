@@ -8,15 +8,6 @@
     "tsConfigPath": "apps/eventstore-interconnect-project/tsconfig.app.json"
   },
   "projects": {
-    "v5-to-v5": {
-      "type": "application",
-      "root": "apps/v5-to-v5",
-      "entryFile": "main",
-      "sourceRoot": "apps/v5-to-v5/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/v5-to-v5/tsconfig.app.json"
-      }
-    },
     "v5-to-v21": {
       "type": "application",
       "root": "apps/v5-to-v21",

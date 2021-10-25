@@ -1,4 +1,3 @@
-import { registerAs } from '@nestjs/config';
 import { EventStoreConnectionConfig } from 'nestjs-geteventstore-next';
 
 export const destEventStoreConfiguration: EventStoreConnectionConfig = {
@@ -11,5 +10,3 @@ export const destEventStoreConfiguration: EventStoreConnectionConfig = {
     password: process.env.EVENTSTORE_CREDENTIALS_PASSWORD || 'changeit',
   },
 };
-
-export default registerAs('eventstore', () => destEventStoreConfiguration);

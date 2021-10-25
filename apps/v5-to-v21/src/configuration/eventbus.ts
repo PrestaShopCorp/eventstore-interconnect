@@ -1,4 +1,3 @@
-import { registerAs } from '@nestjs/config';
 import { IEventStoreConfig } from 'nestjs-geteventstore-legacy';
 import { Logger } from '@nestjs/common';
 
@@ -43,5 +42,3 @@ export const sourceEventStoreConfiguration: IEventStoreConfig = {
     heartbeatTimeout: 2_000,
   },
 };
-
-export default registerAs('eventbus', () => sourceEventStoreConfiguration);
