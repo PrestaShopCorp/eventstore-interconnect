@@ -3,6 +3,7 @@ import { InterconnectionConfiguration } from '../interconnection-configuration';
 import { ContextModule } from 'nestjs-context';
 import EventstoreInterconnectModuleHelper from './eventstore-interconnect.module.helper';
 import { DriverModule } from '../driver/driver.module';
+import { DefaultSafetyNetService, SAFETY_NET } from '../safety-net';
 
 @Module({})
 export class EventstoreInterconnectModule {
@@ -28,8 +29,20 @@ export class EventstoreInterconnectModule {
 
         DriverModule.get(configuration),
       ],
-      providers: [Logger],
-      exports: [eventStoreModuleSource, eventStoreModuleDest, DriverModule],
+      providers: [
+        Logger,
+        {
+          provide: SAFETY_NET,
+          useClass: DefaultSafetyNetService,
+        },
+      ],
+      exports: [
+        eventStoreModuleSource,
+        eventStoreModuleDest,
+        DriverModule,
+        SAFETY_NET,
+        DefaultSafetyNetService,
+      ],
     };
   }
 }

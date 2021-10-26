@@ -21,8 +21,6 @@ import { nextSrcLegDestConfiguration } from '../configuration/eventstore-connect
 //   },
 // ];
 
-console.log('process.env.TOTO : ', process.env.TOTO);
-
 let configuration: InterconnectionConfiguration;
 
 switch (process.env.CASE) {
