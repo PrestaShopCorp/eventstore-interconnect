@@ -1,21 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SafetyNet } from './safety-net.service.interface';
 
 @Injectable()
 export class DefaultSafetyNetService implements SafetyNet {
-  public hook(): any {
-    // this.sentry.withScope((scope: Sentry.Scope) => {
-    //   scope.setUser({
-    //     id: data?.shopId,
-    //     username: `shop ${data?.shopId}`,
-    //   });
-    //   scope.setTags({
-    //     shopId: data?.shopId,
-    //     externalBusinessId: data?.externalBusinessId,
-    //   });
-    //   this.sentryService.error(err);
-    // });
+  constructor(private readonly logger: Logger) {}
 
+  public hook(event: any, eventWritten?: boolean): void {
+    if (eventWritten) {
+      return;
+    }
+    this.logger.error(
+      `Timeout while writing event (eventId ${event.eventId} and others after this one)`,
+    );
     process.exit(1);
   }
 }

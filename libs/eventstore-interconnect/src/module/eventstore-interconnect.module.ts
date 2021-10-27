@@ -41,7 +41,6 @@ export class EventstoreInterconnectModule {
         eventStoreModuleDest,
         DriverModule,
         SAFETY_NET,
-        DefaultSafetyNetService,
       ],
     };
   }

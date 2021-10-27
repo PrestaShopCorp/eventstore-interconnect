@@ -1,0 +1,1 @@
+export const EVENT_WRITER_TIMEOUT_IN_MS = 5000;

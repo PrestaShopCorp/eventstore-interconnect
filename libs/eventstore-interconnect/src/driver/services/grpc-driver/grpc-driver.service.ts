@@ -11,9 +11,9 @@ export class GrpcDriverService implements Driver {
     private readonly client: Client,
   ) {}
 
-  public writeEvent(event: any): Promise<any> {
+  public async writeEvent(event: any): Promise<void> {
     const { data, metadata, eventStreamId, eventType, eventId } = event;
-    return this.client.appendToStream(
+    await this.client.appendToStream(
       eventStreamId,
       [
         {

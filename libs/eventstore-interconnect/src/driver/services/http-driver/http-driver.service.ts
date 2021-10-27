@@ -6,9 +6,12 @@ import { HTTPClient } from 'geteventstore-promise';
 export class HttpDriverService implements Driver {
   constructor(private readonly client: HTTPClient) {}
 
-  public writeEvent(event: any): Promise<any> {
-    const { data, metadata, eventStreamId, eventType } = event;
-    console.log('eventStreamId : ', eventStreamId);
-    return this.client.writeEvent(eventStreamId, eventType, data, metadata);
+  public async writeEvent(event: any): Promise<any> {
+    await this.client.writeEvent(
+      event.eventStreamId,
+      event.eventType,
+      event.data,
+      event.metadata,
+    );
   }
 }
