@@ -3,8 +3,8 @@ import { Driver, SafetyNet } from '../index';
 import { Logger } from '@nestjs/common';
 
 class Wrapper extends EventbusBaseHandler<any> {
-  constructor(safetyNet: SafetyNet, driver: Driver, logger: Logger) {
-    super(safetyNet, driver, logger);
+  constructor(driver: Driver, safetyNet: SafetyNet, logger: Logger) {
+    super(driver, safetyNet, logger);
   }
 }
 
@@ -16,7 +16,7 @@ describe('EventbusBaseHandler', () => {
   const logger: Logger = new Logger();
 
   beforeEach(() => {
-    handler = new Wrapper(safetyNet, driver, logger);
+    handler = new Wrapper(driver, safetyNet, logger);
   });
 
   it('should be created', () => {

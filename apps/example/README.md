@@ -17,3 +17,15 @@ eventstore/eventstore:latest \
 --run-projections=All \
 --enable-atom-pub-over-http
 ```
+
+
+#### Topics:
+
+* SAFETY_NET : it is possible to override the default safety net strategy, as you can see in the [usecase module](apps/example/src/usecase.module.ts) :
+
+```typescript
+    {
+      provide: SAFETY_NET,
+      useClass: CustomSafetyNet, // here, you can provide your custom strategy
+    },
+```

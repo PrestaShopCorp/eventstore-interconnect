@@ -8,7 +8,6 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build eventstore-interconnect",
-    "build:usecase1": "nest build usecase1",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start:usecase:srcLegDestLeg": "CASE='LEGLEG' nest start example",
     "start:usecase:srcLegDestNext": "CASE='LEGNEXT' nest start example",

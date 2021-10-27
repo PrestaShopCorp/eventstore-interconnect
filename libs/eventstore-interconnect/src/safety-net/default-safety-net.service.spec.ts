@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DefaultSafetyNetService } from './default-safety-net.service';
+import { Logger } from '@nestjs/common';
 
 describe('DefaultSafetyNetService', () => {
   let service: DefaultSafetyNetService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [DefaultSafetyNetService],
+      providers: [DefaultSafetyNetService, Logger],
     }).compile();
 
     service = module.get<DefaultSafetyNetService>(DefaultSafetyNetService);
