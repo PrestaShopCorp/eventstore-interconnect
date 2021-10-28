@@ -32,13 +32,13 @@ export abstract class EventbusBaseHandler<
     timeout: number,
   ): Promise<void> {
     let eventWritten = false;
-    setTimeout(() => {
-      this.safetyNet.hook(event, eventWritten);
-    }, timeout);
+    await Promise.all([
+      setTimeout(() => {
+        this.safetyNet.hook(event, eventWritten);
+      }, timeout),
 
-    await this.writeEvent(event);
-
-    eventWritten = true;
+      this.writeEvent(event).then(() => (eventWritten = true)),
+    ]);
   }
 
   private async writeEvent(event: E): Promise<void> {

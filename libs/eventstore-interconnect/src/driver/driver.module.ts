@@ -13,7 +13,7 @@ import {
   createConnection,
   EventStoreNodeConnection,
 } from 'node-eventstore-client';
-import { HTTPClient } from 'geteventstore-promise';
+import { HTTP_CLIENT } from './services/http-driver/http-connection.constants';
 
 @Module({})
 export class DriverModule {
@@ -86,12 +86,8 @@ export class DriverModule {
     return [
       { provide: DRIVER, useClass: HttpDriverService },
       {
-        provide: HTTPClient,
-        useValue: new HTTPClient({
-          hostname: configuration.http.host,
-          port: configuration.http.port,
-          credentials: configuration.credentials,
-        }),
+        provide: HTTP_CLIENT,
+        useValue: eventStoreConnection,
       },
     ];
   }
