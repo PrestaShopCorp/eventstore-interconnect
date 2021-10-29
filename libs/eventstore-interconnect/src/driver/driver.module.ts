@@ -1,10 +1,13 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
-import { ConnectionConfiguration, InterconnectionConfiguration } from '..';
+import {
+  ConnectionConfiguration,
+  InterconnectionConfiguration,
+  isLegacyConf,
+} from '..';
 import { DRIVER } from './services/driver.interface';
 import { HttpDriverService } from './services/http-driver/http-driver.service';
 import { GrpcDriverService } from './services/grpc-driver/grpc-driver.service';
-import { ConfigurationsHelper as legal } from '../module/configurations.helper';
 import { Client } from '@eventstore/db-client/dist/Client';
 import { EVENT_STORE_CONNECTOR } from 'nestjs-geteventstore-next/dist/event-store/services/event-store.constants';
 import { EventStoreDBClient } from '@eventstore/db-client';
@@ -20,9 +23,7 @@ export class DriverModule {
   public static async get(
     configuration: InterconnectionConfiguration,
   ): Promise<DynamicModule> {
-    const driverProviders: Provider[] = legal.isLegacyConf(
-      configuration.destination,
-    )
+    const driverProviders: Provider[] = isLegacyConf(configuration.destination)
       ? await this.getLegacyEventStoreDriver(configuration.destination)
       : this.getNextEventStoreDriver(
           configuration.destination.connectionString,

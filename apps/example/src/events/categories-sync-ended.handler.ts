@@ -34,6 +34,7 @@ export class CategoriesSyncEndedHandler extends InterconnectionHandler<Categorie
           concatErrors,
         )}`,
       );
+      throw Error(`CategoriesSyncEndedEvent not valid, won't be written`);
     }
   }
 }

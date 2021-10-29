@@ -1,14 +1,25 @@
 import { DynamicModule } from '@nestjs/common';
 import { CqrsEventStoreModule as CqrsEventStoreModuleLegacy } from 'nestjs-geteventstore-legacy/dist/cqrs-event-store.module';
 import { CqrsEventStoreModule as CqrsEventStoreModuleNext } from 'nestjs-geteventstore-next/dist/cqrs-event-store.module';
-import { ConfigurationsHelper } from './configurations.helper';
 import { InterconnectionConfiguration } from '../interconnection-configuration';
+import {
+  getConnectionString,
+  getLegacyHttpHost,
+  getLegacyHttpPort,
+  getLegacyPassword,
+  getLegacyTcpHost,
+  getLegacyTcpPort,
+  getLegacyUsername,
+  getNextPassword,
+  getNextUsername,
+  isLegacyConf,
+} from './configurations.helper';
 
 export default class EventstoreInterconnectModuleHelper {
   public static getSourceEventStoreModule(
     configuration: InterconnectionConfiguration,
   ): DynamicModule {
-    return ConfigurationsHelper.isLegacyConf(configuration.source)
+    return isLegacyConf(configuration.source)
       ? this.registerToLegacyEventStoreModuleWithConf(configuration, 'source')
       : this.registerToNextEventStoreModuleWithConf(configuration, 'source');
   }
@@ -16,7 +27,7 @@ export default class EventstoreInterconnectModuleHelper {
   public static getDestinationEventStoreModule(
     configuration: InterconnectionConfiguration,
   ): DynamicModule {
-    return ConfigurationsHelper.isLegacyConf(configuration.destination)
+    return isLegacyConf(configuration.destination)
       ? this.registerToLegacyEventStoreModuleWithConf(configuration, 'dest')
       : this.registerToNextEventStoreModuleWithConf(configuration, 'dest');
   }
@@ -30,36 +41,16 @@ export default class EventstoreInterconnectModuleHelper {
     return CqrsEventStoreModuleLegacy.register(
       {
         tcp: {
-          host:
-            (entry === 'source'
-              ? process.env.EVENTSTORE_INTERCO_TCP_ENDPOINT_SRC
-              : process.env.EVENTSTORE_INTERCO_TCP_ENDPOINT_DST) || tcp.host,
-          port:
-            (entry === 'source'
-              ? +process.env.EVENTSTORE_INTERCO_TCP_PORT_SRC
-              : +process.env.EVENTSTORE_INTERCO_TCP_PORT_DST) || tcp.port,
+          host: getLegacyTcpHost(entry, tcp.host),
+          port: getLegacyTcpPort(entry, tcp.port),
         },
         http: {
-          host:
-            (entry === 'source'
-              ? process.env.EVENTSTORE_INTERCO_HTTP_ENDPOINT_SRC
-              : process.env.EVENTSTORE_INTERCO_HTTP_ENDPOINT_DST) || http.host,
-          port:
-            (entry === 'source'
-              ? +process.env.EVENTSTORE_INTERCO_HTTP_PORT_SRC
-              : +process.env.EVENTSTORE_INTERCO_HTTP_PORT_DST) || http.port,
+          host: getLegacyHttpHost(entry, http.host),
+          port: getLegacyHttpPort(entry, http.port),
         },
         credentials: {
-          username:
-            (entry === 'source'
-              ? process.env.EVENTSTORE_INTERCO_CREDENTIALS_USERNAME_SRC
-              : process.env.EVENTSTORE_INTERCO_CREDENTIALS_USERNAME_DEST) ||
-            credentials.username,
-          password:
-            (entry === 'source'
-              ? process.env.EVENTSTORE_INTERCO_CREDENTIALS_PASSWORD_SRC
-              : process.env.EVENTSTORE_INTERCO_CREDENTIALS_PASSWORD_DST) ||
-            credentials.password,
+          username: getLegacyUsername(entry, credentials.username),
+          password: getLegacyPassword(entry, credentials.password),
         },
       },
       configuration.eventStoreServiceConfig,
@@ -76,23 +67,11 @@ export default class EventstoreInterconnectModuleHelper {
     return CqrsEventStoreModuleNext.register(
       {
         connectionSettings: {
-          connectionString:
-            (entry === 'source'
-              ? process.env.EVENTSTORE_INTERCO_CONNECTION_STRING_SRC
-              : process.env.EVENTSTORE_INTERCO_CONNECTION_STRING_DST) ||
-            connectionString,
+          connectionString: getConnectionString(entry, connectionString),
         },
         defaultUserCredentials: {
-          username:
-            (entry === 'source'
-              ? process.env.EVENTSTORE_INTERCO_CREDENTIALS_USERNAME_SRC
-              : process.env.EVENTSTORE_INTERCO_CREDENTIALS_USERNAME_DST) ||
-            credentials.username,
-          password:
-            (entry === 'source'
-              ? process.env.EVENTSTORE_INTERCO_CREDENTIALS_PASSWORD_SRC
-              : process.env.EVENTSTORE_INTERCO_CREDENTIALS_PASSWORD_DST) ||
-            credentials.password,
+          username: getNextUsername(entry, credentials.username),
+          password: getNextPassword(entry, credentials.password),
         },
       },
       eventStoreSubsystems,

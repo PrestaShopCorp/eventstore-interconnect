@@ -26,7 +26,7 @@ export default class usecaseController {
         specversion: 1,
       },
     };
-    this.eventBus.publish(new ProductsSyncEndedEvent({}, options));
+    await this.eventBus.publish(new ProductsSyncEndedEvent({}, options));
 
     const catSyncEvent: CategoriesSyncEndedEvent = new CategoriesSyncEndedEvent(
       {
@@ -36,7 +36,7 @@ export default class usecaseController {
       },
       options,
     );
-    this.eventBus.publish(catSyncEvent);
+    await this.eventBus.publish(catSyncEvent);
 
     const notValidEvent: any = new CategoriesSyncEndedEvent(
       {
@@ -48,6 +48,6 @@ export default class usecaseController {
     );
     notValidEvent.data.nestor = 123;
 
-    this.eventBus.publish(notValidEvent);
+    await this.eventBus.publish(notValidEvent);
   }
 }
