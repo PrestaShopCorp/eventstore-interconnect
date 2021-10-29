@@ -22,7 +22,7 @@ eventstore/eventstore:latest \
 --enable-atom-pub-over-http
 ```
 
-### Run the correct example
+### Start the correct example
 
 You will see in the package.json that there are 4 examples you can run. These are the 4 situation the lib aims to help for :
 
@@ -42,7 +42,18 @@ yarn run start:usecase:srcNextDestLeg
 ```typescript
 yarn run start:usecase:srcNextDestNext
 ```
+This will start the server with the correct configuration. 
 
+### Start process : 
+
+Now, the last thing you have to do is to run the web service at this adress : 
+
+```
+localhost:3000/start
+```
+
+This will write at first a valid event, and then an invalid, so you can try different things : 
+you can write other types of events, with custom handler behavior, you can remove the override of the safety strategy (cf SAFETY_NET part), you can try the env variable, and you also can try to validate your way the events. Enjoy! (if you see bugs, feel free to create an issue, it'll be very appreciated)
 
 #### SAFETY_NET:
 
