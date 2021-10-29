@@ -1,2 +1,2 @@
-export * from './eventbus-base.handler';
-export * from './event-handler.constants';
+export * from './interconnection.handler';
+export * from './interconnection-handler.constants';

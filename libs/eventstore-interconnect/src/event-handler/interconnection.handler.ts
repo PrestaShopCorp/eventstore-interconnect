@@ -5,7 +5,7 @@ import { Driver, DRIVER } from '../driver';
 import { SAFETY_NET, SafetyNet } from '../safety-net';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from '../event-handler';
 
-export abstract class EventbusBaseHandler<
+export abstract class InterconnectionHandler<
   E extends EventStoreAcknowledgeableEvent,
 > implements IEventHandler<E>
 {
@@ -17,6 +17,7 @@ export abstract class EventbusBaseHandler<
 
   public async handle(event: E): Promise<void> {
     try {
+      await this.validateEventAndDatasDto(event);
       await this.tryToWriteEventAgainstAggressiveTimeout(
         event,
         EVENT_WRITER_TIMEOUT_IN_MS,
@@ -26,6 +27,13 @@ export abstract class EventbusBaseHandler<
       this.safetyNet.hook(event);
     }
   }
+
+  /**
+   * Return void or throw an error. This must be provided
+   * by handlers that will extends this one
+   * @param event the event to be nested validated
+   */
+  public abstract validateEventAndDatasDto(event: E): void | never;
 
   private async tryToWriteEventAgainstAggressiveTimeout(
     event: E,

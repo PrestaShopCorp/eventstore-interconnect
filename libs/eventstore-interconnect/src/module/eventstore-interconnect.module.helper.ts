@@ -29,9 +29,38 @@ export default class EventstoreInterconnectModuleHelper {
       entry === 'source' ? configuration.source : configuration.destination;
     return CqrsEventStoreModuleLegacy.register(
       {
-        tcp,
-        http,
-        credentials,
+        tcp: {
+          host:
+            (entry === 'source'
+              ? process.env.EVENTSTORE_INTERCO_TCP_ENDPOINT_SRC
+              : process.env.EVENTSTORE_INTERCO_TCP_ENDPOINT_DST) || tcp.host,
+          port:
+            (entry === 'source'
+              ? +process.env.EVENTSTORE_INTERCO_TCP_PORT_SRC
+              : +process.env.EVENTSTORE_INTERCO_TCP_PORT_DST) || tcp.port,
+        },
+        http: {
+          host:
+            (entry === 'source'
+              ? process.env.EVENTSTORE_INTERCO_HTTP_ENDPOINT_SRC
+              : process.env.EVENTSTORE_INTERCO_HTTP_ENDPOINT_DST) || http.host,
+          port:
+            (entry === 'source'
+              ? +process.env.EVENTSTORE_INTERCO_HTTP_PORT_SRC
+              : +process.env.EVENTSTORE_INTERCO_HTTP_PORT_DST) || http.port,
+        },
+        credentials: {
+          username:
+            (entry === 'source'
+              ? process.env.EVENTSTORE_INTERCO_CREDENTIALS_USERNAME_SRC
+              : process.env.EVENTSTORE_INTERCO_CREDENTIALS_USERNAME_DEST) ||
+            credentials.username,
+          password:
+            (entry === 'source'
+              ? process.env.EVENTSTORE_INTERCO_CREDENTIALS_PASSWORD_SRC
+              : process.env.EVENTSTORE_INTERCO_CREDENTIALS_PASSWORD_DST) ||
+            credentials.password,
+        },
       },
       configuration.eventStoreServiceConfig,
     );
@@ -46,8 +75,25 @@ export default class EventstoreInterconnectModuleHelper {
     const { eventStoreSubsystems } = configuration;
     return CqrsEventStoreModuleNext.register(
       {
-        connectionSettings: { connectionString },
-        defaultUserCredentials: credentials,
+        connectionSettings: {
+          connectionString:
+            (entry === 'source'
+              ? process.env.EVENTSTORE_INTERCO_CONNECTION_STRING_SRC
+              : process.env.EVENTSTORE_INTERCO_CONNECTION_STRING_DST) ||
+            connectionString,
+        },
+        defaultUserCredentials: {
+          username:
+            (entry === 'source'
+              ? process.env.EVENTSTORE_INTERCO_CREDENTIALS_USERNAME_SRC
+              : process.env.EVENTSTORE_INTERCO_CREDENTIALS_USERNAME_DST) ||
+            credentials.username,
+          password:
+            (entry === 'source'
+              ? process.env.EVENTSTORE_INTERCO_CREDENTIALS_PASSWORD_SRC
+              : process.env.EVENTSTORE_INTERCO_CREDENTIALS_PASSWORD_DST) ||
+            credentials.password,
+        },
       },
       eventStoreSubsystems,
       { read: { allowedEvents: {} }, write: { serviceName: 'test' } },

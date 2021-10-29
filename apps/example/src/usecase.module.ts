@@ -12,17 +12,6 @@ import { nextSrcNextDestConfiguration } from './configuration/eventstore-connect
 import { nextSrcLegDestConfiguration } from './configuration/eventstore-connections/next-src/legacy-dest/next-src-leg-dest.configuration';
 import CustomSafetyNet from './custom-safety-net/custom-safety-net';
 
-// const projections: EventStoreProjectionType[] = [
-//   {
-//     name: 'hero-dragon2',
-//     file: resolve(`apps/usecase/src/projections/hero-dragon.js`),
-//     mode: 'continuous',
-//     enabled: true,
-//     checkPointsEnabled: true,
-//     emitEnabled: true,
-//   },
-// ];
-
 let configuration: InterconnectionConfiguration;
 
 switch (process.env.CASE) {
