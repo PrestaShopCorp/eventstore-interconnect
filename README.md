@@ -50,6 +50,9 @@ EVENTSTORE_INTERCO_EVENT_WRITER_TIMEOUT_IN_MS
 
 So the only thing to do when an upgrade is needed : change these env variables, and restart the project. The detect will be auto (if http conf is provided, then the legacy eventstore will be used.)
 
+## Handlers
+You have to provide handlers for your events, like in the nest default CQRS lib. These handlers have to extend `InterconnectionHandler`. It will force your handlers to implement the validation of your event and/or your datas. You have one example [here](./apps/example/src/events/categories-sync-ended.handler.ts)
+
 
 ## Safety strategy
 Sometimes it can happen the destination eventstore is down. In order not to miss events, an aggressive timeout is used. That means that after a custom duration, by default 5 seconds (but you can give your using the `EVENTSTORE_INTERCO_EVENT_WRITER_TIMEOUT_IN_MS` env variable), the process will exit brutally by default. This is called the Safety net. This basic behavior can be extended, very easily by using another provider, like this :
