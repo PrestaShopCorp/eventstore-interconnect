@@ -27,11 +27,9 @@ export class Example1Handler extends InterconnectionHandler<Example1Event> {
 
     if (concatErrors.length > 0) {
       this.logger.error(
-        `Error handling CategoriesSyncEndedEvent : ${JSON.stringify(
-          concatErrors,
-        )}`,
+        `Error handling Example1Event : ${JSON.stringify(concatErrors)}`,
       );
-      throw Error(`CategoriesSyncEndedEvent not valid, won't be written`);
+      throw Error(`Example1Event not valid, won't be written`);
     }
   }
 }
