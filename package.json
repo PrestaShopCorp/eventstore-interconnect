@@ -1,13 +1,18 @@
 {
   "name": "eventstore-interconnect",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Eventstore interconnector",
   "author": "Alexandre Decollas <alexandre.decollas.pro@gmail.com>",
-  "keywords": ["eventstore", "compatibility", "helper", "interconnect"],
+  "keywords": [
+    "eventstore",
+    "compatibility",
+    "helper",
+    "interconnect"
+  ],
   "private": false,
   "license": "MIT",
+  "main": "libs/eventstore-interconnect",
   "files": [
-    "dist/libs/eventstore-interconnect/index.js",
     "dist/libs/eventstore-interconnect/**/*",
     "*.md"
   ],
@@ -34,20 +39,20 @@
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "1.0.2",
     "@nestjs/core": "^8.0.0",
-    "@nestjs/terminus": "8.0.1",
-    "nestjs-context": "0.12.0",
     "@nestjs/cqrs": "8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/terminus": "8.0.1",
     "@ntegral/nestjs-sentry": "1.0.4",
     "@sentry/node": "^6.13.3",
     "class-transformer": "^0.4.0",
+    "class-validator": "0.13.1",
     "nanoid": "^3.1.30",
+    "nestjs-context": "0.12.0",
     "nestjs-geteventstore-legacy": "npm:nestjs-geteventstore@4.0.1",
     "nestjs-geteventstore-next": "npm:nestjs-geteventstore@5.0.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0",
-    "class-validator": "0.13.1"
+    "rxjs": "^7.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
