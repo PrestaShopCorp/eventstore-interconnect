@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "author": "Alexandre Decollas <alexandre.decollas.pro@gmail.com>",
-  "private": true,
+  "keywords": ["eventstore", "compatibility", "helper", "interconnect"],
+  "private": false,
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
