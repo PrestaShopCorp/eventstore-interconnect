@@ -10,20 +10,8 @@ export class Example1Handler extends InterconnectionHandler<Example1Event> {
   public async validateEventAndDatasDto(
     event: Example1Event,
   ): Promise<void | never> {
-    const validableDatasDto: ValidableDatasDto = plainToClass(
-      ValidableDatasDto,
-      event.data,
-    );
-    const eventGeneralValidationErrors: ValidationError[] = await validate(
-      event,
-    );
-    const providedDatasValidationErrors: ValidationError[] = await validate(
-      validableDatasDto,
-    );
-    const concatErrors: ValidationError[] = [
-      ...eventGeneralValidationErrors,
-      ...providedDatasValidationErrors,
-    ];
+    event.data = plainToClass(ValidableDatasDto, event.data);
+    const concatErrors: ValidationError[] = await validate(event);
 
     if (concatErrors.length > 0) {
       this.logger.error(

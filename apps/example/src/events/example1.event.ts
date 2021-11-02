@@ -34,7 +34,7 @@ export class ValidableDatasDto {
 export class Example1Event extends EventStoreAcknowledgeableEvent {
   @ValidateNested()
   @Type(() => ValidableDatasDto)
-  public readonly data: ValidableDatasDto;
+  public data: ValidableDatasDto;
 
   constructor(data: ValidableDatasDto, options?: EventOptionsType) {
     super(data, options);
