@@ -2,7 +2,7 @@
   "name": "eventstore-interconnect-project",
   "version": "1.0.0",
   "description": "",
-  "author": "alexandredecollas <alexandre.decollas.pro@gmail.com>",
+  "author": "alexandredecollas<alexandre.decollas.pro@gmail.com>",
   "keywords": ["eventstore", "compatibility", "helper", "interconnect"],
   "private": false,
   "license": "MIT",
