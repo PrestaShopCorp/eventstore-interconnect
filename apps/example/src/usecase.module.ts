@@ -5,7 +5,7 @@ import {
   SAFETY_NET,
 } from '@eventstore-interconnect';
 import usecaseController from './usecase.controller';
-import { EventHandlersEventbus } from './events/handlers';
+import { EventHandlers } from './events/handlers';
 import { legSrcLegDestConfiguration } from './configuration/eventstore-connections/legacy-src/legacy-dest/leg-src-leg-dest.configuration';
 import { legSrcNextDestConfiguration } from './configuration/eventstore-connections/legacy-src/next-dest/leg-src-next-dest.configuration';
 import { nextSrcNextDestConfiguration } from './configuration/eventstore-connections/next-src/next-dest/next-src-next-dest.configuration';
@@ -34,7 +34,7 @@ switch (process.env.CASE) {
   imports: [EventstoreInterconnectModule.connectToSrcAndDest(configuration)],
   providers: [
     Logger,
-    ...EventHandlersEventbus,
+    ...EventHandlers,
     {
       provide: SAFETY_NET,
       useClass: CustomSafetyNet,
