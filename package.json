@@ -1,6 +1,6 @@
 {
   "name": "eventstore-interconnect",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Eventstore interconnector",
   "author": "Alexandre Decollas <alexandre.decollas.pro@gmail.com>",
   "keywords": [
@@ -11,7 +11,10 @@
   ],
   "private": false,
   "license": "MIT",
-  "main": "libs/eventstore-interconnect/index.js",
+  "main": "dist/libs/eventstore-interconnect/index.js",
+  "files": [
+    "dist/libs/eventstore-interconnect/**/*"
+  ],
   "readmeFilename": "README.md",
   "scripts": {
     "prebuild": "rimraf dist",
