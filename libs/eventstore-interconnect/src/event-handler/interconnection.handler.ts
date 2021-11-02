@@ -40,13 +40,10 @@ export abstract class InterconnectionHandler<
     timeout: number,
   ): Promise<void> {
     let eventWritten = false;
-    await Promise.all([
-      setTimeout(() => {
-        this.safetyNet.hook(event, eventWritten);
-      }, timeout),
-
-      this.writeEvent(event).then(() => (eventWritten = true)),
-    ]);
+    setTimeout(() => {
+      this.safetyNet.hook(event, eventWritten);
+    }, timeout);
+    this.writeEvent(event).then(() => (eventWritten = true));
   }
 
   private async writeEvent(event: E): Promise<void> {
