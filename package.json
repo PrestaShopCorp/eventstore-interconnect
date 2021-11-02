@@ -1,11 +1,17 @@
 {
   "name": "eventstore-interconnect",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "Eventstore interconnector",
   "author": "Alexandre Decollas <alexandre.decollas.pro@gmail.com>",
   "keywords": ["eventstore", "compatibility", "helper", "interconnect"],
   "private": false,
   "license": "MIT",
+  "files": [
+    "dist/libs/eventstore-interconnect/index.js",
+    "dist/libs/eventstore-interconnect/**/*",
+    "*.md"
+  ],
+  "readmeFilename": "README.md",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build eventstore-interconnect",
