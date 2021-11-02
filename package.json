@@ -1,6 +1,6 @@
 {
   "name": "eventstore-interconnect-project",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "",
   "author": "Alexandre Decollas <alexandre.decollas.pro@gmail.com>",
   "private": true,
