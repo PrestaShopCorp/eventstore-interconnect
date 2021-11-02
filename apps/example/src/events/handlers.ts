@@ -1,9 +1,9 @@
-import { CategoriesSyncEndedHandler } from './categories-sync-ended.handler';
-import { GoogleTaxonomiesSyncEndedHandler } from './google-taxonomies-sync-ended.handler';
-import { ProductsSyncEndedHandler } from './products-sync-ended.handler';
+import { Example1Handler } from './example1.handler';
+import { Example2Handler } from './example2.handler';
+import { Example3Handler } from './example3.handler';
 
 export const EventHandlersEventbus = [
-  CategoriesSyncEndedHandler,
-  GoogleTaxonomiesSyncEndedHandler,
-  ProductsSyncEndedHandler,
+  Example1Handler,
+  Example2Handler,
+  Example3Handler,
 ];

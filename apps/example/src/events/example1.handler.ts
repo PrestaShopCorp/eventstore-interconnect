@@ -1,17 +1,14 @@
 import { EventsHandler } from '@nestjs/cqrs';
 
-import {
-  CategoriesSyncEndedEvent,
-  ValidableDatasDto,
-} from './categories-sync-ended.event';
+import { Example1Event, ValidableDatasDto } from './example1.event';
 import { InterconnectionHandler } from '@eventstore-interconnect';
 import { validate, ValidationError } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 
-@EventsHandler(CategoriesSyncEndedEvent)
-export class CategoriesSyncEndedHandler extends InterconnectionHandler<CategoriesSyncEndedEvent> {
+@EventsHandler(Example1Event)
+export class Example1Handler extends InterconnectionHandler<Example1Event> {
   public async validateEventAndDatasDto(
-    event: CategoriesSyncEndedEvent,
+    event: Example1Event,
   ): Promise<void | never> {
     const validableDatasDto: ValidableDatasDto = plainToClass(
       ValidableDatasDto,

@@ -1,8 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { CommandBus, EventBus } from '@nestjs/cqrs';
-import { ProductsSyncEndedEvent } from './events/products-sync-ended.event';
+import { Example3Event } from './events/example3.event';
 import { EventOptionsType } from 'nestjs-geteventstore-next';
-import { CategoriesSyncEndedEvent } from './events/categories-sync-ended.event';
+import { Example1Event } from './events/example1.event';
 
 @Controller('/')
 export default class usecaseController {
@@ -26,9 +26,9 @@ export default class usecaseController {
         specversion: 1,
       },
     };
-    await this.eventBus.publish(new ProductsSyncEndedEvent({}, options));
+    await this.eventBus.publish(new Example3Event({}, options));
 
-    const catSyncEvent: CategoriesSyncEndedEvent = new CategoriesSyncEndedEvent(
+    const catSyncEvent: Example1Event = new Example1Event(
       {
         id: 'test-id',
         isOk: true,
@@ -38,7 +38,7 @@ export default class usecaseController {
     );
     await this.eventBus.publish(catSyncEvent);
 
-    const notValidEvent: any = new CategoriesSyncEndedEvent(
+    const notValidEvent: any = new Example1Event(
       {
         id: 'test-id',
         isOk: true,

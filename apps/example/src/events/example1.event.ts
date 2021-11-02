@@ -31,7 +31,7 @@ export class ValidableDatasDto {
   nestor: Nestor;
 }
 
-export class CategoriesSyncEndedEvent extends EventStoreAcknowledgeableEvent {
+export class Example1Event extends EventStoreAcknowledgeableEvent {
   @ValidateNested()
   @Type(() => ValidableDatasDto)
   public readonly data: ValidableDatasDto;
