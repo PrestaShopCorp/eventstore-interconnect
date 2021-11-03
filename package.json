@@ -1,6 +1,6 @@
 {
   "name": "eventstore-interconnect",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Eventstore interconnector",
   "author": "Alexandre Decollas <alexandre.decollas.pro@gmail.com>",
   "keywords": [
@@ -11,6 +11,7 @@
   ],
   "private": false,
   "license": "MIT",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist/**",
