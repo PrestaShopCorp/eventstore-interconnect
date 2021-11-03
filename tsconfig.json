@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
     "resolveJsonModule": true,
-
-
-
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -27,7 +24,16 @@
       ],
       "@eventstore-interconnect/*": [
         "libs/eventstore-interconnect/src/*"
-      ],
+      ]
     }
-  }
+  },
+  "include": [
+    "libs/eventstore-interconnect/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "test",
+    "dist",
+    "**/*spec.ts"
+  ]
 }

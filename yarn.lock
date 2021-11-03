@@ -3602,6 +3602,29 @@ events@^3.2.0:
   resolved "https://registry.yarnpkg.com/events/-/events-3.3.0.tgz#31a95ad0a924e2d2c419a813aeb2c4e878ea7400"
   integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
 
+eventstore-interconnect@^1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/eventstore-interconnect/-/eventstore-interconnect-1.0.12.tgz#06bd09179fe95c2786c96fe541608a298f1b3290"
+  integrity sha512-ytxL779TS2xYUmL5mIyTQGfuf7X1fYWUj8v8XnveSb0ThDP5DR+a0MCLXvvC/KGkToOe4j0f9Y921BQFFXh24w==
+  dependencies:
+    "@nestjs/common" "^8.0.0"
+    "@nestjs/config" "1.0.2"
+    "@nestjs/core" "^8.0.0"
+    "@nestjs/cqrs" "8.0.0"
+    "@nestjs/platform-express" "^8.0.0"
+    "@nestjs/terminus" "8.0.1"
+    "@ntegral/nestjs-sentry" "1.0.4"
+    "@sentry/node" "^6.13.3"
+    class-transformer "^0.4.0"
+    class-validator "0.13.1"
+    nanoid "^3.1.30"
+    nestjs-context "0.12.0"
+    nestjs-geteventstore-legacy "npm:nestjs-geteventstore@4.0.1"
+    nestjs-geteventstore-next "npm:nestjs-geteventstore@5.0.2"
+    reflect-metadata "^0.1.13"
+    rimraf "^3.0.2"
+    rxjs "^7.2.0"
+
 execa@^4.0.2:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/execa/-/execa-4.1.0.tgz#4e5491ad1572f2f17a77d388c6c857135b22847a"

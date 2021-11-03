@@ -1,6 +1,6 @@
 {
   "name": "eventstore-interconnect",
-  "version": "1.0.5",
+  "version": "1.0.15",
   "description": "Eventstore interconnector",
   "author": "Alexandre Decollas <alexandre.decollas.pro@gmail.com>",
   "keywords": [
@@ -11,14 +11,15 @@
   ],
   "private": false,
   "license": "MIT",
-  "main": "dist/libs/eventstore-interconnect/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "dist/libs/eventstore-interconnect/**/*"
+    "dist/**",
+    "README.md"
   ],
   "readmeFilename": "README.md",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build eventstore-interconnect",
+    "build": "rimraf dist && tsc -p libs/eventstore-interconnect/tsconfig.lib.json",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start:usecase:srcLegDestLeg": "CASE='LEGLEG' nest start example",
     "start:usecase:srcLegDestNext": "CASE='LEGNEXT' nest start example",

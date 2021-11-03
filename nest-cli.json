@@ -16,15 +16,6 @@
       "compilerOptions": {
         "tsConfigPath": "apps/example/tsconfig.app.json"
       }
-    },
-    "eventstore-interconnect": {
-      "type": "library",
-      "root": "libs/eventstore-interconnect",
-      "entryFile": "index",
-      "sourceRoot": "libs/eventstore-interconnect/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/eventstore-interconnect/tsconfig.lib.json"
-      }
     }
   }
 }
