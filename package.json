@@ -1,6 +1,6 @@
 {
   "name": "eventstore-interconnect",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "Eventstore interconnector",
   "author": "Alexandre Decollas <alexandre.decollas.pro@gmail.com>",
   "keywords": [
@@ -50,6 +50,7 @@
     "nestjs-context": "0.12.0",
     "nestjs-geteventstore-legacy": "npm:nestjs-geteventstore@4.0.1",
     "nestjs-geteventstore-next": "npm:nestjs-geteventstore@5.0.2",
+    "nestjs-pino-stackdriver": "^2.1.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"

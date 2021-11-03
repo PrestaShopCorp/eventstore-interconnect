@@ -1,4 +1,5 @@
-import { Logger, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { Logger } from 'nestjs-pino-stackdriver';
 import {
   EventstoreInterconnectModule,
   InterconnectionConfiguration,

@@ -1,4 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { Logger } from 'nestjs-pino-stackdriver';
 import { SafetyNet } from './safety-net.service.interface';
 
 @Injectable()

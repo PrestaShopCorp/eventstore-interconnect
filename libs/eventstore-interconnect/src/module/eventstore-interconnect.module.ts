@@ -1,4 +1,5 @@
-import { DynamicModule, Logger, Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
+import { Logger } from 'nestjs-pino-stackdriver';
 import { InterconnectionConfiguration } from '../interconnection-configuration';
 import { ContextModule } from 'nestjs-context';
 import EventstoreInterconnectModuleHelper from './eventstore-interconnect.module.helper';

@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger } from 'nestjs-pino-stackdriver';
 import { NestFactory } from '@nestjs/core';
 import { UsecaseModule } from './usecase.module';
 

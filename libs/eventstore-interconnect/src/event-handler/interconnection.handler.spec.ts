@@ -1,6 +1,6 @@
 import { InterconnectionHandler } from './interconnection.handler';
 import { Driver, EVENT_WRITER_TIMEOUT_IN_MS, SafetyNet } from '../index';
-import { Logger } from '@nestjs/common';
+import { Logger } from 'nestjs-pino-stackdriver';
 import {
   EventOptionsType,
   EventStoreAcknowledgeableEvent,

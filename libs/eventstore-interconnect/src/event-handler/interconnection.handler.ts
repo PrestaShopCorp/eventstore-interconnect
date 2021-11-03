@@ -1,4 +1,5 @@
-import { Inject, Logger } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
+import { Logger } from 'nestjs-pino-stackdriver';
 import { IEventHandler } from '@nestjs/cqrs';
 import { EventStoreAcknowledgeableEvent } from 'nestjs-geteventstore-legacy';
 import { Driver, DRIVER } from '../driver';
