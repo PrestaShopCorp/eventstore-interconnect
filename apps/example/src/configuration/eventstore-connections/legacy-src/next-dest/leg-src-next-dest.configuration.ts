@@ -37,5 +37,4 @@ export const legSrcNextDestConfiguration: InterconnectionConfiguration = {
       persistent: legacySubscriptions,
     },
   },
-  eventsAllowed: [],
 };

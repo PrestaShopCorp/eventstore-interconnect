@@ -35,5 +35,4 @@ export const nextSrcLegDestConfiguration: InterconnectionConfiguration = {
   eventStoreSubsystems: {
     subscriptions: { persistent: nextSubscriptions },
   },
-  eventsAllowed: [],
 };

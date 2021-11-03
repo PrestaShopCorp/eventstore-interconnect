@@ -43,5 +43,4 @@ export const legSrcLegDestConfiguration: InterconnectionConfiguration = {
       persistent: legacySubscriptions,
     },
   },
-  eventsAllowed: [],
 };

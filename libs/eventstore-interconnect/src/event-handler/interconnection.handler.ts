@@ -44,6 +44,7 @@ export abstract class InterconnectionHandler<
       this.safetyNet.hook(event, eventWritten);
     }, timeout);
     this.writeEvent(event).then(() => (eventWritten = true));
+    await event.ack();
   }
 
   private async writeEvent(event: E): Promise<void> {
