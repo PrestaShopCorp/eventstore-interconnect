@@ -1,8 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import {
-  ConnectionConfiguration,
-  InterconnectionConfiguration,
-} from '../interconnection-configuration';
+import { InterconnectionConfiguration } from '../interconnection-configuration';
 import { READER } from './services/reader';
 import { isLegacyConf } from '../helpers/configurations.helper';
 import { HttpReaderService } from './services/http-reader/http-reader.service';
@@ -20,9 +17,10 @@ import {
   EventStoreNodeConnection,
 } from 'node-eventstore-client';
 import { SUBSCRIPTIONS } from '../reader/services/constants';
-import { HTTPClient } from 'geteventstore-promise';
 import * as geteventstorePromise from 'geteventstore-promise';
+import { HTTPClient } from 'geteventstore-promise';
 import { Logger } from 'nestjs-pino-stackdriver';
+import { CREDENTIALS } from '../constants';
 
 @Module({})
 export class ReaderModule {
@@ -90,6 +88,10 @@ export class ReaderModule {
         {
           provide: READER,
           useClass: HttpReaderService,
+        },
+        {
+          provide: CREDENTIALS,
+          useValue: configuration.destination.credentials,
         },
         {
           provide: EVENTSTORE_PERSISTENT_CONNECTION,

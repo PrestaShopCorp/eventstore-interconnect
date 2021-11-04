@@ -4,7 +4,7 @@ import {
   EVENTSTORE_PERSISTENT_CONNECTION,
   HTTP_CLIENT,
 } from './http-connection.constants';
-import { InterconnectionConfiguration } from '../../../interconnection-configuration';
+import { Credentials } from '../../../interconnection-configuration';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { SUBSCRIPTIONS } from '../constants';
 import {
@@ -13,6 +13,7 @@ import {
 } from 'geteventstore-promise';
 import { EventStoreNodeConnection } from 'node-eventstore-client';
 import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
+import { CREDENTIALS } from '../../../constants';
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {
@@ -23,6 +24,8 @@ export class HttpReaderService implements Reader, OnModuleInit {
     private readonly eventStoreConnection: EventStoreNodeConnection,
     @Inject(SUBSCRIPTIONS)
     private readonly subscriptions: IEventStorePersistentSubscriptionConfig[],
+    @Inject(CREDENTIALS)
+    private readonly credentials: Credentials,
     private readonly logger: Logger,
   ) {}
 
@@ -54,13 +57,14 @@ export class HttpReaderService implements Reader, OnModuleInit {
         subscription.stream,
         subscription.group,
         (subscription, event) => {
-          console.log('subscription : ', subscription);
-          console.log('event : ', event);
+          console.log('EVENT SPOTTED');
+          // console.log('subscription : ', subscription);
+          // console.log('event : ', event);
         },
         (sub, reason, error) => {
           subscription.onSubscriptionDropped(sub, reason, error.message);
         },
-        { username: 'admin', password: 'changeit' },
+        this.credentials,
         subscription.bufferSize,
         subscription.autoAck,
       );

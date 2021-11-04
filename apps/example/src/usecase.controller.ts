@@ -5,7 +5,7 @@ import { GrpcDriverService, HttpDriverService } from '@eventstore-interconnect';
 import { ES_GRPC_WRITER, ES_HTTP_WRITER } from './constants';
 
 @Controller('/')
-export default class usecaseController {
+export default class UsecaseController {
   constructor(
     @Inject(ES_HTTP_WRITER)
     private readonly httpDriver: HttpDriverService,
@@ -70,7 +70,6 @@ export default class usecaseController {
         specversion: 1,
       },
     };
-    // await this.eventBus.publish(new Example3Event({}, options));
 
     const example1Event: Example1Event = new Example1Event(
       {
@@ -80,8 +79,7 @@ export default class usecaseController {
       },
       options,
     );
-    // example1Event.eventStreamId = '$ce-hero';
-    // await this.eventBus.publish(catSyncEvent);
+    await this.httpDriver.writeEvent(example1Event);
 
     const notValidEvent: any = new Example1Event(
       {
@@ -92,7 +90,6 @@ export default class usecaseController {
       options,
     );
     notValidEvent.data.nestor = 123;
-    // await this.eventBus.publish(notValidEvent);
-    await this.httpDriver.writeEvent(example1Event);
+    await this.httpDriver.writeEvent(notValidEvent);
   }
 }

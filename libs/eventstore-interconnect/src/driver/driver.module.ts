@@ -17,6 +17,7 @@ import {
   EventStoreNodeConnection,
 } from 'node-eventstore-client';
 import { HTTP_CLIENT } from './services/http-driver/http-connection.constants';
+import { CREDENTIALS } from '../constants';
 
 @Module({})
 export class DriverModule {
@@ -25,9 +26,7 @@ export class DriverModule {
   ): Promise<DynamicModule> {
     const driverProviders: Provider[] = isLegacyConf(configuration.destination)
       ? await this.getLegacyEventStoreDriver(configuration.destination)
-      : this.getNextEventStoreDriver(
-          configuration.destination.connectionString,
-        );
+      : this.getNextEventStoreDriver(configuration);
 
     return {
       module: DriverModule,
@@ -53,9 +52,8 @@ export class DriverModule {
   public static async forNextSrc(
     configuration: InterconnectionConfiguration,
   ): Promise<DynamicModule> {
-    const driverProviders: Provider[] = this.getNextEventStoreDriver(
-      configuration.destination.connectionString,
-    );
+    const driverProviders: Provider[] =
+      this.getNextEventStoreDriver(configuration);
 
     return {
       module: DriverModule,
@@ -64,12 +62,19 @@ export class DriverModule {
     };
   }
 
-  private static getNextEventStoreDriver(connectionString: string) {
-    const eventStoreConnector: Client =
-      EventStoreDBClient.connectionString(connectionString);
+  private static getNextEventStoreDriver(
+    configuration: InterconnectionConfiguration,
+  ) {
+    const eventStoreConnector: Client = EventStoreDBClient.connectionString(
+      configuration.destination.connectionString,
+    );
 
     return [
       this.getGrpcDriverProvider(DRIVER),
+      {
+        provide: CREDENTIALS,
+        useValue: configuration.destination.credentials,
+      },
       {
         provide: EVENT_STORE_CONNECTOR,
         useValue: eventStoreConnector,
@@ -119,20 +124,27 @@ export class DriverModule {
     return [
       this.getHttpDriverProvider(DRIVER),
       {
+        provide: CREDENTIALS,
+        useValue: configuration.credentials,
+      },
+      {
         provide: HTTP_CLIENT,
         useValue: eventStoreConnection,
       },
     ];
   }
 
-  public static getGrpcDriverProvider(injectorSymbol: symbol) {
+  public static getGrpcDriverProvider(injectorSymbol: symbol): Provider {
     return {
       provide: injectorSymbol,
       useClass: GrpcDriverService,
     };
   }
 
-  public static getHttpDriverProvider(injectorSymbol: symbol) {
-    return { provide: injectorSymbol, useClass: HttpDriverService };
+  public static getHttpDriverProvider(injectorSymbol: symbol): Provider {
+    return {
+      provide: injectorSymbol,
+      useClass: HttpDriverService,
+    };
   }
 }

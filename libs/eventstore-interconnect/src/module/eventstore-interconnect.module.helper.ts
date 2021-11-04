@@ -1,15 +1,15 @@
 import { DynamicModule } from '@nestjs/common';
 import { CqrsEventStoreModule as CqrsEventStoreModuleNext } from 'nestjs-geteventstore-next/dist/cqrs-event-store.module';
-import { InterconnectionConfiguration } from '../../interconnection-configuration';
+import { InterconnectionConfiguration } from '../interconnection-configuration';
 import {
   getConnectionString,
   getNextPassword,
   getNextUsername,
   isLegacyConf,
-} from '../../helpers/configurations.helper';
-import { LegacyModule } from '../legacy/legacy.module';
-import { ReaderModule } from '../../reader';
-import { DriverModule } from '../../driver';
+} from '../helpers/configurations.helper';
+import { ReaderModule } from '../reader';
+import { DriverModule } from '../driver';
+import { LegacyModule } from './legacy.module';
 
 export default class EventstoreInterconnectModuleHelper {
   public static getSourceEventStoreModule(
