@@ -5,7 +5,7 @@ import {
   InterconnectionConfiguration,
   isLegacyConf,
 } from '..';
-import { DRIVER } from './services/driver.interface';
+import { DRIVER } from './services/driver';
 import { HttpDriverService } from './services/http-driver/http-driver.service';
 import { GrpcDriverService } from './services/grpc-driver/grpc-driver.service';
 import { Client } from '@eventstore/db-client/dist/Client';
@@ -36,15 +36,40 @@ export class DriverModule {
     };
   }
 
+  public static async forLegacySrc(
+    configuration: InterconnectionConfiguration,
+  ): Promise<DynamicModule> {
+    const driverProviders: Provider[] = await this.getLegacyEventStoreDriver(
+      configuration.source,
+    );
+
+    return {
+      module: DriverModule,
+      providers: [...driverProviders],
+      exports: [...driverProviders],
+    };
+  }
+
+  public static async forNextSrc(
+    configuration: InterconnectionConfiguration,
+  ): Promise<DynamicModule> {
+    const driverProviders: Provider[] = this.getNextEventStoreDriver(
+      configuration.destination.connectionString,
+    );
+
+    return {
+      module: DriverModule,
+      providers: [...driverProviders],
+      exports: [...driverProviders],
+    };
+  }
+
   private static getNextEventStoreDriver(connectionString: string) {
     const eventStoreConnector: Client =
       EventStoreDBClient.connectionString(connectionString);
 
     return [
-      {
-        provide: DRIVER,
-        useClass: GrpcDriverService,
-      },
+      this.getGrpcDriverProvider(DRIVER),
       {
         provide: EVENT_STORE_CONNECTOR,
         useValue: eventStoreConnector,
@@ -76,20 +101,38 @@ export class DriverModule {
       host: configuration.tcp.host,
       port: configuration.tcp.port,
     };
-
     const eventStoreConnection: EventStoreNodeConnection = createConnection(
       esConnectionConf,
       tcpEndPoint,
       'interco-module-connection',
     );
     await eventStoreConnection.connect();
+    eventStoreConnection.once('connected', function (tcpEndPoint) {
+      console.log(
+        'DRIVER : Connected to eventstore at ' +
+          tcpEndPoint.host +
+          ':' +
+          tcpEndPoint.port,
+      );
+    });
 
     return [
-      { provide: DRIVER, useClass: HttpDriverService },
+      this.getHttpDriverProvider(DRIVER),
       {
         provide: HTTP_CLIENT,
         useValue: eventStoreConnection,
       },
     ];
+  }
+
+  public static getGrpcDriverProvider(injectorSymbol: symbol) {
+    return {
+      provide: injectorSymbol,
+      useClass: GrpcDriverService,
+    };
+  }
+
+  public static getHttpDriverProvider(injectorSymbol: symbol) {
+    return { provide: injectorSymbol, useClass: HttpDriverService };
   }
 }

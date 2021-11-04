@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Driver } from '../driver.interface';
+import { Driver } from '../driver';
 import { ANY } from 'nestjs-geteventstore-next';
 import { EVENT_STORE_CONNECTOR } from 'nestjs-geteventstore-next/dist/event-store/services/event-store.constants';
 import { Client } from '@eventstore/db-client/dist/Client';
@@ -12,6 +12,7 @@ export class GrpcDriverService implements Driver {
   ) {}
 
   public async writeEvent(event: any): Promise<void> {
+    console.log('DRIVER (Grpc) writing event : ', event);
     const { data, metadata, eventStreamId, eventType, eventId } = event;
     await this.client.appendToStream(
       eventStreamId,

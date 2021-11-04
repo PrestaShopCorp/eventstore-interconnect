@@ -2,15 +2,14 @@ import { InterconnectionHandler } from './interconnection.handler';
 import { Driver, EVENT_WRITER_TIMEOUT_IN_MS, SafetyNet } from '../index';
 import { Logger } from 'nestjs-pino-stackdriver';
 import {
-  EventOptionsType,
-  EventStoreAcknowledgeableEvent,
+  IEventStoreEventOptions,
+  AcknowledgeableEventStoreEvent,
 } from 'nestjs-geteventstore-legacy';
 import spyOn = jest.spyOn;
 
-class CategoriesSyncEndedEvent extends EventStoreAcknowledgeableEvent {
-  constructor(data: any, options?: EventOptionsType) {
+class CategoriesSyncEndedEvent extends AcknowledgeableEventStoreEvent {
+  constructor(data: any, options?: IEventStoreEventOptions) {
     super(data, options);
-    this.data = data;
   }
 }
 
@@ -29,7 +28,7 @@ describe('InterconnectionHandler', () => {
   const driver: Driver = { writeEvent: jest.fn() };
   const logger: Logger = { error: jest.fn(), log: jest.fn() } as any as Logger;
 
-  let options: EventOptionsType;
+  let options: IEventStoreEventOptions;
   let event: CategoriesSyncEndedEvent;
 
   beforeEach(() => {

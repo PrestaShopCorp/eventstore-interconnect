@@ -32,7 +32,7 @@ export const legSrcNextDestConfiguration: InterconnectionConfiguration = {
     },
     connectionString: NEXT_EVENTSTORE_CONNECTION_STRING,
   },
-  eventStoreServiceConfig: {
+  eventStoreBusConfig: {
     subscriptions: {
       persistent: legacySubscriptions,
     },

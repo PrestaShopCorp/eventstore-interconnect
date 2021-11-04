@@ -1,19 +1,15 @@
 import { DynamicModule } from '@nestjs/common';
-import { CqrsEventStoreModule as CqrsEventStoreModuleLegacy } from 'nestjs-geteventstore-legacy/dist/cqrs-event-store.module';
 import { CqrsEventStoreModule as CqrsEventStoreModuleNext } from 'nestjs-geteventstore-next/dist/cqrs-event-store.module';
-import { InterconnectionConfiguration } from '../interconnection-configuration';
+import { InterconnectionConfiguration } from '../../interconnection-configuration';
 import {
   getConnectionString,
-  getLegacyHttpHost,
-  getLegacyHttpPort,
-  getLegacyPassword,
-  getLegacyTcpHost,
-  getLegacyTcpPort,
-  getLegacyUsername,
   getNextPassword,
   getNextUsername,
   isLegacyConf,
-} from './configurations.helper';
+} from '../../helpers/configurations.helper';
+import { LegacyModule } from '../legacy/legacy.module';
+import { ReaderModule } from '../../reader';
+import { DriverModule } from '../../driver';
 
 export default class EventstoreInterconnectModuleHelper {
   public static getSourceEventStoreModule(
@@ -36,25 +32,17 @@ export default class EventstoreInterconnectModuleHelper {
     configuration: InterconnectionConfiguration,
     entry: 'source' | 'dest',
   ): DynamicModule {
-    const { tcp, http, credentials } =
-      entry === 'source' ? configuration.source : configuration.destination;
-    return CqrsEventStoreModuleLegacy.register(
-      {
-        tcp: {
-          host: getLegacyTcpHost(entry, tcp.host),
-          port: getLegacyTcpPort(entry, tcp.port),
-        },
-        http: {
-          host: getLegacyHttpHost(entry, http.host),
-          port: getLegacyHttpPort(entry, http.port),
-        },
-        credentials: {
-          username: getLegacyUsername(entry, credentials.username),
-          password: getLegacyPassword(entry, credentials.password),
-        },
-      },
-      configuration.eventStoreServiceConfig,
-    );
+    return entry === 'source'
+      ? {
+          module: LegacyModule,
+          imports: [ReaderModule.get(configuration)],
+          exports: [ReaderModule],
+        }
+      : {
+          module: LegacyModule,
+          imports: [DriverModule.get(configuration)],
+          exports: [DriverModule],
+        };
   }
 
   private static registerToNextEventStoreModuleWithConf(

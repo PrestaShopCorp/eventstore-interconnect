@@ -1,11 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Driver } from '../driver.interface';
+import { Driver } from '../driver';
 import { ExpectedVersion } from 'nestjs-geteventstore-legacy';
 import {
   createJsonEventData,
   EventStoreNodeConnection,
 } from 'node-eventstore-client';
-import { createEventDefaultMetadata } from 'nestjs-geteventstore-legacy/dist/tools/create-event-default-metadata';
 import { HTTP_CLIENT } from './http-connection.constants';
 
 @Injectable()
@@ -16,16 +15,18 @@ export class HttpDriverService implements Driver {
   ) {}
 
   public async writeEvent(event: any): Promise<any> {
+    console.log('DRIVER (http) writing event : ', event);
     const jsonFormattedEvent = createJsonEventData(
       event.eventId,
       event.data,
-      { ...createEventDefaultMetadata(), ...event.metadata },
+      event.metadata,
       event.eventType,
     );
     await this.eventStoreNodeConnection.appendToStream(
       event.eventStreamId,
       ExpectedVersion.Any,
       jsonFormattedEvent,
+      { username: 'admin', password: 'changeit' },
     );
   }
 }

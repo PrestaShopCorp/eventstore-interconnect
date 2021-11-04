@@ -38,7 +38,7 @@ export const legSrcLegDestConfiguration: InterconnectionConfiguration = {
       port: LEGACY_EVENTSTORE_HTTP_PORT,
     },
   },
-  eventStoreServiceConfig: {
+  eventStoreBusConfig: {
     subscriptions: {
       persistent: legacySubscriptions,
     },

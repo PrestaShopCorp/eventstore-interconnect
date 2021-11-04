@@ -1,11 +1,11 @@
-import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy';
+import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy';
 
-export const legacySubscriptions: IPersistentSubscriptionConfig[] = [
+export const legacySubscriptions: IEventStorePersistentSubscriptionConfig[] = [
   {
     // Event stream category (before the -)
     stream: '$ce-hero',
     group: 'data',
-    autoAck: false,
+    autoAck: true,
     bufferSize: 1,
     // Subscription is created with this options
     options: {

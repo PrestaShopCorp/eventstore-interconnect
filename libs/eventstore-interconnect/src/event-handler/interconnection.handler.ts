@@ -1,13 +1,14 @@
 import { Inject } from '@nestjs/common';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { IEventHandler } from '@nestjs/cqrs';
-import { EventStoreAcknowledgeableEvent } from 'nestjs-geteventstore-legacy';
 import { Driver, DRIVER } from '../driver';
 import { SAFETY_NET, SafetyNet } from '../safety-net';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from '../event-handler';
+import { AcknowledgeableEventStoreEvent } from 'nestjs-geteventstore-legacy';
+import { ES_HTTP_WRITER } from '../../../../apps/example/src/constants';
 
 export abstract class InterconnectionHandler<
-  E extends EventStoreAcknowledgeableEvent,
+  E extends AcknowledgeableEventStoreEvent,
 > implements IEventHandler<E>
 {
   constructor(
