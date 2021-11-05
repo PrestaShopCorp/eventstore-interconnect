@@ -22,6 +22,7 @@ import { HTTPClient } from 'geteventstore-promise';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { ALLOWED_EVENTS, CREDENTIALS } from '../constants';
 import { ValidatorService } from './services/validator';
+import { DriverModule } from '../driver';
 
 @Module({})
 export class ReaderModule {
@@ -86,6 +87,7 @@ export class ReaderModule {
 
     return {
       module: ReaderModule,
+      imports: [await DriverModule.get(configuration)],
       providers: [
         Logger,
         ValidatorService,
@@ -117,15 +119,16 @@ export class ReaderModule {
     };
   }
 
-  private static getNextReaderModule(
+  private static async getNextReaderModule(
     configuration: InterconnectionConfiguration,
     allowedEvents?: any,
-  ): DynamicModule {
+  ): Promise<DynamicModule> {
     const eventStoreConnector: Client = EventStoreDBClient.connectionString(
       configuration.source.connectionString,
     );
     return {
       module: ReaderModule,
+      imports: [await DriverModule.get(configuration)],
       providers: [
         Logger,
         {

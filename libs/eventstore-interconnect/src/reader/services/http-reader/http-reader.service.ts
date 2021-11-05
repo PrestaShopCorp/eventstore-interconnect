@@ -18,6 +18,7 @@ import {
 import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
 import { CREDENTIALS } from '../../../constants';
 import { ValidatorService } from '../validator/validator.service';
+import { Driver, DRIVER } from '../../../driver';
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {
@@ -30,6 +31,8 @@ export class HttpReaderService implements Reader, OnModuleInit {
     private readonly subscriptions: IEventStorePersistentSubscriptionConfig[],
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
+    @Inject(DRIVER)
+    private readonly driver: Driver,
     private readonly validatorService: ValidatorService,
     private readonly logger: Logger,
   ) {}
@@ -62,7 +65,8 @@ export class HttpReaderService implements Reader, OnModuleInit {
         subscription.stream,
         subscription.group,
         async (subscription, event: ResolvedEvent) => {
-          await this.validatorService.validate(event);
+          const validatedEvent = await this.validatorService.validate(event);
+          await this.driver.writeEvent(validatedEvent);
         },
         (sub, reason, error) => {
           subscription.onSubscriptionDropped(sub, reason, error.message);

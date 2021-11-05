@@ -16,6 +16,10 @@ class Nestor {
 }
 
 export class ValidableDatasDto {
+  constructor(data: ValidableDatasDto) {
+    return Object.assign(this, data);
+  }
+
   @IsString()
   id: string;
 
@@ -38,6 +42,6 @@ export class Example1Event extends AcknowledgeableEventStoreEvent {
 
   constructor(data: ValidableDatasDto, options?: IEventStoreEventOptions) {
     super(data, options);
-    this.data = data;
+    this.data = new ValidableDatasDto(data);
   }
 }

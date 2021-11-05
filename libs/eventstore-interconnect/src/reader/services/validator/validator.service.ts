@@ -12,14 +12,20 @@ export class ValidatorService {
     private readonly allowedEvents: any,
   ) {}
 
-  public async validate(eventAsPayload: ResolvedEvent): Promise<void> {
-    const data = JSON.parse(eventAsPayload.event.data.toString());
-    const event = this.tryToInstanciateEvent(eventAsPayload, data);
+  public async validate(eventAsPayload: ResolvedEvent): Promise<any> {
+    const event = JSON.parse(eventAsPayload.event.data.toString());
+    const eventInstance = this.tryToInstanciateEvent(
+      eventAsPayload,
+      event.data,
+    );
 
-    const concatErrors: ValidationError[] = await validate(event);
+    const concatErrors: ValidationError[] = await validate(eventInstance);
     if (concatErrors.length > 0) {
       throw new InvalidEventError(JSON.stringify(concatErrors));
     }
+
+    eventInstance.eventStreamId = eventAsPayload.originalStreamId;
+    return eventInstance;
   }
 
   private tryToInstanciateEvent(eventAsPayload: ResolvedEvent, data) {

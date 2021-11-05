@@ -5,6 +5,7 @@ import { EVENT_STORE_CONNECTOR } from 'nestjs-geteventstore-next/dist/event-stor
 import { Client } from '@eventstore/db-client/dist/Client';
 import { CREDENTIALS } from '../../../constants';
 import { Credentials } from '../../../interconnection-configuration';
+import { jsonEvent } from '@eventstore/db-client';
 
 @Injectable()
 export class GrpcDriverService implements Driver {
@@ -16,22 +17,18 @@ export class GrpcDriverService implements Driver {
   ) {}
 
   public async writeEvent(event: any): Promise<void> {
-    const { data, metadata, eventStreamId, eventType, eventId } = event;
-    await this.client.appendToStream(
-      eventStreamId,
-      [
-        {
-          id: eventId,
-          data,
-          metadata,
-          type: eventType,
-          contentType: 'application/json',
-        },
-      ],
-      {
+    const { eventStreamId } = event;
+    const formattedEvent = jsonEvent({
+      id: event.eventId,
+      type: event.eventType,
+      metadata: event.metadata,
+      data: event.data,
+    });
+    await this.client
+      .appendToStream(eventStreamId, formattedEvent, {
         expectedRevision: ANY,
         credentials: this.credentials,
-      },
-    );
+      })
+      .catch((e) => console.log('ERROR while grpc writing : ', e));
   }
 }

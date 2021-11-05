@@ -67,4 +67,13 @@ describe('ValidatorService', () => {
       expect(e).toEqual(expectedError);
     }
   });
+
+  it('should return the validated event when event is valid', async () => {
+    const validEvent: ResolvedEvent = getEvent(true, 1);
+
+    const event = await service.validate(validEvent);
+
+    expect(event.eventStreamId).toBeTruthy();
+    expect(event).toBeTruthy();
+  });
 });
