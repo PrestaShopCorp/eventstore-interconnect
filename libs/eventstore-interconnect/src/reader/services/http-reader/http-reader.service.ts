@@ -11,9 +11,13 @@ import {
   HTTPClient,
   PersistentSubscriptionOptions,
 } from 'geteventstore-promise';
-import { EventStoreNodeConnection } from 'node-eventstore-client';
+import {
+  EventStoreNodeConnection,
+  ResolvedEvent,
+} from 'node-eventstore-client';
 import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
 import { CREDENTIALS } from '../../../constants';
+import { ValidatorService } from '../validator/validator.service';
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {
@@ -26,6 +30,7 @@ export class HttpReaderService implements Reader, OnModuleInit {
     private readonly subscriptions: IEventStorePersistentSubscriptionConfig[],
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
+    private readonly validatorService: ValidatorService,
     private readonly logger: Logger,
   ) {}
 
@@ -56,10 +61,8 @@ export class HttpReaderService implements Reader, OnModuleInit {
       await this.eventStoreConnection.connectToPersistentSubscription(
         subscription.stream,
         subscription.group,
-        (subscription, event) => {
-          console.log('EVENT SPOTTED');
-          // console.log('subscription : ', subscription);
-          // console.log('event : ', event);
+        async (subscription, event: ResolvedEvent) => {
+          await this.validatorService.validate(event);
         },
         (sub, reason, error) => {
           subscription.onSubscriptionDropped(sub, reason, error.message);
@@ -70,76 +73,4 @@ export class HttpReaderService implements Reader, OnModuleInit {
       );
     }
   }
-
-  // async subscribeToPersistentSubscriptions(
-  //   subscriptions: IPersistentSubscriptionConfig[],
-  // ) {
-  //   await Promise.all(
-  //     subscriptions.map(async (subscription) => {
-  //       await this.upsertSubscription(subscription);
-  //     }),
-  //   );
-  //   await Promise.all(
-  //     subscriptions.map(async (config) => {
-  //       return await this.subscribeToSubscription(config);
-  //     }),
-  //   );
-  // }
-  //
-  // private async subscribeToSubscription(config: IPersistentSubscriptionConfig) {
-  //   this.logger.log(
-  //     `Connecting to persistent subscription "${config.group}" on stream ${config.stream}`,
-  //   );
-  //   return await this.client.subscribeToPersistentSubscription(
-  //     config.stream,
-  //     config.group,
-  //     (subscription, payload) => {
-  //       this.logger.log(
-  //         `Event spotted on subscription ${subscription}, payload : ${payload}`,
-  //       );
-  //     },
-  //     config.autoAck,
-  //     config.bufferSize,
-  //     config.onSubscriptionStart,
-  //     config.onSubscriptionDropped,
-  //   );
-  // }
-  //
-  // private async upsertSubscription(
-  //   subscription: IEventStorePersistentSubscriptionConfig,
-  // ) {
-  //   try {
-  //     this.logger.log(
-  //       `Upsert "${subscription.group}" on stream ${subscription.stream}...`,
-  //     );
-  //     await this.eventStoreConnection.createPersistentSubscription(
-  //       subscription.stream,
-  //       subscription.group,
-  //       PersistentSubscriptionSettings.create(),
-  //       { username: 'admin', password: 'changeit' },
-  //     );
-  //   } catch (e) {
-  //     console.log('e : ', JSON.stringify(e));
-  //     if (!e.response || e.response.status != 404) {
-  //       throw e;
-  //     }
-  //     const options: PersistentSubscriptionOptions = {
-  //       ...subscription.options,
-  //       ...{
-  //         resolveLinkTos:
-  //           subscription.options.resolveLinkTos ||
-  //           subscription.options.resolveLinktos,
-  //       },
-  //     };
-  //     await this.client.persistentSubscriptions.assert(
-  //       subscription.group,
-  //       subscription.stream,
-  //       options,
-  //     );
-  //     this.logger.log(
-  //       `Persistent subscription "${subscription.group}" on stream ${subscription.stream} created ! ` +
-  //         JSON.stringify(subscription.options),
-  //     );
-  //   }
-  // }
 }

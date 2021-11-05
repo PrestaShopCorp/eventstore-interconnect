@@ -21,7 +21,7 @@ export class HttpDriverService implements Driver {
   public async writeEvent(event: any): Promise<any> {
     const jsonFormattedEvent = createJsonEventData(
       event.eventId,
-      event.data,
+      event,
       event.metadata,
       event.eventType,
     );

@@ -14,10 +14,19 @@ import { LegacyModule } from './legacy.module';
 export default class EventstoreInterconnectModuleHelper {
   public static getSourceEventStoreModule(
     configuration: InterconnectionConfiguration,
+    allowedEvents: any,
   ): DynamicModule {
     return isLegacyConf(configuration.source)
-      ? this.registerToLegacyEventStoreModuleWithConf(configuration, 'source')
-      : this.registerToNextEventStoreModuleWithConf(configuration, 'source');
+      ? this.registerToLegacyEventStoreModuleWithConf(
+          configuration,
+          'source',
+          allowedEvents,
+        )
+      : this.registerToNextEventStoreModuleWithConf(
+          configuration,
+          'source',
+          allowedEvents,
+        );
   }
 
   public static getDestinationEventStoreModule(
@@ -31,11 +40,12 @@ export default class EventstoreInterconnectModuleHelper {
   private static registerToLegacyEventStoreModuleWithConf(
     configuration: InterconnectionConfiguration,
     entry: 'source' | 'dest',
+    allowedEvents?: any,
   ): DynamicModule {
     return entry === 'source'
       ? {
           module: LegacyModule,
-          imports: [ReaderModule.get(configuration)],
+          imports: [ReaderModule.get(configuration, allowedEvents)],
           exports: [ReaderModule],
         }
       : {
@@ -48,6 +58,7 @@ export default class EventstoreInterconnectModuleHelper {
   private static registerToNextEventStoreModuleWithConf(
     configuration: InterconnectionConfiguration,
     entry: 'source' | 'dest',
+    allowedEvents?: any,
   ): DynamicModule {
     const { connectionString, credentials } =
       entry === 'source' ? configuration.source : configuration.destination;

@@ -20,20 +20,23 @@ import { SUBSCRIPTIONS } from '../reader/services/constants';
 import * as geteventstorePromise from 'geteventstore-promise';
 import { HTTPClient } from 'geteventstore-promise';
 import { Logger } from 'nestjs-pino-stackdriver';
-import { CREDENTIALS } from '../constants';
+import { ALLOWED_EVENTS, CREDENTIALS } from '../constants';
+import { ValidatorService } from './services/validator';
 
 @Module({})
 export class ReaderModule {
   public static async get(
     configuration: InterconnectionConfiguration,
+    allowedEvents?: any,
   ): Promise<DynamicModule> {
     return isLegacyConf(configuration.source)
-      ? ReaderModule.getLegacyReaderModule(configuration)
-      : ReaderModule.getNextReaderModule(configuration);
+      ? ReaderModule.getLegacyReaderModule(configuration, allowedEvents)
+      : ReaderModule.getNextReaderModule(configuration, allowedEvents);
   }
 
   private static async getLegacyReaderModule(
     configuration: InterconnectionConfiguration,
+    allowedEvents?: any[],
   ): Promise<DynamicModule> {
     const esConnectionConf: ConnectionSettings = {
       // Buffer events if remote is slow or not available
@@ -85,6 +88,11 @@ export class ReaderModule {
       module: ReaderModule,
       providers: [
         Logger,
+        ValidatorService,
+        {
+          provide: ALLOWED_EVENTS,
+          useValue: allowedEvents ?? {},
+        },
         {
           provide: READER,
           useClass: HttpReaderService,
@@ -111,6 +119,7 @@ export class ReaderModule {
 
   private static getNextReaderModule(
     configuration: InterconnectionConfiguration,
+    allowedEvents?: any,
   ): DynamicModule {
     const eventStoreConnector: Client = EventStoreDBClient.connectionString(
       configuration.source.connectionString,
@@ -119,6 +128,10 @@ export class ReaderModule {
       module: ReaderModule,
       providers: [
         Logger,
+        {
+          provide: ALLOWED_EVENTS,
+          useValue: allowedEvents ?? {},
+        },
         {
           provide: READER,
           useClass: GrpcReaderService,

@@ -13,6 +13,9 @@ import { nextSrcNextDestConfiguration } from './configuration/eventstore-connect
 import { nextSrcLegDestConfiguration } from './configuration/eventstore-connections/next-src/legacy-dest/next-src-leg-dest.configuration';
 import CustomSafetyNet from './custom-safety-net/custom-safety-net';
 import { ES_GRPC_WRITER, ES_HTTP_WRITER } from './constants';
+import { Example1Event } from './events/example1.event';
+import { Example3Event } from './events/example3.event';
+import { Example2Event } from './events/example2.event';
 
 let configuration: InterconnectionConfiguration;
 
@@ -31,10 +34,19 @@ switch (process.env.CASE) {
     break;
 }
 
+const allowedEvents: any = {
+  Example1Event,
+  Example2Event,
+  Example3Event,
+};
+
 @Module({
   controllers: [UsecaseController],
   imports: [
-    EventstoreInterconnectModule.connectToSrcAndDest(configuration),
+    EventstoreInterconnectModule.connectToSrcAndDest(
+      configuration,
+      allowedEvents,
+    ),
     DriverModule.forLegacySrc(configuration), // Only for running this example, for writing on the src
   ],
   providers: [

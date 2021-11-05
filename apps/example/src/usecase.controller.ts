@@ -79,7 +79,8 @@ export default class UsecaseController {
       },
       options,
     );
-    await this.httpDriver.writeEvent(example1Event);
+    // console.log('writing Ev 1');
+    // await this.httpDriver.writeEvent(example1Event);
 
     const notValidEvent: any = new Example1Event(
       {
@@ -90,6 +91,7 @@ export default class UsecaseController {
       options,
     );
     notValidEvent.data.nestor = 123;
+    console.log('writing Ev 2');
     await this.httpDriver.writeEvent(notValidEvent);
   }
 }

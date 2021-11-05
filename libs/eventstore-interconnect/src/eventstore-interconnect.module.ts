@@ -1,20 +1,21 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { Logger } from 'nestjs-pino-stackdriver';
-import { InterconnectionConfiguration } from '../interconnection-configuration';
+import { InterconnectionConfiguration } from './interconnection-configuration';
 import { ContextModule } from 'nestjs-context';
-import EventstoreInterconnectModuleHelper from './eventstore-interconnect.module.helper';
-import { DriverModule } from '../driver/driver.module';
-import { DefaultSafetyNetService, SAFETY_NET } from '../safety-net';
-import { CommandBus } from '@nestjs/cqrs';
+import EventstoreInterconnectModuleHelper from './module-helpers/eventstore-interconnect.module.helper';
+import { DriverModule } from './driver/driver.module';
+import { DefaultSafetyNetService, SAFETY_NET } from './safety-net';
 
 @Module({})
 export class EventstoreInterconnectModule {
   public static connectToSrcAndDest(
     configuration: InterconnectionConfiguration,
+    allowedEvents?: any,
   ): DynamicModule {
     const eventStoreModuleSource: DynamicModule =
       EventstoreInterconnectModuleHelper.getSourceEventStoreModule(
         configuration,
+        allowedEvents,
       );
 
     const eventStoreModuleDest: DynamicModule =
@@ -32,7 +33,6 @@ export class EventstoreInterconnectModule {
         DriverModule.get(configuration),
       ],
       providers: [
-        CommandBus,
         Logger,
         {
           provide: SAFETY_NET,
@@ -40,7 +40,6 @@ export class EventstoreInterconnectModule {
         },
       ],
       exports: [
-        CommandBus,
         eventStoreModuleSource,
         eventStoreModuleDest,
         DriverModule,
