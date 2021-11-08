@@ -6,6 +6,9 @@ import { Client } from '@eventstore/db-client/dist/Client';
 import { CREDENTIALS } from '../../../constants';
 import { Credentials } from '../../../interconnection-configuration';
 import { jsonEvent } from '@eventstore/db-client';
+import { SAFETY_NET, SafetyNet } from '../../../safety-net';
+import { Logger } from 'nestjs-pino-stackdriver';
+import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
 
 @Injectable()
 export class GrpcDriverService implements Driver {
@@ -14,9 +17,38 @@ export class GrpcDriverService implements Driver {
     private readonly client: Client,
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
+    @Inject(SAFETY_NET) protected readonly safetyNet: SafetyNet,
+    private readonly logger: Logger,
   ) {}
 
   public async writeEvent(event: any): Promise<void> {
+    try {
+      await this.tryToWriteEventAgainstAggressiveTimeout(
+        event,
+        EVENT_WRITER_TIMEOUT_IN_MS,
+      );
+    } catch (err) {
+      this.logger.error(err.toString());
+      this.safetyNet.hook(event);
+    }
+  }
+
+  private async tryToWriteEventAgainstAggressiveTimeout(
+    event: any,
+    timeout: number,
+  ): Promise<void> {
+    let eventWritten = false;
+    setTimeout(() => {
+      this.safetyNet.hook(event, eventWritten);
+    }, timeout);
+    this.appendEventToStreamteEvent(event).then(() => (eventWritten = true));
+    await event.ack();
+  }
+
+  private async appendEventToStreamteEvent(event: any): Promise<void> {
+    this.logger.log(
+      `Trying to write ${event.eventType} (id: ${event.eventId}) on stream ${event.eventStreamId}`,
+    );
     const { eventStreamId } = event;
     const formattedEvent = jsonEvent({
       id: event.eventId,
@@ -24,11 +56,10 @@ export class GrpcDriverService implements Driver {
       metadata: event.metadata,
       data: event.data,
     });
-    await this.client
-      .appendToStream(eventStreamId, formattedEvent, {
-        expectedRevision: ANY,
-        credentials: this.credentials,
-      })
-      .catch((e) => console.log('ERROR while grpc writing : ', e));
+    await this.client.appendToStream(eventStreamId, formattedEvent, {
+      expectedRevision: ANY,
+      credentials: this.credentials,
+    });
+    this.logger.log(`Event (id: ${event.eventId}) written`);
   }
 }

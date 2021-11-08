@@ -3,8 +3,10 @@ import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import {
   ConnectionConfiguration,
   Credentials,
+  DefaultSafetyNetService,
   InterconnectionConfiguration,
   isLegacyConf,
+  SAFETY_NET,
 } from '..';
 import { DRIVER } from './services/driver';
 import { HttpDriverService } from './services/http-driver/http-driver.service';
@@ -19,6 +21,7 @@ import {
 } from 'node-eventstore-client';
 import { HTTP_CLIENT } from './services/http-driver/http-connection.constants';
 import { CREDENTIALS } from '../constants';
+import { Logger } from 'nestjs-pino-stackdriver';
 
 @Module({})
 export class DriverModule {
@@ -85,6 +88,11 @@ export class DriverModule {
         provide: EVENT_STORE_CONNECTOR,
         useValue: eventStoreConnector,
       },
+      {
+        provide: SAFETY_NET,
+        useClass: DefaultSafetyNetService,
+      },
+      Logger,
     ];
   }
 
@@ -137,6 +145,11 @@ export class DriverModule {
         provide: HTTP_CLIENT,
         useValue: eventStoreConnection,
       },
+      {
+        provide: SAFETY_NET,
+        useClass: DefaultSafetyNetService,
+      },
+      Logger,
     ];
   }
 
