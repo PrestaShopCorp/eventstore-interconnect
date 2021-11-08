@@ -1,15 +1,10 @@
 import { DynamicModule } from '@nestjs/common';
-import { CqrsEventStoreModule as CqrsEventStoreModuleNext } from 'nestjs-geteventstore-next/dist/cqrs-event-store.module';
 import { InterconnectionConfiguration } from '../interconnection-configuration';
-import {
-  getConnectionString,
-  getNextPassword,
-  getNextUsername,
-  isLegacyConf,
-} from '../helpers/configurations.helper';
+import { isLegacyConf } from '../helpers/configurations.helper';
 import { ReaderModule } from '../reader';
 import { DriverModule } from '../driver';
 import { LegacyModule } from './legacy.module';
+import { NextModule } from './next.module';
 
 export default class EventstoreInterconnectModuleHelper {
   public static getSourceEventStoreModule(
@@ -63,18 +58,29 @@ export default class EventstoreInterconnectModuleHelper {
     const { connectionString, credentials } =
       entry === 'source' ? configuration.source : configuration.destination;
     const { eventStoreSubsystems } = configuration;
-    return CqrsEventStoreModuleNext.register(
-      {
-        connectionSettings: {
-          connectionString: getConnectionString(entry, connectionString),
-        },
-        defaultUserCredentials: {
-          username: getNextUsername(entry, credentials.username),
-          password: getNextPassword(entry, credentials.password),
-        },
-      },
-      eventStoreSubsystems,
-      { read: { allowedEvents: {} }, write: { serviceName: 'test' } },
-    );
+    // return CqrsEventStoreModuleNext.register(
+    //   {
+    //     connectionSettings: {
+    //       connectionString: getConnectionString(entry, connectionString),
+    //     },
+    //     defaultUserCredentials: {
+    //       username: getNextUsername(entry, credentials.username),
+    //       password: getNextPassword(entry, credentials.password),
+    //     },
+    //   },
+    //   eventStoreSubsystems,
+    //   { read: { allowedEvents: {} }, write: { serviceName: 'test' } },
+    // );
+    return entry === 'dest'
+      ? {
+          module: NextModule,
+          imports: [DriverModule.get(configuration)],
+          exports: [DriverModule],
+        }
+      : {
+          module: NextModule,
+          imports: [ReaderModule.get(configuration, allowedEvents)],
+          exports: [ReaderModule],
+        };
   }
 }

@@ -4,6 +4,7 @@ import {
   DriverModule,
   EventstoreInterconnectModule,
   InterconnectionConfiguration,
+  isLegacyConf,
   SAFETY_NET,
 } from '@eventstore-interconnect';
 import UsecaseController from './usecase.controller';
@@ -47,7 +48,9 @@ const allowedEvents: any = {
       configuration,
       allowedEvents,
     ),
-    DriverModule.forLegacySrc(configuration), // Only for running this example, for writing on the src
+    isLegacyConf(configuration.source)
+      ? DriverModule.forLegacySrc(configuration.source) // Only for running this example, for writing on the src
+      : DriverModule.forNextSrc(configuration.source),
   ],
   providers: [
     Logger,
@@ -55,8 +58,18 @@ const allowedEvents: any = {
       provide: SAFETY_NET,
       useClass: CustomSafetyNet,
     },
-    DriverModule.getHttpDriverProvider(ES_HTTP_WRITER),
-    DriverModule.getGrpcDriverProvider(ES_GRPC_WRITER),
+    configuration !== nextSrcNextDestConfiguration
+      ? DriverModule.getHttpDriverProvider(ES_HTTP_WRITER)
+      : {
+          provide: ES_HTTP_WRITER,
+          useValue: {},
+        },
+    configuration !== legSrcLegDestConfiguration
+      ? DriverModule.getGrpcDriverProvider(ES_GRPC_WRITER)
+      : {
+          provide: ES_GRPC_WRITER,
+          useValue: {},
+        },
   ],
 })
 export class UsecaseModule {}

@@ -7,6 +7,8 @@ export const nextSubscriptions: IPersistentSubscriptionConfig[] = [
     group: 'data',
     settingsForCreation: {
       subscriptionSettings: {
+        liveBufferSize: 1,
+        readBatchSize: 1,
         resolveLinkTos: true,
         minCheckpointCount: 1,
       },

@@ -21,8 +21,11 @@ import * as geteventstorePromise from 'geteventstore-promise';
 import { HTTPClient } from 'geteventstore-promise';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { ALLOWED_EVENTS, CREDENTIALS } from '../constants';
-import { ValidatorService } from './services/validator';
+import { LegacyEventsValidatorService } from './services/validator';
 import { DriverModule } from '../driver';
+import { EventStoreService } from './services/grpc-reader/event-store.service';
+import { NextEventsValidatorService } from './services/validator/next/next-events-validator.service';
+import { VALIDATOR } from './services/validator/validator';
 
 @Module({})
 export class ReaderModule {
@@ -90,7 +93,11 @@ export class ReaderModule {
       imports: [await DriverModule.get(configuration)],
       providers: [
         Logger,
-        ValidatorService,
+        {
+          provide: VALIDATOR,
+          useClass: LegacyEventsValidatorService,
+        },
+
         {
           provide: ALLOWED_EVENTS,
           useValue: allowedEvents ?? {},
@@ -131,6 +138,15 @@ export class ReaderModule {
       imports: [await DriverModule.get(configuration)],
       providers: [
         Logger,
+        EventStoreService,
+        {
+          provide: VALIDATOR,
+          useClass: NextEventsValidatorService,
+        },
+        {
+          provide: SUBSCRIPTIONS,
+          useValue: configuration.eventStoreSubsystems.subscriptions.persistent,
+        },
         {
           provide: ALLOWED_EVENTS,
           useValue: allowedEvents ?? {},
@@ -138,6 +154,10 @@ export class ReaderModule {
         {
           provide: READER,
           useClass: GrpcReaderService,
+        },
+        {
+          provide: VALIDATOR,
+          useClass: NextEventsValidatorService,
         },
         {
           provide: EVENT_STORE_CONNECTOR,

@@ -1,1 +1,1 @@
-export * from './validator.service';
+export * from './legacy/legacy-events-validator.service';

@@ -1,21 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidatorService } from './validator.service';
-import { ALLOWED_EVENTS } from '../../../constants';
+import { NextEventsValidatorService } from './next-events-validator.service';
+import { ALLOWED_EVENTS } from '../../../../constants';
 import { Dumb1Event } from './mocks/dumb1.event';
 import { Dumb2Event } from './mocks/dumb2.event';
 import { Dumb3Event } from './mocks/dumb3.event';
 import { ResolvedEvent } from 'node-eventstore-client';
 import { getEvent } from './mocks/helper';
-import { InvalidEventError } from './errors/invalid-event.error';
-import { NotAllowedEventError } from './errors/not-allowed-event.error';
+import { InvalidEventError } from '../errors/invalid-event.error';
+import { NotAllowedEventError } from '../errors/not-allowed-event.error';
 
-describe('ValidatorService', () => {
-  let service: ValidatorService;
+describe('NextEventsValidatorService', () => {
+  let service: NextEventsValidatorService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ValidatorService,
+        NextEventsValidatorService,
         {
           provide: ALLOWED_EVENTS,
           useValue: {
@@ -27,7 +27,9 @@ describe('ValidatorService', () => {
       ],
     }).compile();
 
-    service = module.get<ValidatorService>(ValidatorService);
+    service = module.get<NextEventsValidatorService>(
+      NextEventsValidatorService,
+    );
   });
 
   it('should throw an InvalidEventError when event is invalid', async () => {

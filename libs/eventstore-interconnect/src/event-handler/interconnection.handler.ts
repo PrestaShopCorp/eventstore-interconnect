@@ -3,7 +3,7 @@ import { Logger } from 'nestjs-pino-stackdriver';
 import { Driver, DRIVER } from '../driver';
 import { SAFETY_NET, SafetyNet } from '../safety-net';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from '../event-handler';
-import { ValidatorService } from '../reader';
+import { LegacyEventsValidatorService } from '../reader';
 
 @Injectable()
 export class InterconnectionHandler {
@@ -11,7 +11,7 @@ export class InterconnectionHandler {
     @Inject(DRIVER) private readonly driver: Driver,
     @Inject(SAFETY_NET) protected readonly safetyNet: SafetyNet,
     protected readonly logger: Logger,
-    private readonly validatorService: ValidatorService,
+    private readonly validatorService: LegacyEventsValidatorService,
   ) {}
 
   public async handle(event: any): Promise<void> {

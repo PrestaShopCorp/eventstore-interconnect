@@ -2,6 +2,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import {
   ConnectionConfiguration,
+  Credentials,
   InterconnectionConfiguration,
   isLegacyConf,
 } from '..';
@@ -26,7 +27,10 @@ export class DriverModule {
   ): Promise<DynamicModule> {
     const driverProviders: Provider[] = isLegacyConf(configuration.destination)
       ? await this.getLegacyEventStoreDriver(configuration.destination)
-      : this.getNextEventStoreDriver(configuration);
+      : this.getNextEventStoreDriver(
+          configuration.destination.connectionString,
+          configuration.destination.credentials,
+        );
 
     return {
       module: DriverModule,
@@ -36,10 +40,10 @@ export class DriverModule {
   }
 
   public static async forLegacySrc(
-    configuration: InterconnectionConfiguration,
+    configuration: ConnectionConfiguration,
   ): Promise<DynamicModule> {
     const driverProviders: Provider[] = await this.getLegacyEventStoreDriver(
-      configuration.source,
+      configuration,
     );
 
     return {
@@ -50,10 +54,12 @@ export class DriverModule {
   }
 
   public static async forNextSrc(
-    configuration: InterconnectionConfiguration,
+    configuration: ConnectionConfiguration,
   ): Promise<DynamicModule> {
-    const driverProviders: Provider[] =
-      this.getNextEventStoreDriver(configuration);
+    const driverProviders: Provider[] = this.getNextEventStoreDriver(
+      configuration.connectionString,
+      configuration.credentials,
+    );
 
     return {
       module: DriverModule,
@@ -63,17 +69,17 @@ export class DriverModule {
   }
 
   private static getNextEventStoreDriver(
-    configuration: InterconnectionConfiguration,
+    connectionString: string,
+    credentials: Credentials,
   ) {
-    const eventStoreConnector: Client = EventStoreDBClient.connectionString(
-      configuration.destination.connectionString,
-    );
+    const eventStoreConnector: Client =
+      EventStoreDBClient.connectionString(connectionString);
 
     return [
       this.getGrpcDriverProvider(DRIVER),
       {
         provide: CREDENTIALS,
-        useValue: configuration.destination.credentials,
+        useValue: credentials,
       },
       {
         provide: EVENT_STORE_CONNECTOR,

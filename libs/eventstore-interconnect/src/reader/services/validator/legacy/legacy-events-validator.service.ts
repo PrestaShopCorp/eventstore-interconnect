@@ -1,18 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ALLOWED_EVENTS } from '../../../constants';
+import { ALLOWED_EVENTS } from '../../../../constants';
 import { validate, ValidationError } from 'class-validator';
-import { ResolvedEvent } from 'node-eventstore-client';
-import { InvalidEventError } from './errors/invalid-event.error';
-import { NotAllowedEventError } from './errors/not-allowed-event.error';
+import { InvalidEventError } from '../errors/invalid-event.error';
+import { NotAllowedEventError } from '../errors/not-allowed-event.error';
+import { Validator } from '../validator';
 
 @Injectable()
-export class ValidatorService {
+export class LegacyEventsValidatorService implements Validator {
   constructor(
     @Inject(ALLOWED_EVENTS)
     private readonly allowedEvents: any,
   ) {}
 
-  public async validate(eventAsPayload: ResolvedEvent): Promise<any> {
+  public async validate(eventAsPayload: any): Promise<any> {
     const event = JSON.parse(eventAsPayload.event.data.toString());
     const eventInstance = this.tryToInstanciateEvent(
       eventAsPayload,
@@ -28,7 +28,7 @@ export class ValidatorService {
     return eventInstance;
   }
 
-  private tryToInstanciateEvent(eventAsPayload: ResolvedEvent, data) {
+  private tryToInstanciateEvent(eventAsPayload: any, data) {
     try {
       return new this.allowedEvents[eventAsPayload.event.eventType](data);
     } catch (e) {

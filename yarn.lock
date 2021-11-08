@@ -702,7 +702,7 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@eventstore/db-client@^2.1.0":
+"@eventstore/db-client@2.1.1", "@eventstore/db-client@^2.1.0":
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/@eventstore/db-client/-/db-client-2.1.1.tgz#4e75ffeb266cb30a60ad31354afd3d442444b70d"
   integrity sha512-g8gBgsOiv8RNR/QSudeS4iWIRE5NltluuKWhd2jrqAxOnDmAz7EWKZJZvWNvzg/n7gkty+OsowRQelAPG+uP2w==
