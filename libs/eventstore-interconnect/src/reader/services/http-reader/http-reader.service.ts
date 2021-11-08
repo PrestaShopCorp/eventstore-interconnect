@@ -17,9 +17,8 @@ import {
 } from 'node-eventstore-client';
 import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
 import { CREDENTIALS } from '../../../constants';
-import { LegacyEventsValidatorService } from '../validator/legacy/legacy-events-validator.service';
 import { Driver, DRIVER } from '../../../driver';
-import { VALIDATOR } from '../validator/validator';
+import { Validator, VALIDATOR } from '../validator/validator';
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {
@@ -35,7 +34,7 @@ export class HttpReaderService implements Reader, OnModuleInit {
     @Inject(DRIVER)
     private readonly driver: Driver,
     @Inject(VALIDATOR)
-    private readonly validatorService: LegacyEventsValidatorService,
+    private readonly validatorService: Validator,
     private readonly logger: Logger,
   ) {}
 

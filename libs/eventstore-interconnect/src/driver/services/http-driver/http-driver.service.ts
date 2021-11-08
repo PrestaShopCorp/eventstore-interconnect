@@ -46,7 +46,7 @@ export class HttpDriverService implements Driver {
     await event.ack();
   }
 
-  public async appendEventToStreamteEvent(event: any): Promise<any> {
+  private async appendEventToStreamteEvent(event: any): Promise<any> {
     const jsonFormattedEvent = createJsonEventData(
       event.eventId,
       event,

@@ -28,8 +28,8 @@ export class GrpcDriverService implements Driver {
         EVENT_WRITER_TIMEOUT_IN_MS,
       );
     } catch (err) {
-      this.logger.error(err.toString());
       this.safetyNet.hook(event);
+      this.logger.error(err.toString());
     }
   }
 

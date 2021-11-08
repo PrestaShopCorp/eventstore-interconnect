@@ -19,7 +19,7 @@ export class NextEventsValidatorService implements Validator {
     if (concatErrors.length > 0) {
       throw new InvalidEventError(JSON.stringify(concatErrors));
     }
-
+    eventInstance.eventStreamId = event.originalStreamId;
     return eventInstance;
   }
 

@@ -27,6 +27,7 @@
     "start:usecase:srcNextDestLeg": "CASE='NEXTLEG' nest start example",
     "start:usecase:srcNextDestNext": "CASE='NEXTNEXT' nest start example",
     "start:usecase:srcNextDestLeg:debug": "CASE='NEXTLEG' node --inspect-brk -r ts-node/register -r tsconfig-paths/register apps/example/src/main.ts",
+    "start:usecase:srcLegDestNext:debug": "CASE='LEGNEXT' node --inspect-brk -r ts-node/register -r tsconfig-paths/register apps/example/src/main.ts",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch usecase",
     "start:prod": "node dist/main",

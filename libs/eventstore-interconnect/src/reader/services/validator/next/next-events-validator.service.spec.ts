@@ -75,7 +75,7 @@ describe('NextEventsValidatorService', () => {
 
     const event = await service.validate(validEvent);
 
-    expect(event.eventStreamId).toBeTruthy();
     expect(event).toBeTruthy();
+    expect(event.eventStreamId).toBeTruthy();
   });
 });

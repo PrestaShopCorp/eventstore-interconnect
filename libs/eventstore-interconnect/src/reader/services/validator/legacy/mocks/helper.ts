@@ -1,6 +1,6 @@
 import { ResolvedEvent } from 'node-eventstore-client';
 
-export const getEvent = (valid: boolean, version: number): ResolvedEvent => {
+export const getEvent = (valid: boolean, version: number): any => {
   return {
     event: {
       eventStreamId: '$ce-hero',

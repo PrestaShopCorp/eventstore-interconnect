@@ -1,8 +1,12 @@
+import { ExpectedVersion } from 'nestjs-geteventstore-legacy';
 import { HttpDriverService } from './http-driver.service';
 import { EventStoreNodeConnection } from 'node-eventstore-client';
-import { ExpectedVersion } from 'nestjs-geteventstore-legacy';
-import Mock = jest.Mock;
+import { Credentials } from '../../../interconnection-configuration';
+import { SafetyNet } from '../../../safety-net';
+import { Logger } from 'nestjs-pino-stackdriver';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
+import Mock = jest.Mock;
+import spyOn = jest.spyOn;
 
 describe('HttpDriverService', () => {
   let service: HttpDriverService;
@@ -10,11 +14,26 @@ describe('HttpDriverService', () => {
   const esNodeConnection: EventStoreNodeConnection = {
     appendToStream: jest.fn(),
   } as any as EventStoreNodeConnection;
+  const credentials: Credentials = { username: '', password: '' };
+  const safetyNet: SafetyNet = { hook: jest.fn() } as any as SafetyNet;
+  const logger: Logger = { error: jest.fn() } as any as Logger;
 
   const eventId = 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab';
 
+  const event = {
+    eventStreamId: 'a',
+    eventId: eventId,
+    data: { toto: 123 },
+    metadata: {},
+  };
+
   beforeEach(async () => {
-    service = new HttpDriverService(esNodeConnection);
+    service = new HttpDriverService(
+      esNodeConnection,
+      credentials,
+      safetyNet,
+      logger,
+    );
   });
 
   afterEach(() => {
@@ -22,24 +41,13 @@ describe('HttpDriverService', () => {
   });
 
   it('should transmit write event command to the legacy client when writing event', async () => {
-    await service.writeEvent({
-      eventStreamId: 'a',
-      eventId: eventId,
-      data: { toto: 123 },
-      metadata: {},
-    });
+    await service.writeEvent(event);
 
     expect(esNodeConnection.appendToStream).toHaveBeenCalled();
   });
 
   it('should transmit the eventId for idempotency when writing event', async () => {
-    await service.writeEvent({
-      eventStreamId: 'a',
-      eventId,
-      data: { toto: 123 },
-      metadata: {},
-      eventType: 'eventType',
-    });
+    await service.writeEvent(event);
 
     const callerArgs = (esNodeConnection.appendToStream as Mock).mock.calls[0];
     expect(callerArgs[0]).toEqual('a');
@@ -47,24 +55,24 @@ describe('HttpDriverService', () => {
     expect(callerArgs[2].eventId).toEqual(eventId);
   });
 
-  it('should use the driver to write event when handling the event', async () => {
-    spyOn(driver, 'writeEvent').mockResolvedValue(true);
+  it('should use the esNodeConnection to write event when handling the event', async () => {
+    spyOn(esNodeConnection, 'appendToStream');
 
     jest.useFakeTimers();
     jest.spyOn(global, 'setTimeout');
 
-    await handler.handle(event);
+    await service.writeEvent(event);
 
-    expect(driver.writeEvent).toHaveBeenCalled();
+    expect(esNodeConnection.appendToStream).toHaveBeenCalled();
   });
 
   it('should trigger the safety net hook in case of failure when writing event', async () => {
-    spyOn(driver, 'writeEvent').mockImplementation(() => {
+    spyOn(esNodeConnection, 'appendToStream').mockImplementation(() => {
       throw Error();
     });
     spyOn(safetyNet, 'hook');
 
-    await handler.handle(event);
+    await service.writeEvent(event);
 
     expect(safetyNet.hook).toHaveBeenCalled();
   });
@@ -73,23 +81,17 @@ describe('HttpDriverService', () => {
     jest.useFakeTimers();
     jest.spyOn(global, 'setTimeout');
 
-    spyOn(driver, 'writeEvent').mockImplementation(async () => {
-      setTimeout(() => null, EVENT_WRITER_TIMEOUT_IN_MS * 2);
-    });
+    spyOn(esNodeConnection, 'appendToStream').mockImplementation(
+      async (streamName, events): Promise<any> => {
+        setTimeout(() => null, EVENT_WRITER_TIMEOUT_IN_MS * 2);
+      },
+    );
     spyOn(safetyNet, 'hook');
 
-    await handler.handle(event);
+    await service.writeEvent(event);
 
     jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS);
 
     expect(safetyNet.hook).toHaveBeenCalled();
-  });
-
-  it('should check the validity of the events args when handling one', () => {
-    spyOn(handler, 'validateEventAndDatasDto');
-
-    handler.handle(event);
-
-    expect(handler.validateEventAndDatasDto).toHaveBeenCalled();
   });
 });

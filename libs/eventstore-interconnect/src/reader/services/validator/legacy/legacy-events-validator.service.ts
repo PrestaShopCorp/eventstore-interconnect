@@ -13,11 +13,8 @@ export class LegacyEventsValidatorService implements Validator {
   ) {}
 
   public async validate(eventAsPayload: any): Promise<any> {
-    const event = JSON.parse(eventAsPayload.event.data.toString());
-    const eventInstance = this.tryToInstanciateEvent(
-      eventAsPayload,
-      event.data,
-    );
+    const datas = JSON.parse(eventAsPayload.event.data.toString());
+    const eventInstance = this.tryToInstanciateEvent(eventAsPayload, datas);
 
     const concatErrors: ValidationError[] = await validate(eventInstance);
     if (concatErrors.length > 0) {
