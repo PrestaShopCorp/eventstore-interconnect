@@ -18,19 +18,19 @@ export class EventstoreInterconnectModule {
         allowedEvents,
       );
 
-    const eventStoreModuleDest: DynamicModule =
-      EventstoreInterconnectModuleHelper.getDestinationEventStoreModule(
-        configuration,
-      );
+    // const eventStoreModuleDest: DynamicModule =
+    //   EventstoreInterconnectModuleHelper.getDestinationEventStoreModule(
+    //     configuration,
+    //   );
 
     return {
       module: EventstoreInterconnectModule,
       imports: [
         ContextModule.register(),
         eventStoreModuleSource,
-        eventStoreModuleDest,
+        // eventStoreModuleDest,
 
-        DriverModule.get(configuration),
+        // DriverModule.get(configuration),
       ],
       providers: [
         Logger,
@@ -41,8 +41,8 @@ export class EventstoreInterconnectModule {
       ],
       exports: [
         eventStoreModuleSource,
-        eventStoreModuleDest,
-        DriverModule,
+        // eventStoreModuleDest,
+        // DriverModule,
         SAFETY_NET,
       ],
     };

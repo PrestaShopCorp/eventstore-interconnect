@@ -22,6 +22,7 @@
     "prebuild": "rimraf dist",
     "build": "rimraf dist && tsc -p libs/eventstore-interconnect/tsconfig.lib.json",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
+    "start:usecase:srcLegDestLeg:debug": "CASE='LEGLEG' node --inspect-brk -r ts-node/register -r tsconfig-paths/register apps/example/src/main.ts",
     "start:usecase:srcLegDestLeg": "CASE='LEGLEG' nest start example",
     "start:usecase:srcLegDestNext": "CASE='LEGNEXT' nest start example",
     "start:usecase:srcNextDestLeg": "CASE='NEXTLEG' nest start example",

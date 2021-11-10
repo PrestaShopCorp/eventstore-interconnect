@@ -2,11 +2,11 @@ import { InterconnectionConfiguration } from '@eventstore-interconnect';
 import {
   EVENTSTORE_PASSWORD,
   EVENTSTORE_USERNAME,
-  LEGACY_EVENTSTORE_HTTP_HOST,
-  LEGACY_EVENTSTORE_HTTP_PORT,
-  LEGACY_EVENTSTORE_TCP_HOST,
-  LEGACY_EVENTSTORE_TCP_PORT,
-  NEXT_EVENTSTORE_CONNECTION_STRING,
+  LEGACY_EVENTSTORE_HTTP_HOST_SOURCE,
+  LEGACY_EVENTSTORE_HTTP_PORT_SOURCE,
+  LEGACY_EVENTSTORE_TCP_HOST_SOURCE,
+  LEGACY_EVENTSTORE_TCP_PORT_SOURCE,
+  NEXT_EVENTSTORE_CONNECTION_STRING_DEST,
 } from '../../general.constants';
 import { legacySubscriptions } from '../legacy-subscriptions';
 
@@ -17,12 +17,12 @@ export const legSrcNextDestConfiguration: InterconnectionConfiguration = {
       password: EVENTSTORE_PASSWORD,
     },
     tcp: {
-      host: LEGACY_EVENTSTORE_TCP_HOST,
-      port: LEGACY_EVENTSTORE_TCP_PORT,
+      host: LEGACY_EVENTSTORE_TCP_HOST_SOURCE,
+      port: LEGACY_EVENTSTORE_TCP_PORT_SOURCE,
     },
     http: {
-      host: LEGACY_EVENTSTORE_HTTP_HOST,
-      port: LEGACY_EVENTSTORE_HTTP_PORT,
+      host: LEGACY_EVENTSTORE_HTTP_HOST_SOURCE,
+      port: LEGACY_EVENTSTORE_HTTP_PORT_SOURCE,
     },
   },
   destination: {
@@ -30,7 +30,7 @@ export const legSrcNextDestConfiguration: InterconnectionConfiguration = {
       username: EVENTSTORE_USERNAME,
       password: EVENTSTORE_PASSWORD,
     },
-    connectionString: NEXT_EVENTSTORE_CONNECTION_STRING,
+    connectionString: NEXT_EVENTSTORE_CONNECTION_STRING_DEST,
   },
   eventStoreBusConfig: {
     subscriptions: {

@@ -3,24 +3,45 @@ build docker container for SOURCE eventstore (eventbus) :
 
 ### Starter pack
 
-In order to run the example, you will need 2 eventstores of 2 different versions :
+In order to run the example, you will need 2 eventstores for 2 different versions so then you will be able to reproduce these situations : 
+- read on source v5 and write on destination v5
+- read on source v21 and write on destination v5
+- read on source v5 and write on destination v21
+- read on source v21 and write on destination v21
 
-### The legacy one (v5) :
+### The legacy one (v5, src and dest) :
 ```
-docker run --name eventstore-legacy-11130-21130 \ 
+docker run --name eventstore-source-legacy-11130-21130 \ 
 -it -p 2113:21130 -p 1113:11130 \ 
 eventstore/eventstore:release-5.0.9
 ```
-
-### The next one (v21):
 ```
-docker run --name eventstore-next-version-2113-1113 \
+docker run --name eventstore-dest-legacy-11131-21131 \ 
+-it -p 2113:21131 -p 1113:11131 \ 
+eventstore/eventstore:release-5.0.9
+```
+
+### The next one (v21, src and dest):
+```
+docker run --name eventstore-next-source-version-2113-1113 \
 -it -p 2113:2113 -p 1113:1113 \
 eventstore/eventstore:latest \
 --insecure \
 --run-projections=All \
 --enable-atom-pub-over-http
 ```
+```
+docker run --name eventstore-next-dest-version-2112-1112 \
+-it -p 2113:2112 -p 1113:1112 \
+eventstore/eventstore:latest \
+--insecure \
+--run-projections=All \
+--enable-atom-pub-over-http
+```
+
+Note that when you only when to test a unique situation (for example reading on v5 and writting on v21), you only need 2 eventstores, with version 5 for source and version 21 for dest.
+
+You can also note if you use the same event store as a dest and a source, it will loop, as you read on a stream on what you also write... 
 
 ### Start the correct example
 

@@ -108,7 +108,7 @@ export class ReaderModule {
         },
         {
           provide: CREDENTIALS,
-          useValue: configuration.destination.credentials,
+          useValue: configuration.source.credentials,
         },
         {
           provide: EVENTSTORE_PERSISTENT_CONNECTION,
