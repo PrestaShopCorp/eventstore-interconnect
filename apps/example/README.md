@@ -10,33 +10,19 @@ In order to run the example, you will need 2 eventstores for 2 different version
 - read on source v21 and write on destination v21
 
 ### The legacy one (v5, src and dest) :
+```shell
+docker run --name eventstore-source-legacy-11130-21130 -it -p 2113:21130 -p 1113:11130 eventstore/eventstore:release-5.0.9
 ```
-docker run --name eventstore-source-legacy-11130-21130 \ 
--it -p 2113:21130 -p 1113:11130 \ 
-eventstore/eventstore:release-5.0.9
-```
-```
-docker run --name eventstore-dest-legacy-11131-21131 \ 
--it -p 2113:21131 -p 1113:11131 \ 
-eventstore/eventstore:release-5.0.9
+```shell
+docker run --name eventstore-dest-legacy-11131-21131 -it -p 2113:21131 -p 1113:11131 eventstore/eventstore:release-5.0.9
 ```
 
 ### The next one (v21, src and dest):
+```shell
+docker run --name eventstore-next-source-version-2113-1113 -it -p 2113:2113 -p 1113:1113 eventstore/eventstore:latest --insecure --run-projections=All --enable-atom-pub-over-http
 ```
-docker run --name eventstore-next-source-version-2113-1113 \
--it -p 2113:2113 -p 1113:1113 \
-eventstore/eventstore:latest \
---insecure \
---run-projections=All \
---enable-atom-pub-over-http
-```
-```
-docker run --name eventstore-next-dest-version-2112-1112 \
--it -p 2113:2112 -p 1113:1112 \
-eventstore/eventstore:latest \
---insecure \
---run-projections=All \
---enable-atom-pub-over-http
+```shell
+docker run --name eventstore-next-dest-version-2112-1112 -it -p 2113:2112 -p 1113:1112 eventstore/eventstore:latest --insecure --run-projections=All --enable-atom-pub-over-http
 ```
 
 Note that when you only when to test a unique situation (for example reading on v5 and writting on v21), you only need 2 eventstores, with version 5 for source and version 21 for dest.

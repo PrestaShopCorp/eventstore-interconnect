@@ -7,10 +7,7 @@ async function bootstrap() {
 
   try {
     const app = await NestFactory.create(UsecaseModule);
-    const port = 3000;
-    await app.listen(port);
-
-    logger.log('Started, listening on ' + port);
+    await app.init();
   } catch (error) {
     logger.error(
       `Cannot init nestjs app, error: ${error}\n exiting with code E#5#`,

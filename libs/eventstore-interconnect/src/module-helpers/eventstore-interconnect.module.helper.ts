@@ -12,19 +12,11 @@ export default class EventstoreInterconnectModuleHelper {
     allowedEvents: any,
   ): DynamicModule {
     return isLegacyConf(configuration.source)
-      ? this.registerToLegacyEventStoreModuleWithConf(
-          configuration,
-          'source',
-          allowedEvents,
-        )
-      : this.registerToNextEventStoreModuleWithConf(
-          configuration,
-          'source',
-          allowedEvents,
-        );
+      ? this.getProvidersForLegacyConf(configuration, 'source', allowedEvents)
+      : this.getProvidersForNextConf(configuration, 'source', allowedEvents);
   }
 
-  private static registerToLegacyEventStoreModuleWithConf(
+  private static getProvidersForLegacyConf(
     configuration: InterconnectionConfiguration,
     entry: 'source' | 'dest',
     allowedEvents?: any,
@@ -42,7 +34,7 @@ export default class EventstoreInterconnectModuleHelper {
         };
   }
 
-  private static registerToNextEventStoreModuleWithConf(
+  private static getProvidersForNextConf(
     configuration: InterconnectionConfiguration,
     entry: 'source' | 'dest',
     allowedEvents?: any,

@@ -26,6 +26,7 @@ import { DriverModule } from '../driver';
 import { EventStoreService } from './services/grpc-reader/event-store.service';
 import { NextEventsValidatorService } from './services/validator/next/next-events-validator.service';
 import { VALIDATOR } from './services/validator/validator';
+import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 
 @Module({})
 export class ReaderModule {
@@ -33,15 +34,25 @@ export class ReaderModule {
     configuration: InterconnectionConfiguration,
     allowedEvents?: any,
   ): Promise<DynamicModule> {
-    return isLegacyConf(configuration.source)
-      ? ReaderModule.getLegacyReaderModule(configuration, allowedEvents)
-      : ReaderModule.getNextReaderModule(configuration, allowedEvents);
+    const providersForReader: Provider[] = isLegacyConf(configuration.source)
+      ? await ReaderModule.getLegacyReaderModule(configuration)
+      : ReaderModule.getNextReaderModule(configuration);
+    return {
+      module: ReaderModule,
+      imports: [await DriverModule.get(configuration)],
+      providers: [
+        ...providersForReader,
+        {
+          provide: ALLOWED_EVENTS,
+          useValue: allowedEvents ?? {},
+        },
+      ],
+    };
   }
 
   private static async getLegacyReaderModule(
     configuration: InterconnectionConfiguration,
-    allowedEvents?: any[],
-  ): Promise<DynamicModule> {
+  ): Promise<Provider[]> {
     const esConnectionConf: ConnectionSettings = {
       // Buffer events if remote is slow or not available
       maxQueueSize: 100_000,
@@ -88,82 +99,60 @@ export class ReaderModule {
       },
     });
 
-    return {
-      module: ReaderModule,
-      imports: [await DriverModule.get(configuration)],
-      providers: [
-        Logger,
-        {
-          provide: VALIDATOR,
-          useClass: LegacyEventsValidatorService,
-        },
-
-        {
-          provide: ALLOWED_EVENTS,
-          useValue: allowedEvents ?? {},
-        },
-        {
-          provide: READER,
-          useClass: HttpReaderService,
-        },
-        {
-          provide: CREDENTIALS,
-          useValue: configuration.source.credentials,
-        },
-        {
-          provide: EVENTSTORE_PERSISTENT_CONNECTION,
-          useValue: eventStoreConnection,
-        },
-        {
-          provide: HTTP_CLIENT,
-          useValue: httpClient,
-        },
-        {
-          provide: SUBSCRIPTIONS,
-          useValue: configuration.eventStoreBusConfig.subscriptions.persistent,
-        },
-      ],
-    };
+    return [
+      Logger,
+      {
+        provide: VALIDATOR,
+        useClass: LegacyEventsValidatorService,
+      },
+      {
+        provide: READER,
+        useClass: HttpReaderService,
+      },
+      {
+        provide: CREDENTIALS,
+        useValue: configuration.source.credentials,
+      },
+      {
+        provide: EVENTSTORE_PERSISTENT_CONNECTION,
+        useValue: eventStoreConnection,
+      },
+      {
+        provide: HTTP_CLIENT,
+        useValue: httpClient,
+      },
+      {
+        provide: SUBSCRIPTIONS,
+        useValue: configuration.eventStoreBusConfig.subscriptions.persistent,
+      },
+    ];
   }
 
-  private static async getNextReaderModule(
+  private static getNextReaderModule(
     configuration: InterconnectionConfiguration,
-    allowedEvents?: any,
-  ): Promise<DynamicModule> {
+  ): Provider[] {
     const eventStoreConnector: Client = EventStoreDBClient.connectionString(
       configuration.source.connectionString,
     );
-    return {
-      module: ReaderModule,
-      imports: [await DriverModule.get(configuration)],
-      providers: [
-        Logger,
-        EventStoreService,
-        {
-          provide: VALIDATOR,
-          useClass: NextEventsValidatorService,
-        },
-        {
-          provide: SUBSCRIPTIONS,
-          useValue: configuration.eventStoreSubsystems.subscriptions.persistent,
-        },
-        {
-          provide: ALLOWED_EVENTS,
-          useValue: allowedEvents ?? {},
-        },
-        {
-          provide: READER,
-          useClass: GrpcReaderService,
-        },
-        {
-          provide: VALIDATOR,
-          useClass: NextEventsValidatorService,
-        },
-        {
-          provide: EVENT_STORE_CONNECTOR,
-          useValue: eventStoreConnector,
-        },
-      ],
-    };
+    return [
+      Logger,
+      EventStoreService,
+      {
+        provide: VALIDATOR,
+        useClass: NextEventsValidatorService,
+      },
+      {
+        provide: READER,
+        useClass: GrpcReaderService,
+      },
+      {
+        provide: EVENT_STORE_CONNECTOR,
+        useValue: eventStoreConnector,
+      },
+      {
+        provide: SUBSCRIPTIONS,
+        useValue: configuration.eventStoreSubsystems.subscriptions.persistent,
+      },
+    ];
   }
 }
