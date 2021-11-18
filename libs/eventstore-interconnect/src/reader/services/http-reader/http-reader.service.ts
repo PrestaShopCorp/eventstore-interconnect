@@ -19,7 +19,6 @@ import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-le
 import { CREDENTIALS } from '../../../constants';
 import { Driver, DRIVER } from '../../../driver';
 import { Validator, VALIDATOR } from '../validator/validator';
-import { Client } from '@eventstore/db-client/dist/Client';
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {

@@ -39,8 +39,8 @@ export class ReaderModule {
     allowedEvents?: any,
   ): Promise<DynamicModule> {
     const providersForReader: Provider[] = isLegacyConf(configuration.source)
-      ? await ReaderModule.getLegacyReaderModule(configuration)
-      : await ReaderModule.getNextReaderModule(configuration);
+      ? await ReaderModule.getLegacyReaderProviders(configuration)
+      : await ReaderModule.getNextReaderProviders(configuration);
     return {
       module: ReaderModule,
       imports: [await DriverModule.get(configuration)],
@@ -54,7 +54,7 @@ export class ReaderModule {
     };
   }
 
-  private static async getLegacyReaderModule(
+  private static async getLegacyReaderProviders(
     configuration: InterconnectionConfiguration,
   ): Promise<Provider[]> {
     const esConnectionConf: ConnectionSettings = {
@@ -144,7 +144,7 @@ export class ReaderModule {
     }
   }
 
-  private static async getNextReaderModule(
+  private static async getNextReaderProviders(
     configuration: InterconnectionConfiguration,
   ): Promise<Provider[]> {
     const eventStoreConnector: Client = EventStoreDBClient.connectionString(

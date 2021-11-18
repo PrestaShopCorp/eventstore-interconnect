@@ -1,24 +1,26 @@
 import { InterconnectionConfiguration } from '@eventstore-interconnect';
 import {
-  EVENTSTORE_PASSWORD,
-  EVENTSTORE_USERNAME,
   NEXT_EVENTSTORE_CONNECTION_STRING_DEST,
   NEXT_EVENTSTORE_CONNECTION_STRING_SOURCE,
+  NEXT_EVENTSTORE_PASSWORD_DEST,
+  NEXT_EVENTSTORE_PASSWORD_SRC,
+  NEXT_EVENTSTORE_USERNAME_DEST,
+  NEXT_EVENTSTORE_USERNAME_SRC,
 } from '../../general.constants';
 import { nextSubscriptions } from '../next-subscription';
 
 export const nextSrcNextDestConfiguration: InterconnectionConfiguration = {
   source: {
     credentials: {
-      username: EVENTSTORE_USERNAME,
-      password: EVENTSTORE_PASSWORD,
+      username: NEXT_EVENTSTORE_USERNAME_SRC,
+      password: NEXT_EVENTSTORE_PASSWORD_SRC,
     },
     connectionString: NEXT_EVENTSTORE_CONNECTION_STRING_SOURCE,
   },
   destination: {
     credentials: {
-      username: EVENTSTORE_USERNAME,
-      password: EVENTSTORE_PASSWORD,
+      username: NEXT_EVENTSTORE_USERNAME_DEST,
+      password: NEXT_EVENTSTORE_PASSWORD_DEST,
     },
     connectionString: NEXT_EVENTSTORE_CONNECTION_STRING_DEST,
   },
