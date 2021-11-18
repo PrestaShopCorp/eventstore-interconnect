@@ -19,6 +19,7 @@ import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-le
 import { CREDENTIALS } from '../../../constants';
 import { Driver, DRIVER } from '../../../driver';
 import { Validator, VALIDATOR } from '../validator/validator';
+import { Client } from '@eventstore/db-client/dist/Client';
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {
@@ -60,7 +61,7 @@ export class HttpReaderService implements Reader, OnModuleInit {
     }
     for (const subscription of this.subscriptions) {
       this.logger.log(
-        `Connecting to persistent subscription "${subscription.group}" on stream ${subscription.stream}`,
+        `Connecting to persistent subscription "${subscription.group}" on stream ${subscription.stream}...`,
       );
       await this.eventStoreConnection.connectToPersistentSubscription(
         subscription.stream,
@@ -80,6 +81,7 @@ export class HttpReaderService implements Reader, OnModuleInit {
         subscription.bufferSize,
         subscription.autoAck,
       );
+      this.logger.log(`Connected.`);
     }
   }
 }

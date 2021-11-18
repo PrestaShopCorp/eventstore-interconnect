@@ -6,6 +6,7 @@ import {
   DefaultSafetyNetService,
   InterconnectionConfiguration,
   isLegacyConf,
+  ReaderModule,
   SAFETY_NET,
 } from '..';
 import { DRIVER } from './services/driver';
@@ -23,6 +24,8 @@ import { HTTP_CLIENT } from './services/http-driver/http-connection.constants';
 import { CREDENTIALS } from '../constants';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { NoGrpcConnectionError } from './errors/no-grpc-connection.error';
+import { HTTPClient } from 'geteventstore-promise';
+import * as geteventstorePromise from 'geteventstore-promise';
 
 @Module({})
 export class DriverModule {
@@ -78,7 +81,8 @@ export class DriverModule {
   ) {
     const eventStoreConnector: Client =
       EventStoreDBClient.connectionString(connectionString);
-    await this.checkConnectionStatus(eventStoreConnector, connectionString);
+    await this.checkNextConnectionStatus(eventStoreConnector, connectionString);
+    console.log('DRIVER : Connected to Next eventstore on ' + connectionString);
 
     return [
       this.getGrpcDriverProvider(DRIVER),
@@ -98,7 +102,7 @@ export class DriverModule {
     ];
   }
 
-  private static async checkConnectionStatus(
+  public static async checkNextConnectionStatus(
     eventStoreConnector: Client,
     connectionString: string,
   ): Promise<void> {
@@ -139,14 +143,22 @@ export class DriverModule {
       'interco-module-connection',
     );
     await eventStoreConnection.connect();
-    eventStoreConnection.once('connected', function (tcpEndPoint) {
-      console.log(
-        'DRIVER : Connected to legacy eventstore at ' +
-          tcpEndPoint.host +
-          ':' +
-          tcpEndPoint.port,
-      );
+    const httpClient: HTTPClient = new geteventstorePromise.HTTPClient({
+      hostname: configuration.http.host.replace(/^https?:\/\//, ''),
+      port: configuration.http.port,
+      credentials: {
+        username: configuration.credentials.username,
+        password: configuration.credentials.password,
+      },
     });
+
+    await ReaderModule.checkLegacyConnectionStatus(httpClient, tcpEndPoint);
+    console.log(
+      'DRIVER : Connected to legacy eventstore at ' +
+        tcpEndPoint.host +
+        ':' +
+        tcpEndPoint.port,
+    );
 
     return [
       this.getHttpDriverProvider(DRIVER),

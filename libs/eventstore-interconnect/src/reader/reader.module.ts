@@ -40,7 +40,7 @@ export class ReaderModule {
   ): Promise<DynamicModule> {
     const providersForReader: Provider[] = isLegacyConf(configuration.source)
       ? await ReaderModule.getLegacyReaderModule(configuration)
-      : ReaderModule.getNextReaderModule(configuration);
+      : await ReaderModule.getNextReaderModule(configuration);
     return {
       module: ReaderModule,
       imports: [await DriverModule.get(configuration)],
@@ -85,14 +85,6 @@ export class ReaderModule {
       'interco-module-connection',
     );
     await eventStoreConnection.connect();
-    eventStoreConnection.once('connected', function (tcpEndPoint) {
-      console.log(
-        'READER : Connected to eventstore at ' +
-          tcpEndPoint.host +
-          ':' +
-          tcpEndPoint.port,
-      );
-    });
 
     const httpClient: HTTPClient = new geteventstorePromise.HTTPClient({
       hostname: configuration.source.http.host.replace(/^https?:\/\//, ''),
@@ -103,7 +95,14 @@ export class ReaderModule {
       },
     });
 
-    await this.checkConnectionStatus(httpClient, tcpEndPoint);
+    await this.checkLegacyConnectionStatus(httpClient, tcpEndPoint);
+
+    console.log(
+      'READER : Connected to legacy eventstore at ' +
+        tcpEndPoint.host +
+        ':' +
+        tcpEndPoint.port,
+    );
 
     return [
       Logger,
@@ -134,7 +133,7 @@ export class ReaderModule {
     ];
   }
 
-  private static async checkConnectionStatus(
+  public static async checkLegacyConnectionStatus(
     httpClient: HTTPClient,
     tcpEndPoint: ProtocolConf,
   ): Promise<void> {
@@ -145,12 +144,22 @@ export class ReaderModule {
     }
   }
 
-  private static getNextReaderModule(
+  private static async getNextReaderModule(
     configuration: InterconnectionConfiguration,
-  ): Provider[] {
+  ): Promise<Provider[]> {
     const eventStoreConnector: Client = EventStoreDBClient.connectionString(
       configuration.source.connectionString,
     );
+    await DriverModule.checkNextConnectionStatus(
+      eventStoreConnector,
+      configuration.source.connectionString,
+    );
+
+    console.log(
+      'READER : Connected to Next eventstore on ' +
+        configuration.source.connectionString,
+    );
+
     return [
       Logger,
       EventStoreService,
