@@ -22,6 +22,7 @@ import {
 import { HTTP_CLIENT } from './services/http-driver/http-connection.constants';
 import { CREDENTIALS } from '../constants';
 import { Logger } from 'nestjs-pino-stackdriver';
+import { NoGrpcConnectionError } from './errors/no-grpc-connection.error';
 
 @Module({})
 export class DriverModule {
@@ -30,7 +31,7 @@ export class DriverModule {
   ): Promise<DynamicModule> {
     const driverProviders: Provider[] = isLegacyConf(configuration.destination)
       ? await this.getLegacyEventStoreDriver(configuration.destination)
-      : this.getNextEventStoreDriver(
+      : await this.getNextEventStoreDriver(
           configuration.destination.connectionString,
           configuration.destination.credentials,
         );
@@ -59,7 +60,7 @@ export class DriverModule {
   public static async forNextSrc(
     configuration: ConnectionConfiguration,
   ): Promise<DynamicModule> {
-    const driverProviders: Provider[] = this.getNextEventStoreDriver(
+    const driverProviders: Provider[] = await this.getNextEventStoreDriver(
       configuration.connectionString,
       configuration.credentials,
     );
@@ -71,12 +72,13 @@ export class DriverModule {
     };
   }
 
-  private static getNextEventStoreDriver(
+  private static async getNextEventStoreDriver(
     connectionString: string,
     credentials: Credentials,
   ) {
     const eventStoreConnector: Client =
       EventStoreDBClient.connectionString(connectionString);
+    await this.checkConnectionStatus(eventStoreConnector, connectionString);
 
     return [
       this.getGrpcDriverProvider(DRIVER),
@@ -94,6 +96,17 @@ export class DriverModule {
       },
       Logger,
     ];
+  }
+
+  private static async checkConnectionStatus(
+    eventStoreConnector: Client,
+    connectionString: string,
+  ): Promise<void> {
+    try {
+      await eventStoreConnector.getStreamMetadata('$all');
+    } catch (errMessage) {
+      throw new NoGrpcConnectionError(errMessage, connectionString);
+    }
   }
 
   private static async getLegacyEventStoreDriver(
@@ -128,7 +141,7 @@ export class DriverModule {
     await eventStoreConnection.connect();
     eventStoreConnection.once('connected', function (tcpEndPoint) {
       console.log(
-        'DRIVER : Connected to eventstore at ' +
+        'DRIVER : Connected to legacy eventstore at ' +
           tcpEndPoint.host +
           ':' +
           tcpEndPoint.port,

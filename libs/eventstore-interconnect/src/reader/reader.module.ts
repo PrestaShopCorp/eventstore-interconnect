@@ -1,5 +1,8 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { InterconnectionConfiguration } from '../interconnection-configuration';
+import {
+  InterconnectionConfiguration,
+  ProtocolConf,
+} from '../interconnection-configuration';
 import { READER } from './services/reader';
 import { isLegacyConf } from '../helpers/configurations.helper';
 import { HttpReaderService } from './services/http-reader/http-reader.service';
@@ -27,6 +30,7 @@ import { EventStoreService } from './services/grpc-reader/event-store.service';
 import { NextEventsValidatorService } from './services/validator/next/next-events-validator.service';
 import { VALIDATOR } from './services/validator/validator';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
+import { NoLegacyConnectionError } from './errors/no-legacy-connection.error';
 
 @Module({})
 export class ReaderModule {
@@ -70,7 +74,7 @@ export class ReaderModule {
       heartbeatTimeout: 3_000,
     };
 
-    const tcpEndPoint = {
+    const tcpEndPoint: ProtocolConf = {
       host: configuration.source.tcp.host,
       port: configuration.source.tcp.port,
     };
@@ -99,6 +103,8 @@ export class ReaderModule {
       },
     });
 
+    await this.checkConnectionStatus(httpClient, tcpEndPoint);
+
     return [
       Logger,
       {
@@ -126,6 +132,17 @@ export class ReaderModule {
         useValue: configuration.eventStoreBusConfig.subscriptions.persistent,
       },
     ];
+  }
+
+  private static async checkConnectionStatus(
+    httpClient: HTTPClient,
+    tcpEndPoint: ProtocolConf,
+  ): Promise<void> {
+    try {
+      await httpClient.checkStreamExists('$all');
+    } catch (errMessage) {
+      throw new NoLegacyConnectionError(errMessage, tcpEndPoint);
+    }
   }
 
   private static getNextReaderModule(

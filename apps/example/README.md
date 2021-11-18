@@ -22,7 +22,7 @@ docker run --name eventstore-dest-legacy-11131-21131 -it -p 2113:21131 -p 1113:1
 docker run --name eventstore-next-source-version-2113-1113 -it -p 2113:2113 -p 1113:1113 eventstore/eventstore:latest --insecure --run-projections=All --enable-atom-pub-over-http
 ```
 ```shell
-docker run --name eventstore-next-dest-version-2112-1112 -it -p 2113:2112 -p 1113:1112 eventstore/eventstore:latest --insecure --run-projections=All --enable-atom-pub-over-http
+docker run --name eventstore-next-dest-version-2112-1112 -it -p 2112:2113 -p 1112:1113 eventstore/eventstore:latest --insecure --run-projections=All --enable-atom-pub-over-http
 ```
 
 Note that when you only when to test a unique situation (for example reading on v5 and writting on v21), you only need 2 eventstores, with version 5 for source and version 21 for dest.
@@ -64,7 +64,7 @@ you can write other types of events, with custom handler behavior, you can remov
 
 #### SAFETY_NET:
 
-It is possible to override the default safety net strategy, as you can see in the [usecase module](./src/usecase.module.ts) :
+It is possible to override the default safety net strategy, as you can see in the [usecase module](src/usecase.module.ts) :
 
 ```typescript
     {
