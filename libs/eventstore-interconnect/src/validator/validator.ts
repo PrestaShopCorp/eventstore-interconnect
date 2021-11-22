@@ -1,5 +1,5 @@
 export const VALIDATOR = Symbol();
 
 export interface Validator {
-  validate(event: any);
+  validate(event: any): Promise<void>;
 }

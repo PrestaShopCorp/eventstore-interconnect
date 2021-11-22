@@ -1,31 +1,27 @@
 import { GrpcReaderService } from './grpc-reader.service';
 import { Client } from '@eventstore/db-client/dist/Client';
-import { ANY } from 'nestjs-geteventstore-next';
 import { EventStoreService } from './event-store.service';
-import { Driver } from '../../../driver';
-import { Validator } from '../validator/validator';
 import { Logger } from 'nestjs-pino-stackdriver';
+import { EventHandler } from '../../../event-handler';
 import spyOn = jest.spyOn;
 
 describe('GrpcReaderService', () => {
   let service: GrpcReaderService;
 
   const eventStoreService: EventStoreService = {
-    startWithOnEvent: jest.fn(),
+    init: jest.fn(),
   } as any as EventStoreService;
   const client: Client = { appendToStream: jest.fn() } as any as Client;
-  const driver: Driver = { writeEvent: jest.fn() } as any as Driver;
-  const validatorService: Validator = {
-    validate: jest.fn(),
-  } as any as Validator;
+  const eventHandlerMock: EventHandler = {
+    handle: jest.fn(),
+  } as any as EventHandler;
   const logger: Logger = { appendToStream: jest.fn() } as any as Logger;
 
   beforeEach(async () => {
     service = new GrpcReaderService(
-      eventStoreService,
       client,
-      driver,
-      validatorService,
+      eventHandlerMock,
+      eventStoreService,
       logger,
     );
   });
@@ -43,42 +39,19 @@ describe('GrpcReaderService', () => {
   });
 
   it('should call the eventstore service for starting with the given onEvent callback', async () => {
-    spyOn(eventStoreService, 'startWithOnEvent');
+    spyOn(eventStoreService, 'init');
 
     await service.upsertPersistantSubscription();
 
-    expect(eventStoreService.startWithOnEvent).toHaveBeenCalled();
+    expect(eventStoreService.init).toHaveBeenCalled();
   });
 
-  it('should transmit write order to client with good options when writing valid event', async () => {
+  it('should event to event handler when event appears', async () => {
     expect.assertions(1);
-    spyOn(validatorService, 'validate').mockReturnValue({
-      eventStreamId: undefined,
-    });
-    spyOn(driver, 'writeEvent');
-    spyOn(eventStoreService, 'startWithOnEvent').mockImplementation(
+    spyOn(eventStoreService, 'init').mockImplementation(
       async (onEventCallBack: (event: any) => void): Promise<void> => {
         await onEventCallBack({ event: { streamId: 'dumb' } });
-        expect(driver.writeEvent).toHaveBeenCalled();
-      },
-    );
-
-    await service.upsertPersistantSubscription();
-  });
-
-  it('should throw an error when writing an invalid event', async () => {
-    expect.assertions(1);
-    spyOn(validatorService, 'validate').mockReturnValue({
-      eventStreamId: undefined,
-    });
-    spyOn(driver, 'writeEvent');
-    spyOn(eventStoreService, 'startWithOnEvent').mockImplementation(
-      async (onEventCallBack: (event: any) => void): Promise<void> => {
-        try {
-          await onEventCallBack({});
-        } catch (e) {
-          expect(e).toBeTruthy();
-        }
+        expect(eventHandlerMock.handle).toHaveBeenCalled();
       },
     );
 

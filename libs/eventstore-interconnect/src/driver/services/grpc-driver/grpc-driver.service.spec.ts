@@ -6,6 +6,7 @@ import { Logger } from 'nestjs-pino-stackdriver';
 import { Credentials } from '../../../interconnection-configuration';
 import { SafetyNet } from '../../../safety-net';
 import spyOn = jest.spyOn;
+import { setTimeout } from 'timers/promises';
 
 describe('GrpcDriverService', () => {
   let driver: GrpcDriverService;
@@ -34,6 +35,7 @@ describe('GrpcDriverService', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
+    jest.useRealTimers();
   });
 
   it('should transmit write order to client with good options when writing event', async () => {
@@ -71,11 +73,9 @@ describe('GrpcDriverService', () => {
   });
 
   it('should trigger the safety net hook in case of failure when writing event', async () => {
-    spyOn(client, 'appendToStream').mockImplementation(
-      async (): Promise<any> => {
-        throw Error();
-      },
-    );
+    spyOn(client, 'appendToStream').mockImplementation(() => {
+      throw Error();
+    });
     spyOn(safetyNet, 'hook');
 
     await driver.writeEvent(event);
@@ -84,20 +84,20 @@ describe('GrpcDriverService', () => {
   });
 
   it('should trigger safety net hook when write event timed out', async () => {
-    jest.useFakeTimers();
+    jest.useFakeTimers('legacy');
     jest.spyOn(global, 'setTimeout');
 
     spyOn(client, 'appendToStream').mockImplementation(
       async (): Promise<any> => {
-        setTimeout(() => null, EVENT_WRITER_TIMEOUT_IN_MS * 2);
+        await setTimeout(EVENT_WRITER_TIMEOUT_IN_MS * 2);
       },
     );
-    spyOn(safetyNet, 'hook');
 
     await driver.writeEvent(event);
 
     jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS);
 
-    expect(safetyNet.hook).toHaveBeenCalledWith(event);
+    expect(safetyNet.hook).toHaveBeenCalledWith(event, false);
+    jest.runAllTimers();
   });
 });

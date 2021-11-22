@@ -1,21 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NextEventsValidatorService } from './next-events-validator.service';
-import { ALLOWED_EVENTS } from '../../../../constants';
+import { LegacyEventsValidatorService } from './legacy-events-validator.service';
+import { ALLOWED_EVENTS } from '../../constants';
 import { Dumb1Event } from './mocks/dumb1.event';
 import { Dumb2Event } from './mocks/dumb2.event';
 import { Dumb3Event } from './mocks/dumb3.event';
-import { ResolvedEvent } from 'node-eventstore-client';
 import { getEvent } from './mocks/helper';
 import { InvalidEventError } from '../errors/invalid-event.error';
 import { NotAllowedEventError } from '../errors/not-allowed-event.error';
 
-describe('NextEventsValidatorService', () => {
-  let service: NextEventsValidatorService;
+describe('LegacyEventsValidatorService', () => {
+  let service: LegacyEventsValidatorService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        NextEventsValidatorService,
+        LegacyEventsValidatorService,
         {
           provide: ALLOWED_EVENTS,
           useValue: {
@@ -27,8 +26,8 @@ describe('NextEventsValidatorService', () => {
       ],
     }).compile();
 
-    service = module.get<NextEventsValidatorService>(
-      NextEventsValidatorService,
+    service = module.get<LegacyEventsValidatorService>(
+      LegacyEventsValidatorService,
     );
   });
 
@@ -36,7 +35,7 @@ describe('NextEventsValidatorService', () => {
     expect.assertions(1);
     const expectedError: InvalidEventError = new InvalidEventError('');
     try {
-      const invalidEvent: ResolvedEvent = getEvent(false, 1);
+      const invalidEvent = getEvent(false, 1);
       await service.validate(invalidEvent);
     } catch (e) {
       expect(e.message.indexOf(expectedError.message)).not.toEqual(-1);
@@ -47,7 +46,8 @@ describe('NextEventsValidatorService', () => {
     expect.assertions(1);
     const evidenceValidateDidNotFail = new Error("didn't throw");
     try {
-      const validEvent: ResolvedEvent = getEvent(true, 1);
+      const validEvent = getEvent(true, 1);
+
       await service.validate(validEvent);
       throw evidenceValidateDidNotFail;
     } catch (error) {
@@ -57,25 +57,16 @@ describe('NextEventsValidatorService', () => {
 
   it('should throw an NotAllowedEventError when the event is not part of the allowed events', async () => {
     expect.assertions(1);
-    const expectedError: NotAllowedEventError = new NotAllowedEventError('', {
+    const expectedError: NotAllowedEventError = new NotAllowedEventError({
       Dumb1Event,
       Dumb2Event,
       Dumb3Event,
     });
     try {
-      const notAllowedEvent: ResolvedEvent = getEvent(false, 5);
+      const notAllowedEvent = getEvent(false, 5);
       await service.validate(notAllowedEvent);
     } catch (e) {
       expect(e).toEqual(expectedError);
     }
-  });
-
-  it('should return the validated event when event is valid', async () => {
-    const validEvent: ResolvedEvent = getEvent(true, 1);
-
-    const event = await service.validate(validEvent);
-
-    expect(event).toBeTruthy();
-    expect(event.eventStreamId).toBeTruthy();
   });
 });

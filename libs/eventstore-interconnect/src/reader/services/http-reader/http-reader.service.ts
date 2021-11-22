@@ -17,8 +17,7 @@ import {
 } from 'node-eventstore-client';
 import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
 import { CREDENTIALS } from '../../../constants';
-import { Driver, DRIVER } from '../../../driver';
-import { Validator, VALIDATOR } from '../validator/validator';
+import { EVENT_HANDLER, EventHandler } from '../../../event-handler';
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {
@@ -31,10 +30,8 @@ export class HttpReaderService implements Reader, OnModuleInit {
     private readonly subscriptions: IEventStorePersistentSubscriptionConfig[],
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
-    @Inject(DRIVER)
-    private readonly driver: Driver,
-    @Inject(VALIDATOR)
-    private readonly validatorService: Validator,
+    @Inject(EVENT_HANDLER)
+    private readonly eventHandler: EventHandler,
     private readonly logger: Logger,
   ) {}
 
@@ -66,12 +63,15 @@ export class HttpReaderService implements Reader, OnModuleInit {
         subscription.stream,
         subscription.group,
         async (subscription, event: ResolvedEvent) => {
-          try {
-            const validatedEvent = await this.validatorService.validate(event);
-            await this.driver.writeEvent(validatedEvent);
-          } catch (e) {
-            this.logger.error('Error while writing an event : ', e.message);
-          }
+          await this.eventHandler
+            .handle(event)
+            .then(() => subscription.acknowledge(event))
+            .catch((e) => {
+              subscription.fail(event, 3, 'An error occurred');
+              this.logger.error(
+                `Unexpected error while handling an event... Details : ${e.message}`,
+              );
+            });
         },
         (sub, reason, error) => {
           subscription.onSubscriptionDropped(sub, reason, error.message);

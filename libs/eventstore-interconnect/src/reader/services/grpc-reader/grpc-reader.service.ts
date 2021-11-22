@@ -3,20 +3,17 @@ import { Reader } from '../reader';
 import { EVENT_STORE_CONNECTOR } from 'nestjs-geteventstore-next/dist/event-store/services/event-store.constants';
 import { Client } from '@eventstore/db-client/dist/Client';
 import { EventStoreService } from './event-store.service';
-import { Driver, DRIVER } from '../../../driver';
-import { VALIDATOR, Validator } from '../validator/validator';
+import { EVENT_HANDLER, EventHandler } from '../../../event-handler';
 import { Logger } from 'nestjs-pino-stackdriver';
 
 @Injectable()
 export class GrpcReaderService implements Reader, OnModuleInit {
   constructor(
-    private readonly eventStoreService: EventStoreService,
     @Inject(EVENT_STORE_CONNECTOR)
     private readonly client: Client,
-    @Inject(DRIVER)
-    private readonly driver: Driver,
-    @Inject(VALIDATOR)
-    private readonly validatorService: Validator,
+    @Inject(EVENT_HANDLER)
+    private readonly eventHandler: EventHandler,
+    private readonly eventStoreService: EventStoreService,
     private readonly logger: Logger,
   ) {}
 
@@ -25,13 +22,13 @@ export class GrpcReaderService implements Reader, OnModuleInit {
   }
 
   public async upsertPersistantSubscription(): Promise<void> {
-    await this.eventStoreService.startWithOnEvent(async (event: any) => {
+    await this.eventStoreService.init(async (event: any) => {
       try {
-        const validatedEvent = await this.validatorService.validate(event);
-        validatedEvent.eventStreamId = event.event.streamId;
-        await this.driver.writeEvent(validatedEvent);
+        await this.eventHandler.handle(event);
       } catch (e) {
-        this.logger.error('Error while writing an event : ', e.message);
+        this.logger.error(
+          `Unexpected error while handling an event... Details : ${e.message}`,
+        );
       }
     });
   }

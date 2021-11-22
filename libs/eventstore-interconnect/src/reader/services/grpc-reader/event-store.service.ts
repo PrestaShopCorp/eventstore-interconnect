@@ -1,12 +1,9 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-
-import { AppendResult } from '@eventstore/db-client/dist/types';
-import * as constants from '@eventstore/db-client/dist/constants';
-import { EventData } from '@eventstore/db-client/dist/types/events';
-import { AppendToStreamOptions } from '@eventstore/db-client/dist/streams';
+import { Inject, Injectable } from '@nestjs/common';
 import {
+  EventType,
   PersistentSubscription,
   persistentSubscriptionSettingsFromDefaults,
+  ResolvedEvent,
 } from '@eventstore/db-client';
 import { isNil } from '@nestjs/common/utils/shared.utils';
 import { Client } from '@eventstore/db-client/dist/Client';
@@ -16,10 +13,10 @@ import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
 import { CREDENTIALS } from '../../../constants';
 import { EVENT_STORE_CONNECTOR } from 'nestjs-geteventstore-next/dist/event-store/services/event-store.constants';
 import { PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE } from 'nestjs-geteventstore-next/dist/event-store/services/errors.constant';
+import { Logger } from 'nestjs-pino-stackdriver';
 
 @Injectable()
 export class EventStoreService {
-  private logger: Logger = new Logger(this.constructor.name);
   private persistentSubscriptions: PersistentSubscription[];
 
   constructor(
@@ -29,9 +26,10 @@ export class EventStoreService {
     private readonly credentials: Credentials,
     @Inject(SUBSCRIPTIONS)
     private readonly subscriptions: IPersistentSubscriptionConfig[],
+    private readonly logger: Logger,
   ) {}
 
-  public async startWithOnEvent(onEvent: (event: any) => void): Promise<void> {
+  public async init(onEvent: (event: any) => void): Promise<void> {
     this.persistentSubscriptions =
       await this.subscribeToPersistentSubscriptions(
         this.subscriptions,
@@ -60,7 +58,22 @@ export class EventStoreService {
               subscription.stream,
               subscription.group,
             );
-          persistentSubscription.on('data', onEvent);
+          persistentSubscription.on(
+            'data',
+            (event: ResolvedEvent<EventType>) => {
+              try {
+                onEvent(event);
+                persistentSubscription.ack(event);
+              } catch (e) {
+                persistentSubscription.nack(
+                  'park',
+                  'An error occured...',
+                  event,
+                );
+                throw e;
+              }
+            },
+          );
           if (!isNil(subscription.onSubscriptionStart)) {
             persistentSubscription.on(
               'confirmation',
@@ -135,25 +148,4 @@ export class EventStoreService {
   public getPersistentSubscriptions(): PersistentSubscription[] {
     return this.persistentSubscriptions;
   }
-
-  public async writeEvent(
-    stream: string,
-    events: EventData,
-    expectedVersion: AppendToStreamOptions = {
-      expectedRevision: constants.ANY,
-    },
-  ): Promise<AppendResult> {
-    const appendResult: AppendResult = await this.eventStore.appendToStream(
-      stream,
-      events,
-      { ...expectedVersion, ...this.credentials },
-    );
-    return appendResult;
-  }
-
-  // private async onEvent(event: any): Promise<any> {
-  //   console.log('EVENT SPOTTED on v21 src : ', event);
-  //   const validatedEvent = await this.validatorService.validate(event);
-  //   await this.driver.writeEvent(validatedEvent);
-  // }
 }

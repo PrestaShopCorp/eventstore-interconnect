@@ -1,14 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Driver } from '../driver';
+import { Driver } from '../../driver';
 import { ANY } from 'nestjs-geteventstore-next';
 import { EVENT_STORE_CONNECTOR } from 'nestjs-geteventstore-next/dist/event-store/services/event-store.constants';
 import { Client } from '@eventstore/db-client/dist/Client';
-import { CREDENTIALS } from '../../../constants';
+import { CREDENTIALS, EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
 import { Credentials } from '../../../interconnection-configuration';
 import { jsonEvent } from '@eventstore/db-client';
 import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { Logger } from 'nestjs-pino-stackdriver';
-import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
+import { FormattedEvent } from '../../../formatter';
+import { EventData } from '@eventstore/db-client/dist/types/events';
 
 @Injectable()
 export class GrpcDriverService implements Driver {
@@ -21,42 +22,44 @@ export class GrpcDriverService implements Driver {
     private readonly logger: Logger,
   ) {}
 
-  public async writeEvent(event: any): Promise<void> {
+  public async writeEvent(event: FormattedEvent): Promise<void> {
     try {
       await this.tryToWriteEventAgainstAggressiveTimeout(
         event,
         EVENT_WRITER_TIMEOUT_IN_MS,
       );
     } catch (err) {
-      this.safetyNet.hook(event);
       this.logger.error(err.toString());
+      this.safetyNet.hook(event);
     }
   }
 
   private async tryToWriteEventAgainstAggressiveTimeout(
-    event: any,
+    event: FormattedEvent,
     timeout: number,
   ): Promise<void> {
     let eventWritten = false;
     setTimeout(() => {
       this.safetyNet.hook(event, eventWritten);
     }, timeout);
-    this.appendEventToStreamteEvent(event).then(() => (eventWritten = true));
-    await event.ack();
+    this.appendEventToStreamteEvent(event).finally(() => (eventWritten = true));
   }
 
-  private async appendEventToStreamteEvent(event: any): Promise<void> {
+  private async appendEventToStreamteEvent(
+    event: FormattedEvent,
+  ): Promise<void> {
     this.logger.log(
-      `Trying to write ${event.eventType} (id: ${event.eventId}) on stream ${event.eventStreamId}`,
+      `Trying to write ${event.type} (id: ${event.eventId}) on stream ${event.streamId}`,
     );
-    const { eventStreamId } = event;
-    const formattedEvent = jsonEvent({
-      id: event.eventId,
-      type: event.eventType,
-      metadata: event.metadata,
-      data: event.data,
+    const { type, data, metadata, eventId, streamId } = event;
+
+    const formattedEvent: EventData = jsonEvent({
+      id: eventId,
+      type,
+      data,
+      metadata,
     });
-    await this.client.appendToStream(eventStreamId, formattedEvent, {
+    await this.client.appendToStream(streamId, formattedEvent, {
       expectedRevision: ANY,
       credentials: this.credentials,
     });

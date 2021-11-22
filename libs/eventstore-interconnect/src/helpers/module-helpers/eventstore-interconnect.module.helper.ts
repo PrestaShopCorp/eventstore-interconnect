@@ -1,8 +1,8 @@
 import { DynamicModule } from '@nestjs/common';
-import { InterconnectionConfiguration } from '../interconnection-configuration';
-import { isLegacyConf } from '../helpers/configurations.helper';
-import { ReaderModule } from '../reader';
-import { DriverModule } from '../driver';
+import { InterconnectionConfiguration } from '../../interconnection-configuration';
+import { isLegacyConf } from '../configurations.helper';
+import { ReaderModule } from '../../reader';
+import { DriverModule } from '../../driver';
 import { LegacyModule } from './legacy.module';
 import { NextModule } from './next.module';
 

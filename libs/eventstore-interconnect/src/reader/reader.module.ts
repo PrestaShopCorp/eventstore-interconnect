@@ -24,13 +24,19 @@ import * as geteventstorePromise from 'geteventstore-promise';
 import { HTTPClient } from 'geteventstore-promise';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { ALLOWED_EVENTS, CREDENTIALS } from '../constants';
-import { LegacyEventsValidatorService } from './services/validator';
+import { LegacyEventsValidatorService } from '../validator';
 import { DriverModule } from '../driver';
 import { EventStoreService } from './services/grpc-reader/event-store.service';
-import { NextEventsValidatorService } from './services/validator/next/next-events-validator.service';
-import { VALIDATOR } from './services/validator/validator';
+import { NextEventsValidatorService } from '../validator/next/next-events-validator.service';
+import { VALIDATOR } from '../validator/validator';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { NoLegacyConnectionError } from './errors/no-legacy-connection.error';
+import { EVENT_HANDLER, EventHandlerService } from '../event-handler';
+import {
+  FORMATTER,
+  LegacyEventFormatterService,
+  NextEventFormatterService,
+} from '../formatter';
 
 @Module({})
 export class ReaderModule {
@@ -105,30 +111,38 @@ export class ReaderModule {
     );
 
     return [
-      Logger,
-      {
-        provide: VALIDATOR,
-        useClass: LegacyEventsValidatorService,
-      },
       {
         provide: READER,
         useClass: HttpReaderService,
-      },
-      {
-        provide: CREDENTIALS,
-        useValue: configuration.source.credentials,
-      },
-      {
-        provide: EVENTSTORE_PERSISTENT_CONNECTION,
-        useValue: eventStoreConnection,
       },
       {
         provide: HTTP_CLIENT,
         useValue: httpClient,
       },
       {
+        provide: EVENTSTORE_PERSISTENT_CONNECTION,
+        useValue: eventStoreConnection,
+      },
+      {
         provide: SUBSCRIPTIONS,
         useValue: configuration.eventStoreBusConfig.subscriptions.persistent,
+      },
+      {
+        provide: CREDENTIALS,
+        useValue: configuration.source.credentials,
+      },
+      {
+        provide: EVENT_HANDLER,
+        useClass: EventHandlerService,
+      },
+      Logger,
+      {
+        provide: VALIDATOR,
+        useClass: LegacyEventsValidatorService,
+      },
+      {
+        provide: FORMATTER,
+        useClass: LegacyEventFormatterService,
       },
     ];
   }
@@ -161,12 +175,6 @@ export class ReaderModule {
     );
 
     return [
-      Logger,
-      EventStoreService,
-      {
-        provide: VALIDATOR,
-        useClass: NextEventsValidatorService,
-      },
       {
         provide: READER,
         useClass: GrpcReaderService,
@@ -176,8 +184,22 @@ export class ReaderModule {
         useValue: eventStoreConnector,
       },
       {
+        provide: EVENT_HANDLER,
+        useClass: EventHandlerService,
+      },
+      EventStoreService,
+      Logger,
+      {
         provide: SUBSCRIPTIONS,
         useValue: configuration.eventStoreSubsystems.subscriptions.persistent,
+      },
+      {
+        provide: VALIDATOR,
+        useClass: NextEventsValidatorService,
+      },
+      {
+        provide: FORMATTER,
+        useClass: NextEventFormatterService,
       },
     ];
   }

@@ -7,6 +7,7 @@ import { Logger } from 'nestjs-pino-stackdriver';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
 import Mock = jest.Mock;
 import spyOn = jest.spyOn;
+import { setTimeout } from 'timers/promises';
 
 describe('HttpDriverService', () => {
   let service: HttpDriverService;
@@ -78,12 +79,12 @@ describe('HttpDriverService', () => {
   });
 
   it('should trigger safety net hook when write event timed out', async () => {
-    jest.useFakeTimers();
+    jest.useFakeTimers('legacy');
     jest.spyOn(global, 'setTimeout');
 
     spyOn(esNodeConnection, 'appendToStream').mockImplementation(
       async (streamName, events): Promise<any> => {
-        setTimeout(() => null, EVENT_WRITER_TIMEOUT_IN_MS * 2);
+        await setTimeout(EVENT_WRITER_TIMEOUT_IN_MS * 2);
       },
     );
     spyOn(safetyNet, 'hook');
@@ -92,6 +93,7 @@ describe('HttpDriverService', () => {
 
     jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS);
 
-    expect(safetyNet.hook).toHaveBeenCalled();
+    expect(safetyNet.hook).toHaveBeenCalledWith(event, false);
+    jest.runAllTimers();
   });
 });

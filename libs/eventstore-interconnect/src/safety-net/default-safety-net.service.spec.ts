@@ -28,13 +28,4 @@ describe('DefaultSafetyNetService', () => {
 
     expect(process.exit).toHaveBeenCalled();
   });
-
-  it('should nack the event when process fails to write the event', () => {
-    jest.spyOn(process, 'exit');
-
-    const event = { nack: jest.fn() };
-    hook.hook(event, false);
-
-    expect(event.nack).toHaveBeenCalled();
-  });
 });

@@ -5,10 +5,10 @@ import {
   EventStorePersistentSubscription,
 } from 'node-eventstore-client';
 import { Driver } from '../../../driver';
-import { Validator } from '../validator/validator';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { HTTPClient } from 'geteventstore-promise';
 import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
+import { EventHandler } from '../../../event-handler';
 import spyOn = jest.spyOn;
 
 describe('HttpReaderService', () => {
@@ -17,17 +17,14 @@ describe('HttpReaderService', () => {
   const client: HTTPClient = {
     persistentSubscriptions: { assert: jest.fn() },
   } as any as HTTPClient;
-  const driver: Driver = { writeEvent: jest.fn() } as any as Driver;
-  const validatorService: Validator = {
-    validate: jest.fn(),
-  } as any as Validator;
+  const eventHandlerMock: EventHandler = {
+    handle: jest.fn(),
+  } as any as EventHandler;
   const logger: Logger = { log: jest.fn() } as any as Logger;
 
   const esNodeConnection: EventStoreNodeConnection = {
     connectToPersistentSubscription: jest.fn(),
   } as any as EventStoreNodeConnection;
-
-  const eventId = 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab';
 
   const subscriptions: IEventStorePersistentSubscriptionConfig[] = [
     {
@@ -50,8 +47,7 @@ describe('HttpReaderService', () => {
         username: '',
         password: '',
       },
-      driver,
-      validatorService,
+      eventHandlerMock,
       logger,
     );
   });
@@ -84,9 +80,8 @@ describe('HttpReaderService', () => {
     expect(esNodeConnection.connectToPersistentSubscription).toHaveBeenCalled();
   });
 
-  it('should validate event when one is written on persistent subscription', async () => {
+  it(`should handle the event when a event appears`, async () => {
     expect.assertions(1);
-    spyOn(validatorService, 'validate');
 
     spyOn(
       esNodeConnection,
@@ -109,40 +104,7 @@ describe('HttpReaderService', () => {
             originalStreamId: '',
           },
         );
-        expect(validatorService.validate).toHaveBeenCalled();
-      },
-    );
-
-    await service.upsertPersistantSubscription();
-  });
-
-  it(`should write each valid event when it's red on persistent subscription`, async () => {
-    expect.assertions(1);
-    spyOn(validatorService, 'validate').mockReturnValue({ id: 'tutu' });
-    spyOn(driver, 'writeEvent');
-
-    spyOn(
-      esNodeConnection,
-      'connectToPersistentSubscription',
-    ).mockImplementation(
-      async (
-        stream: string,
-        groupName: string,
-        eventAppeared: EventAppearedCallback<EventStorePersistentSubscription>,
-      ): Promise<any> => {
-        await eventAppeared(
-          {
-            acknowledge(event: any): void {},
-            fail(event: any, action: any, reason: string): void {},
-            stop(): void {},
-          },
-          {
-            isResolved: false,
-            originalEventNumber: undefined,
-            originalStreamId: '',
-          },
-        );
-        expect(driver.writeEvent).toHaveBeenCalled();
+        expect(eventHandlerMock.handle).toHaveBeenCalled();
       },
     );
 

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Driver } from '../driver';
+import { Driver } from '../../driver';
 import { ExpectedVersion } from 'nestjs-geteventstore-legacy';
 import {
   createJsonEventData,
@@ -10,6 +10,7 @@ import { CREDENTIALS, EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
 import { Credentials } from '../../../interconnection-configuration';
 import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { Logger } from 'nestjs-pino-stackdriver';
+import { FormattedEvent } from '../../../formatter';
 
 @Injectable()
 export class HttpDriverService implements Driver {
@@ -22,7 +23,7 @@ export class HttpDriverService implements Driver {
     private readonly logger: Logger,
   ) {}
 
-  public async writeEvent(event: any): Promise<void> {
+  public async writeEvent(event: FormattedEvent): Promise<void> {
     try {
       await this.tryToWriteEventAgainstAggressiveTimeout(
         event,
@@ -35,26 +36,28 @@ export class HttpDriverService implements Driver {
   }
 
   private async tryToWriteEventAgainstAggressiveTimeout(
-    event: any,
+    event: FormattedEvent,
     timeout: number,
   ): Promise<void> {
     let eventWritten = false;
     setTimeout(() => {
       this.safetyNet.hook(event, eventWritten);
     }, timeout);
-    this.appendEventToStreamteEvent(event).then(() => (eventWritten = true));
-    await event.ack();
+    await this.appendEventToStreamteEvent(event);
+    eventWritten = true;
   }
 
-  private async appendEventToStreamteEvent(event: any): Promise<any> {
+  private async appendEventToStreamteEvent(
+    event: FormattedEvent,
+  ): Promise<any> {
     const jsonFormattedEvent = createJsonEventData(
       event.eventId,
       event,
       event.metadata,
-      event.eventType,
+      event.type,
     );
     await this.eventStoreNodeConnection.appendToStream(
-      event.eventStreamId,
+      event.streamId,
       ExpectedVersion.Any,
       jsonFormattedEvent,
       this.credentials,

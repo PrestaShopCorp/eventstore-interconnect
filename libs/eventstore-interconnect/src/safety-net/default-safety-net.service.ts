@@ -13,7 +13,6 @@ export class DefaultSafetyNetService implements SafetyNet {
     this.logger.error(
       `Timeout while writing event (eventId ${event.eventId} and others after this one)`,
     );
-    event.nack();
-    process.exit(1);
+    // process.exit(1);
   }
 }

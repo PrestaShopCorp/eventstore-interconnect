@@ -9,7 +9,7 @@ import {
   ReaderModule,
   SAFETY_NET,
 } from '..';
-import { DRIVER } from './services/driver';
+import { DRIVER } from './driver';
 import { HttpDriverService } from './services/http-driver/http-driver.service';
 import { GrpcDriverService } from './services/grpc-driver/grpc-driver.service';
 import { Client } from '@eventstore/db-client/dist/Client';

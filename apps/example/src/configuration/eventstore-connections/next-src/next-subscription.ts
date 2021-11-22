@@ -5,12 +5,13 @@ export const nextSubscriptions: IPersistentSubscriptionConfig[] = [
     // Event stream category (before the -)
     stream: '$ce-hero',
     group: 'data',
+    optionsForConnection: {
+      subscriptionConnectionOptions: { bufferSize: 1 },
+    },
     settingsForCreation: {
       subscriptionSettings: {
         liveBufferSize: 1,
-        readBatchSize: 1,
         resolveLinkTos: true,
-        minCheckpointCount: 1,
       },
     },
     onError: (err: Error) => console.log(`An error occurred : ${err.message}`),
