@@ -13,6 +13,7 @@ export interface ConnectionConfiguration {
   tcp?: ProtocolConf;
   http?: ProtocolConf;
   connectionString?: string;
+  tcpConnectionName?: string;
 }
 
 export interface Credentials {

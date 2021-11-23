@@ -1,42 +1,43 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import {
-  InterconnectionConfiguration,
-  ProtocolConf,
-} from '../interconnection-configuration';
-import { READER } from './services/reader';
-import { isLegacyConf } from '../helpers/configurations.helper';
-import { HttpReaderService } from './services/http-reader/http-reader.service';
-import { GrpcReaderService } from './services/grpc-reader/grpc-reader.service';
-import { EVENT_STORE_CONNECTOR } from 'nestjs-geteventstore-next/dist/event-store/services/event-store.constants';
-import { Client } from '@eventstore/db-client/dist/Client';
 import { EventStoreDBClient } from '@eventstore/db-client';
-import {
-  EVENTSTORE_PERSISTENT_CONNECTION,
-  HTTP_CLIENT,
-} from './services/http-reader/http-connection.constants';
+import { Client } from '@eventstore/db-client/dist/Client';
+import { DynamicModule, Module } from '@nestjs/common';
+import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
+import * as geteventstorePromise from 'geteventstore-promise';
+import { HTTPClient } from 'geteventstore-promise';
+import { nanoid } from 'nanoid';
+import { EVENT_STORE_CONNECTOR } from 'nestjs-geteventstore-next/dist/event-store/services/event-store.constants';
+import { Logger } from 'nestjs-pino-stackdriver';
 import {
   ConnectionSettings,
   createConnection,
   EventStoreNodeConnection,
 } from 'node-eventstore-client';
-import { SUBSCRIPTIONS } from '../reader/services/constants';
-import * as geteventstorePromise from 'geteventstore-promise';
-import { HTTPClient } from 'geteventstore-promise';
-import { Logger } from 'nestjs-pino-stackdriver';
 import { ALLOWED_EVENTS, CREDENTIALS } from '../constants';
-import { LegacyEventsValidatorService } from '../validator';
 import { DriverModule } from '../driver';
-import { EventStoreService } from './services/grpc-reader/event-store.service';
-import { NextEventsValidatorService } from '../validator/next/next-events-validator.service';
-import { VALIDATOR } from '../validator/validator';
-import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
-import { NoLegacyConnectionError } from './errors/no-legacy-connection.error';
-import { EVENT_HANDLER, EventHandlerService } from '../event-handler';
+import { EventHandlerService, EVENT_HANDLER } from '../event-handler';
 import {
   FORMATTER,
   LegacyEventFormatterService,
   NextEventFormatterService,
 } from '../formatter';
+import { isLegacyConf } from '../helpers/configurations.helper';
+import {
+  InterconnectionConfiguration,
+  ProtocolConf,
+} from '../interconnection-configuration';
+import { SUBSCRIPTIONS } from '../reader/services/constants';
+import { LegacyEventsValidatorService } from '../validator';
+import { NextEventsValidatorService } from '../validator/next/next-events-validator.service';
+import { VALIDATOR } from '../validator/validator';
+import { NoLegacyConnectionError } from './errors/no-legacy-connection.error';
+import { EventStoreService } from './services/grpc-reader/event-store.service';
+import { GrpcReaderService } from './services/grpc-reader/grpc-reader.service';
+import {
+  EVENTSTORE_PERSISTENT_CONNECTION,
+  HTTP_CLIENT,
+} from './services/http-reader/http-connection.constants';
+import { HttpReaderService } from './services/http-reader/http-reader.service';
+import { READER } from './services/reader';
 
 @Module({})
 export class ReaderModule {
@@ -80,6 +81,12 @@ export class ReaderModule {
       heartbeatTimeout: 3_000,
     };
 
+    const randomId = nanoid(11);
+    const connectionString =
+      configuration.source.connectionString ||
+      configuration.source.tcpConnectionName ||
+      `interco-module-connection-${randomId}`;
+
     const tcpEndPoint: ProtocolConf = {
       host: configuration.source.tcp.host,
       port: configuration.source.tcp.port,
@@ -88,7 +95,7 @@ export class ReaderModule {
     const eventStoreConnection: EventStoreNodeConnection = createConnection(
       esConnectionConf,
       tcpEndPoint,
-      'interco-module-connection',
+      connectionString,
     );
     await eventStoreConnection.connect();
 

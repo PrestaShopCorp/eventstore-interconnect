@@ -1,5 +1,17 @@
+import { EventStoreDBClient } from '@eventstore/db-client';
+import { Client } from '@eventstore/db-client/dist/Client';
 import { DynamicModule, Module } from '@nestjs/common';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
+import * as geteventstorePromise from 'geteventstore-promise';
+import { HTTPClient } from 'geteventstore-promise';
+import { nanoid } from 'nanoid';
+import { EVENT_STORE_CONNECTOR } from 'nestjs-geteventstore-next/dist/event-store/services/event-store.constants';
+import { Logger } from 'nestjs-pino-stackdriver';
+import {
+  ConnectionSettings,
+  createConnection,
+  EventStoreNodeConnection,
+} from 'node-eventstore-client';
 import {
   ConnectionConfiguration,
   Credentials,
@@ -9,23 +21,12 @@ import {
   ReaderModule,
   SAFETY_NET,
 } from '..';
-import { DRIVER } from './driver';
-import { HttpDriverService } from './services/http-driver/http-driver.service';
-import { GrpcDriverService } from './services/grpc-driver/grpc-driver.service';
-import { Client } from '@eventstore/db-client/dist/Client';
-import { EVENT_STORE_CONNECTOR } from 'nestjs-geteventstore-next/dist/event-store/services/event-store.constants';
-import { EventStoreDBClient } from '@eventstore/db-client';
-import {
-  ConnectionSettings,
-  createConnection,
-  EventStoreNodeConnection,
-} from 'node-eventstore-client';
-import { HTTP_CLIENT } from './services/http-driver/http-connection.constants';
 import { CREDENTIALS } from '../constants';
-import { Logger } from 'nestjs-pino-stackdriver';
+import { DRIVER } from './driver';
 import { NoGrpcConnectionError } from './errors/no-grpc-connection.error';
-import { HTTPClient } from 'geteventstore-promise';
-import * as geteventstorePromise from 'geteventstore-promise';
+import { GrpcDriverService } from './services/grpc-driver/grpc-driver.service';
+import { HTTP_CLIENT } from './services/http-driver/http-connection.constants';
+import { HttpDriverService } from './services/http-driver/http-driver.service';
 
 @Module({})
 export class DriverModule {
@@ -133,15 +134,23 @@ export class DriverModule {
       heartbeatTimeout: 3_000,
     };
 
+    const randomId = nanoid(11);
+    const connectionString =
+      configuration.connectionString ||
+      configuration.tcpConnectionName ||
+      `interco-module-connection-${randomId}`;
+
     const tcpEndPoint = {
       host: configuration.tcp.host,
       port: configuration.tcp.port,
     };
+
     const eventStoreConnection: EventStoreNodeConnection = createConnection(
       esConnectionConf,
       tcpEndPoint,
-      'interco-module-connection',
+      connectionString,
     );
+
     await eventStoreConnection.connect();
     const httpClient: HTTPClient = new geteventstorePromise.HTTPClient({
       hostname: configuration.http.host.replace(/^https?:\/\//, ''),
