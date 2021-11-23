@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
-import { Logger } from 'nestjs-pino-stackdriver';
 import {
   EventstoreInterconnectModule,
   InterconnectionConfiguration,
-  SAFETY_NET,
 } from '@eventstore-interconnect';
 import { legSrcLegDestConfiguration } from './configuration/eventstore-connections/legacy-src/legacy-dest/leg-src-leg-dest.configuration';
 import { legSrcNextDestConfiguration } from './configuration/eventstore-connections/legacy-src/next-dest/leg-src-next-dest.configuration';
 import { nextSrcNextDestConfiguration } from './configuration/eventstore-connections/next-src/next-dest/next-src-next-dest.configuration';
 import { nextSrcLegDestConfiguration } from './configuration/eventstore-connections/next-src/legacy-dest/next-src-leg-dest.configuration';
-import CustomSafetyNet from './custom-safety-net/custom-safety-net';
+import { CustomSafetyNet } from './custom-safety-net/custom-safety-net';
 import { Example1Event } from './events/example1.event';
 import { Example3Event } from './events/example3.event';
 import { Example2Event } from './events/example2.event';
@@ -42,14 +40,8 @@ const allowedEvents: any = {
     EventstoreInterconnectModule.connectToSrcAndDest(
       configuration,
       allowedEvents,
+      CustomSafetyNet,
     ),
-  ],
-  providers: [
-    Logger,
-    {
-      provide: SAFETY_NET,
-      useClass: CustomSafetyNet,
-    },
   ],
 })
 export class UsecaseModule {}

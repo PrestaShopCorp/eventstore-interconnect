@@ -3,11 +3,9 @@ import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import {
   ConnectionConfiguration,
   Credentials,
-  DefaultSafetyNetService,
   InterconnectionConfiguration,
   isLegacyConf,
   ReaderModule,
-  SAFETY_NET,
 } from '..';
 import { DRIVER } from './driver';
 import { HttpDriverService } from './services/http-driver/http-driver.service';
@@ -22,68 +20,36 @@ import {
 } from 'node-eventstore-client';
 import { HTTP_CLIENT } from './services/http-driver/http-connection.constants';
 import { CREDENTIALS } from '../constants';
-import { Logger } from 'nestjs-pino-stackdriver';
 import { NoGrpcConnectionError } from './errors/no-grpc-connection.error';
-import { HTTPClient } from 'geteventstore-promise';
 import * as geteventstorePromise from 'geteventstore-promise';
+import { HTTPClient } from 'geteventstore-promise';
+import { SafetyNetModule } from '../safety-net';
 
 @Module({})
 export class DriverModule {
-  public static async get(
+  public static get(
     configuration: InterconnectionConfiguration,
-  ): Promise<DynamicModule> {
+    customSafetyNetStrategy?,
+  ): DynamicModule {
     const driverProviders: Provider[] = isLegacyConf(configuration.destination)
-      ? await this.getLegacyEventStoreDriver(configuration.destination)
-      : await this.getNextEventStoreDriver(
+      ? this.getLegacyEventStoreDriver(configuration.destination)
+      : this.getNextEventStoreDriver(
           configuration.destination.connectionString,
           configuration.destination.credentials,
         );
 
     return {
       module: DriverModule,
+      imports: [SafetyNetModule.use(customSafetyNetStrategy)],
       providers: [...driverProviders],
-      exports: [...driverProviders],
+      exports: [...driverProviders, SafetyNetModule],
     };
   }
 
-  public static async forLegacySrc(
-    configuration: ConnectionConfiguration,
-  ): Promise<DynamicModule> {
-    const driverProviders: Provider[] = await this.getLegacyEventStoreDriver(
-      configuration,
-    );
-
-    return {
-      module: DriverModule,
-      providers: [...driverProviders],
-      exports: [...driverProviders],
-    };
-  }
-
-  public static async forNextSrc(
-    configuration: ConnectionConfiguration,
-  ): Promise<DynamicModule> {
-    const driverProviders: Provider[] = await this.getNextEventStoreDriver(
-      configuration.connectionString,
-      configuration.credentials,
-    );
-
-    return {
-      module: DriverModule,
-      providers: [...driverProviders],
-      exports: [...driverProviders],
-    };
-  }
-
-  private static async getNextEventStoreDriver(
+  private static getNextEventStoreDriver(
     connectionString: string,
     credentials: Credentials,
-  ) {
-    const eventStoreConnector: Client =
-      EventStoreDBClient.connectionString(connectionString);
-    await this.checkNextConnectionStatus(eventStoreConnector, connectionString);
-    console.log('DRIVER : Connected to Next eventstore on ' + connectionString);
-
+  ): Provider[] {
     return [
       this.getGrpcDriverProvider(DRIVER),
       {
@@ -92,13 +58,19 @@ export class DriverModule {
       },
       {
         provide: EVENT_STORE_CONNECTOR,
-        useValue: eventStoreConnector,
+        useFactory: async () => {
+          const eventStoreConnector: Client =
+            EventStoreDBClient.connectionString(connectionString);
+          await this.checkNextConnectionStatus(
+            eventStoreConnector,
+            connectionString,
+          );
+          console.log(
+            'DRIVER : Connected to Next eventstore on ' + connectionString,
+          );
+          return eventStoreConnector;
+        },
       },
-      {
-        provide: SAFETY_NET,
-        useClass: DefaultSafetyNetService,
-      },
-      Logger,
     ];
   }
 
@@ -113,9 +85,9 @@ export class DriverModule {
     }
   }
 
-  private static async getLegacyEventStoreDriver(
+  private static getLegacyEventStoreDriver(
     configuration: ConnectionConfiguration,
-  ) {
+  ): Provider[] {
     const esConnectionConf: ConnectionSettings = {
       // Buffer events if remote is slow or not available
       maxQueueSize: 100_000,
@@ -137,22 +109,7 @@ export class DriverModule {
       host: configuration.tcp.host,
       port: configuration.tcp.port,
     };
-    const eventStoreConnection: EventStoreNodeConnection = createConnection(
-      esConnectionConf,
-      tcpEndPoint,
-      'interco-module-connection',
-    );
-    await eventStoreConnection.connect();
-    const httpClient: HTTPClient = new geteventstorePromise.HTTPClient({
-      hostname: configuration.http.host.replace(/^https?:\/\//, ''),
-      port: configuration.http.port,
-      credentials: {
-        username: configuration.credentials.username,
-        password: configuration.credentials.password,
-      },
-    });
 
-    await ReaderModule.checkLegacyConnectionStatus(httpClient, tcpEndPoint);
     console.log(
       'DRIVER : Connected to legacy eventstore at ' +
         tcpEndPoint.host +
@@ -168,13 +125,30 @@ export class DriverModule {
       },
       {
         provide: HTTP_CLIENT,
-        useValue: eventStoreConnection,
+        useFactory: async () => {
+          const httpClient: HTTPClient = new geteventstorePromise.HTTPClient({
+            hostname: configuration.http.host.replace(/^https?:\/\//, ''),
+            port: configuration.http.port,
+            credentials: {
+              username: configuration.credentials.username,
+              password: configuration.credentials.password,
+            },
+          });
+          const eventStoreConnection: EventStoreNodeConnection =
+            createConnection(
+              esConnectionConf,
+              tcpEndPoint,
+              'interco-module-connection',
+            );
+          await eventStoreConnection.connect();
+
+          await ReaderModule.checkLegacyConnectionStatus(
+            httpClient,
+            tcpEndPoint,
+          );
+          return eventStoreConnection;
+        },
       },
-      {
-        provide: SAFETY_NET,
-        useClass: DefaultSafetyNetService,
-      },
-      Logger,
     ];
   }
 

@@ -1,34 +1,24 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { Logger } from 'nestjs-pino-stackdriver';
 import { InterconnectionConfiguration } from './interconnection-configuration';
 import { ContextModule } from 'nestjs-context';
-import EventstoreInterconnectModuleHelper from './helpers/module-helpers/eventstore-interconnect.module.helper';
-import { DriverModule } from './driver/driver.module';
-import { DefaultSafetyNetService, SAFETY_NET } from './safety-net';
+import { ReaderModule } from './reader';
+import { isLegacyConf } from './helpers';
 
 @Module({})
 export class EventstoreInterconnectModule {
   public static connectToSrcAndDest(
     configuration: InterconnectionConfiguration,
-    allowedEvents?: any,
+    allowedEvents: any,
+    customStrategy?,
   ): DynamicModule {
-    const eventStoreModuleSource: DynamicModule =
-      EventstoreInterconnectModuleHelper.getSourceEventStoreModule(
-        configuration,
-        allowedEvents,
-      );
+    const readerModule: DynamicModule = isLegacyConf(configuration.source)
+      ? ReaderModule.get(configuration, allowedEvents, customStrategy)
+      : ReaderModule.get(configuration, allowedEvents, customStrategy);
 
     return {
       module: EventstoreInterconnectModule,
-      imports: [ContextModule.register(), eventStoreModuleSource],
-      providers: [
-        Logger,
-        {
-          provide: SAFETY_NET,
-          useClass: DefaultSafetyNetService,
-        },
-      ],
-      exports: [eventStoreModuleSource, SAFETY_NET],
+      imports: [ContextModule.register(), readerModule],
+      exports: [readerModule],
     };
   }
 }

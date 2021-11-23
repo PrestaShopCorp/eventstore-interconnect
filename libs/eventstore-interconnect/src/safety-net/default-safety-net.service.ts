@@ -4,7 +4,9 @@ import { SafetyNet } from './safety-net.service.interface';
 
 @Injectable()
 export class DefaultSafetyNetService implements SafetyNet {
-  constructor(private readonly logger: Logger) {}
+  constructor(private readonly logger: Logger) {
+    logger.log('toto');
+  }
 
   public hook(event: any, eventWritten?: boolean): void {
     if (eventWritten) {

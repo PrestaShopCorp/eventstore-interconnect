@@ -40,16 +40,18 @@ import {
 
 @Module({})
 export class ReaderModule {
-  public static async get(
+  public static get(
     configuration: InterconnectionConfiguration,
     allowedEvents?: any,
-  ): Promise<DynamicModule> {
+    customStrategy?,
+  ): DynamicModule {
     const providersForReader: Provider[] = isLegacyConf(configuration.source)
-      ? await ReaderModule.getLegacyReaderProviders(configuration)
-      : await ReaderModule.getNextReaderProviders(configuration);
+      ? ReaderModule.getLegacyReaderProviders(configuration)
+      : ReaderModule.getNextReaderProviders(configuration);
     return {
       module: ReaderModule,
-      imports: [await DriverModule.get(configuration)],
+      imports: [DriverModule.get(configuration, customStrategy)],
+      exports: [DriverModule],
       providers: [
         ...providersForReader,
         {
@@ -60,9 +62,9 @@ export class ReaderModule {
     };
   }
 
-  private static async getLegacyReaderProviders(
+  private static getLegacyReaderProviders(
     configuration: InterconnectionConfiguration,
-  ): Promise<Provider[]> {
+  ): Provider[] {
     const esConnectionConf: ConnectionSettings = {
       // Buffer events if remote is slow or not available
       maxQueueSize: 100_000,
@@ -85,31 +87,6 @@ export class ReaderModule {
       port: configuration.source.tcp.port,
     };
 
-    const eventStoreConnection: EventStoreNodeConnection = createConnection(
-      esConnectionConf,
-      tcpEndPoint,
-      'interco-module-connection',
-    );
-    await eventStoreConnection.connect();
-
-    const httpClient: HTTPClient = new geteventstorePromise.HTTPClient({
-      hostname: configuration.source.http.host.replace(/^https?:\/\//, ''),
-      port: configuration.source.http.port,
-      credentials: {
-        username: configuration.source.credentials.username,
-        password: configuration.source.credentials.password,
-      },
-    });
-
-    await this.checkLegacyConnectionStatus(httpClient, tcpEndPoint);
-
-    console.log(
-      'READER : Connected to legacy eventstore at ' +
-        tcpEndPoint.host +
-        ':' +
-        tcpEndPoint.port,
-    );
-
     return [
       {
         provide: READER,
@@ -117,11 +94,42 @@ export class ReaderModule {
       },
       {
         provide: HTTP_CLIENT,
-        useValue: httpClient,
+        useFactory: async () => {
+          const httpClient: HTTPClient = new geteventstorePromise.HTTPClient({
+            hostname: configuration.source.http.host.replace(
+              /^https?:\/\//,
+              '',
+            ),
+            port: configuration.source.http.port,
+            credentials: {
+              username: configuration.source.credentials.username,
+              password: configuration.source.credentials.password,
+            },
+          });
+          await this.checkLegacyConnectionStatus(httpClient, tcpEndPoint);
+          return httpClient;
+        },
       },
       {
         provide: EVENTSTORE_PERSISTENT_CONNECTION,
-        useValue: eventStoreConnection,
+        useFactory: async () => {
+          const eventStoreConnection: EventStoreNodeConnection =
+            createConnection(
+              esConnectionConf,
+              tcpEndPoint,
+              'interco-module-connection',
+            );
+          await eventStoreConnection.connect();
+
+          console.log(
+            'READER : Connected to legacy eventstore at ' +
+              tcpEndPoint.host +
+              ':' +
+              tcpEndPoint.port,
+          );
+
+          return eventStoreConnection;
+        },
       },
       {
         provide: SUBSCRIPTIONS,
@@ -158,17 +166,9 @@ export class ReaderModule {
     }
   }
 
-  private static async getNextReaderProviders(
+  private static getNextReaderProviders(
     configuration: InterconnectionConfiguration,
-  ): Promise<Provider[]> {
-    const eventStoreConnector: Client = EventStoreDBClient.connectionString(
-      configuration.source.connectionString,
-    );
-    await DriverModule.checkNextConnectionStatus(
-      eventStoreConnector,
-      configuration.source.connectionString,
-    );
-
+  ): Provider[] {
     console.log(
       'READER : Connected to Next eventstore on ' +
         configuration.source.connectionString,
@@ -181,7 +181,17 @@ export class ReaderModule {
       },
       {
         provide: EVENT_STORE_CONNECTOR,
-        useValue: eventStoreConnector,
+        useFactory: async () => {
+          const eventStoreConnector: Client =
+            EventStoreDBClient.connectionString(
+              configuration.source.connectionString,
+            );
+          await DriverModule.checkNextConnectionStatus(
+            eventStoreConnector,
+            configuration.source.connectionString,
+          );
+          return eventStoreConnector;
+        },
       },
       {
         provide: EVENT_HANDLER,

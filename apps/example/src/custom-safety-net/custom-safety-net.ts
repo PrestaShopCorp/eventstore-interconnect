@@ -1,7 +1,11 @@
 import { SafetyNet } from '@eventstore-interconnect';
+import { Injectable } from '@nestjs/common';
+import { Logger } from 'nestjs-pino-stackdriver';
 
-export default class CustomSafetyNet implements SafetyNet {
+@Injectable()
+export class CustomSafetyNet implements SafetyNet {
+  constructor(private readonly logger: Logger) {}
   public hook(event: any, eventWritten?: boolean): void {
-    console.log('OVERRIDE SAFETY NET, DO NOTHING');
+    this.logger.log('OVERRIDE SAFETY NET, DO NOTHING');
   }
 }
