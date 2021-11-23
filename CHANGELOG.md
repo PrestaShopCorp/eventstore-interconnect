@@ -3,7 +3,8 @@
 ### 1.0.22
 On this version, seperation of concerns about the event handling :
 - errors are emmitted when event is invalid, or not allowed, so then we can catch them with a general filter
-
+- the default strategy is to be given directly in the conf of the module
+- bug fixes
 
 ### 1.0.21
 On this version, more stability, more errors when problems appends, like connection issue.
