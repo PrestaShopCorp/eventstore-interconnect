@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Module, Type } from '@nestjs/common';
 import {
   InterconnectionConfiguration,
   ProtocolConf,
@@ -37,13 +37,14 @@ import {
   LegacyEventFormatterService,
   NextEventFormatterService,
 } from '../formatter';
+import { SafetyNet } from '../safety-net';
 
 @Module({})
 export class ReaderModule {
   public static get(
     configuration: InterconnectionConfiguration,
-    allowedEvents?: any,
-    customStrategy?,
+    allowedEvents?: Type<SafetyNet>,
+    customStrategy?: Type<SafetyNet>,
   ): DynamicModule {
     const providersForReader: Provider[] = isLegacyConf(configuration.source)
       ? ReaderModule.getLegacyReaderProviders(configuration)

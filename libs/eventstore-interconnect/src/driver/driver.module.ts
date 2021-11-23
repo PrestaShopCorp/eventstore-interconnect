@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Module, Type } from '@nestjs/common';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import {
   ConnectionConfiguration,
@@ -6,6 +6,7 @@ import {
   InterconnectionConfiguration,
   isLegacyConf,
   ReaderModule,
+  SafetyNet,
 } from '..';
 import { DRIVER } from './driver';
 import { HttpDriverService } from './services/http-driver/http-driver.service';
@@ -29,7 +30,7 @@ import { SafetyNetModule } from '../safety-net';
 export class DriverModule {
   public static get(
     configuration: InterconnectionConfiguration,
-    customSafetyNetStrategy?,
+    customSafetyNetStrategy?: Type<SafetyNet>,
   ): DynamicModule {
     const driverProviders: Provider[] = isLegacyConf(configuration.destination)
       ? this.getLegacyEventStoreDriver(configuration.destination)
