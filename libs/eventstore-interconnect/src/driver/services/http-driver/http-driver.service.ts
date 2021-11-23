@@ -50,6 +50,9 @@ export class HttpDriverService implements Driver {
   private async appendEventToStreamteEvent(
     event: FormattedEvent,
   ): Promise<any> {
+    this.logger.log(
+      `Trying to write ${event.type} (id: ${event.eventId}) on stream ${event.streamId}`,
+    );
     const jsonFormattedEvent = createJsonEventData(
       event.eventId,
       event,
@@ -62,5 +65,6 @@ export class HttpDriverService implements Driver {
       jsonFormattedEvent,
       this.credentials,
     );
+    this.logger.log(`Event (id: ${event.eventId}) written`);
   }
 }
