@@ -23,9 +23,9 @@ describe('DefaultSafetyNetService', () => {
   });
 
   it('should exit the process when while calling the hook, the event is not written', () => {
-    jest.spyOn(process, 'exit');
+    jest.spyOn(process, 'exit').mockReturnValue(null as never);
     hook.hook({ nack: jest.fn() }, false);
 
-    expect(process.exit).toHaveBeenCalled();
+    expect(process.exit).toHaveBeenCalledWith(1);
   });
 });

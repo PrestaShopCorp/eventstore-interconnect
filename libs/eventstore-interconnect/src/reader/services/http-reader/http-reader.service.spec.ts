@@ -4,7 +4,6 @@ import {
   EventStoreNodeConnection,
   EventStorePersistentSubscription,
 } from 'node-eventstore-client';
-import { Driver } from '../../../driver';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { HTTPClient } from 'geteventstore-promise';
 import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
@@ -18,7 +17,9 @@ describe('HttpReaderService', () => {
     persistentSubscriptions: { assert: jest.fn() },
   } as any as HTTPClient;
   const eventHandlerMock: EventHandler = {
-    handle: jest.fn(),
+    handle: () => {
+      return { catch: jest.fn() };
+    },
   } as any as EventHandler;
   const logger: Logger = { log: jest.fn() } as any as Logger;
 
@@ -83,6 +84,8 @@ describe('HttpReaderService', () => {
   it(`should handle the event when a event appears`, async () => {
     expect.assertions(1);
 
+    spyOn(eventHandlerMock, 'handle');
+
     spyOn(
       esNodeConnection,
       'connectToPersistentSubscription',
@@ -94,8 +97,8 @@ describe('HttpReaderService', () => {
       ): Promise<any> => {
         await eventAppeared(
           {
-            acknowledge(event: any): void {},
-            fail(event: any, action: any, reason: string): void {},
+            acknowledge(): void {},
+            fail(): void {},
             stop(): void {},
           },
           {

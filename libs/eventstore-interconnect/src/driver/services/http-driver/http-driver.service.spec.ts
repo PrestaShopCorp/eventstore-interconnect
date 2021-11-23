@@ -5,9 +5,10 @@ import { Credentials } from '../../../interconnection-configuration';
 import { SafetyNet } from '../../../safety-net';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
+import { setTimeout } from 'timers/promises';
+import { FormattedEvent } from '../../../formatter';
 import Mock = jest.Mock;
 import spyOn = jest.spyOn;
-import { setTimeout } from 'timers/promises';
 
 describe('HttpDriverService', () => {
   let service: HttpDriverService;
@@ -21,8 +22,10 @@ describe('HttpDriverService', () => {
 
   const eventId = 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab';
 
-  const event = {
-    eventStreamId: 'a',
+  const event: FormattedEvent = {
+    contentType: 'application/json',
+    type: '',
+    streamId: 'a',
     eventId: eventId,
     data: { toto: 123 },
     metadata: {},
@@ -39,6 +42,7 @@ describe('HttpDriverService', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
+    jest.useRealTimers();
   });
 
   it('should transmit write event command to the legacy client when writing event', async () => {
@@ -79,21 +83,25 @@ describe('HttpDriverService', () => {
   });
 
   it('should trigger safety net hook when write event timed out', async () => {
-    jest.useFakeTimers('legacy');
-    jest.spyOn(global, 'setTimeout');
-
-    spyOn(esNodeConnection, 'appendToStream').mockImplementation(
-      async (streamName, events): Promise<any> => {
-        await setTimeout(EVENT_WRITER_TIMEOUT_IN_MS * 2);
-      },
-    );
+    jest.useFakeTimers();
+    spyOn(global, 'setTimeout');
     spyOn(safetyNet, 'hook');
 
-    await service.writeEvent(event);
+    spyOn(esNodeConnection, 'appendToStream').mockImplementation(
+      async (): Promise<any> => {
+        return await setTimeout(EVENT_WRITER_TIMEOUT_IN_MS * 2);
+      },
+    );
+
+    service.writeEvent(event);
 
     jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS);
 
+    expect(global.setTimeout).toHaveBeenCalledTimes(1);
+    expect(global.setTimeout).toHaveBeenLastCalledWith(
+      expect.any(Function),
+      EVENT_WRITER_TIMEOUT_IN_MS,
+    );
     expect(safetyNet.hook).toHaveBeenCalledWith(event, false);
-    jest.runAllTimers();
   });
 });

@@ -17,18 +17,21 @@ describe('NextEventFormatterService', () => {
   });
 
   it('should return the event given in param', () => {
-    expect(
-      service.format({
-        event: {
-          id: 'toto',
-          data: {},
-          metadata: {},
-        },
-      }),
-    ).toEqual({
-      id: 'toto',
-      data: {},
-      metadata: {},
+    const event = service.format({
+      event: {
+        id: 'toto',
+        type: 'tutu',
+        data: { plop: 'plop' },
+        metadata: { pulp: 'pulp' },
+        streamId: 'sss',
+      },
     });
+
+    expect(event.eventId).toEqual('toto');
+    expect(event.type).toEqual('tutu');
+    expect(event.data.plop).toEqual('plop');
+    expect(event.metadata.pulp).toEqual('pulp');
+    expect(event.contentType).toEqual('application/json');
+    expect(event.streamId).toEqual('sss');
   });
 });

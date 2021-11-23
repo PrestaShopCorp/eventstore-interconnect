@@ -7,6 +7,7 @@ import { Credentials } from '../../../interconnection-configuration';
 import { SafetyNet } from '../../../safety-net';
 import spyOn = jest.spyOn;
 import { setTimeout } from 'timers/promises';
+import { FormattedEvent } from '../../../formatter';
 
 describe('GrpcDriverService', () => {
   let driver: GrpcDriverService;
@@ -21,11 +22,12 @@ describe('GrpcDriverService', () => {
   } as any as SafetyNet;
   const logger: Logger = { error: jest.fn(), log: jest.fn() } as any as Logger;
 
-  const event = {
+  const event: FormattedEvent = {
+    contentType: 'application/json',
     data: {},
     metadata: {},
-    eventStreamId: 'test',
-    eventType: 'toto',
+    streamId: 'test',
+    type: 'toto',
     eventId: 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab',
   };
 

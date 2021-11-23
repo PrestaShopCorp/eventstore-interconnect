@@ -40,7 +40,7 @@ export class HttpDriverService implements Driver {
     timeout: number,
   ): Promise<void> {
     let eventWritten = false;
-    setTimeout(() => {
+    await setTimeout(() => {
       this.safetyNet.hook(event, eventWritten);
     }, timeout);
     await this.appendEventToStreamteEvent(event);

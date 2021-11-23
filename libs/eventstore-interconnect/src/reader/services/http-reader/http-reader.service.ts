@@ -63,15 +63,13 @@ export class HttpReaderService implements Reader, OnModuleInit {
         subscription.stream,
         subscription.group,
         async (subscription, event: ResolvedEvent) => {
-          await this.eventHandler
-            .handle(event)
-            .then(() => subscription.acknowledge(event))
-            .catch((e) => {
-              subscription.fail(event, 3, 'An error occurred');
-              this.logger.error(
-                `Unexpected error while handling an event... Details : ${e.message}`,
-              );
-            });
+          await this.eventHandler.handle(event).catch((e) => {
+            subscription.fail(event, 3, 'An error occurred');
+            this.logger.error(
+              `Unexpected error while handling an event... Details : ${e.message}`,
+            );
+          });
+          subscription.acknowledge(event);
         },
         (sub, reason, error) => {
           subscription.onSubscriptionDropped(sub, reason, error.message);
