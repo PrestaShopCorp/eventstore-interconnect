@@ -37,10 +37,7 @@ export class DriverModule {
     customSafetyNetStrategy?: Type<SafetyNet>,
   ): DynamicModule {
     const driverProviders: Provider[] = isLegacyConf(configuration.destination)
-      ? this.getLegacyEventStoreDriver(
-          configuration.destination,
-          configuration.connectionLabel,
-        )
+      ? this.getLegacyEventStoreDriver(configuration.destination)
       : this.getNextEventStoreDriver(
           configuration.destination.connectionString,
           configuration.destination.credentials,
@@ -95,7 +92,6 @@ export class DriverModule {
 
   private static getLegacyEventStoreDriver(
     configuration: ConnectionConfiguration,
-    connectionLabel?: string,
   ): Provider[] {
     const esConnectionConf: ConnectionSettings = {
       // Buffer events if remote is slow or not available
@@ -147,7 +143,7 @@ export class DriverModule {
             createConnection(
               esConnectionConf,
               tcpEndPoint,
-              connectionLabel ??
+              configuration.tcpConnectionName ??
                 `${INTERCONNECTION_CONNECTION_DEFAULT_NAME}-${nanoid(11)}`,
             );
           await eventStoreConnection.connect();

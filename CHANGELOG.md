@@ -1,5 +1,8 @@
 # Major evlolutions of the project
 
+### 1.0.24
+update naming of the connection name for legacy event store
+
 ### 1.0.23
 - Adding a custom strategy for invalid event handling
 - the name of te connection is always the same

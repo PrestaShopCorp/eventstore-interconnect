@@ -119,11 +119,16 @@ export class ReaderModule {
       {
         provide: EVENTSTORE_PERSISTENT_CONNECTION,
         useFactory: async () => {
+          console.log(
+            'configuration.source.tcpConnectionName : ',
+            configuration.source.tcpConnectionName ??
+              `${INTERCONNECTION_CONNECTION_DEFAULT_NAME}-${nanoid(11)}`,
+          );
           const eventStoreConnection: EventStoreNodeConnection =
             createConnection(
               esConnectionConf,
               tcpEndPoint,
-              configuration.connectionLabel ??
+              configuration.source.tcpConnectionName ??
                 `${INTERCONNECTION_CONNECTION_DEFAULT_NAME}-${nanoid(11)}`,
             );
           await eventStoreConnection.connect();

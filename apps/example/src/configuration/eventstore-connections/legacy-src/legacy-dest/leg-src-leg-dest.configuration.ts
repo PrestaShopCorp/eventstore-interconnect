@@ -29,6 +29,7 @@ export const legSrcLegDestConfiguration: InterconnectionConfiguration = {
       host: LEGACY_EVENTSTORE_HTTP_HOST_SOURCE,
       port: LEGACY_EVENTSTORE_HTTP_PORT_SOURCE,
     },
+    tcpConnectionName: 'toto',
   },
   destination: {
     credentials: {
@@ -43,6 +44,7 @@ export const legSrcLegDestConfiguration: InterconnectionConfiguration = {
       host: LEGACY_EVENTSTORE_HTTP_HOST_DEST,
       port: LEGACY_EVENTSTORE_HTTP_PORT_DEST,
     },
+    tcpConnectionName: 'tutu',
   },
   eventStoreBusConfig: {
     subscriptions: {

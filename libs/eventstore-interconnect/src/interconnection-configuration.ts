@@ -6,12 +6,12 @@ export interface InterconnectionConfiguration {
   destination: ConnectionConfiguration;
   eventStoreSubsystems?: IEventStoreSubsystems;
   eventStoreBusConfig?: IEventStoreBusConfig;
-  connectionLabel?: string;
 }
 
 export interface ConnectionConfiguration {
   credentials: Credentials;
   tcp?: ProtocolConf;
+  tcpConnectionName?: string;
   http?: ProtocolConf;
   connectionString?: string;
 }
