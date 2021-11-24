@@ -8,14 +8,25 @@ import { ResolvedEvent } from 'node-eventstore-client';
 import { getEvent } from './mocks/helper';
 import { InvalidEventError } from '../errors/invalid-event.error';
 import { NotAllowedEventError } from '../errors/not-allowed-event.error';
+import { SAFETY_NET } from '../../safety-net';
+import spyOn = jest.spyOn;
 
 describe('NextEventsValidatorService', () => {
   let service: NextEventsValidatorService;
+
+  const safetynetMock = {
+    cannotWriteEventHook: jest.fn(),
+    invalidEventHook: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NextEventsValidatorService,
+        {
+          provide: SAFETY_NET,
+          useValue: safetynetMock,
+        },
         {
           provide: ALLOWED_EVENTS,
           useValue: {
@@ -68,5 +79,31 @@ describe('NextEventsValidatorService', () => {
     } catch (e) {
       expect(e).toEqual(expectedError);
     }
+  });
+
+  it('should trigger the safety hook for invalid event when event is invalid', async () => {
+    expect.assertions(1);
+    spyOn(safetynetMock, 'invalidEventHook');
+
+    const invalidEvent = getEvent(false, 1);
+    try {
+      await service.validate(invalidEvent);
+    } catch (e) {
+      // do nothing;
+      expect(safetynetMock.invalidEventHook).toHaveBeenCalledWith(invalidEvent);
+    }
+  });
+
+  it('should trigger the safety hook for invalid invent when event is not allowed', async () => {
+    spyOn(safetynetMock, 'invalidEventHook');
+    const notAllowedEvent: ResolvedEvent = getEvent(false, 1);
+    try {
+      await service.validate(notAllowedEvent);
+    } catch (e) {
+      // do nothing
+    }
+    expect(safetynetMock.invalidEventHook).toHaveBeenCalledWith(
+      notAllowedEvent,
+    );
   });
 });

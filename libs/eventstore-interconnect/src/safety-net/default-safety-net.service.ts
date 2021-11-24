@@ -4,11 +4,9 @@ import { SafetyNet } from './safety-net.service.interface';
 
 @Injectable()
 export class DefaultSafetyNetService implements SafetyNet {
-  constructor(private readonly logger: Logger) {
-    logger.log('toto');
-  }
+  constructor(private readonly logger: Logger) {}
 
-  public hook(event: any, eventWritten?: boolean): void {
+  public cannotWriteEventHook(event: any, eventWritten?: boolean): void {
     if (eventWritten) {
       return;
     }
@@ -16,5 +14,9 @@ export class DefaultSafetyNetService implements SafetyNet {
       `Timeout while writing event (eventId ${event.eventId} and others after this one)`,
     );
     process.exit(1);
+  }
+
+  public invalidEventHook(): void {
+    // Do nothing by default
   }
 }

@@ -31,7 +31,7 @@ export class HttpDriverService implements Driver {
       );
     } catch (err) {
       this.logger.error(err.toString());
-      this.safetyNet.hook(event);
+      this.safetyNet.cannotWriteEventHook(event);
     }
   }
 
@@ -41,7 +41,7 @@ export class HttpDriverService implements Driver {
   ): Promise<void> {
     let eventWritten = false;
     await setTimeout(() => {
-      this.safetyNet.hook(event, eventWritten);
+      this.safetyNet.cannotWriteEventHook(event, eventWritten);
     }, timeout);
     await this.appendEventToStreamteEvent(event);
     eventWritten = true;

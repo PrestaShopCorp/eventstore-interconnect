@@ -78,11 +78,11 @@ describe('GrpcDriverService', () => {
     spyOn(client, 'appendToStream').mockImplementation(() => {
       throw Error();
     });
-    spyOn(safetyNet, 'hook');
+    spyOn(safetyNet, 'cannotWriteEventHook');
 
     await driver.writeEvent(event);
 
-    expect(safetyNet.hook).toHaveBeenCalled();
+    expect(safetyNet.cannotWriteEventHook).toHaveBeenCalled();
   });
 
   it('should trigger safety net hook when write event timed out', async () => {
@@ -99,7 +99,7 @@ describe('GrpcDriverService', () => {
 
     jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS);
 
-    expect(safetyNet.hook).toHaveBeenCalledWith(event, false);
+    expect(safetyNet.cannotWriteEventHook).toHaveBeenCalledWith(event, false);
     jest.runAllTimers();
   });
 });

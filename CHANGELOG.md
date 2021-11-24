@@ -1,5 +1,9 @@
 # Major evlolutions of the project
 
+### 1.0.23
+- Adding a custom strategy for invalid event handling
+- the name of te connection is always the same
+
 ### 1.0.22
 On this version, seperation of concerns about the event handling :
 - errors are emmitted when event is invalid, or not allowed, so then we can catch them with a general filter

@@ -4,12 +4,15 @@ import { validate, ValidationError } from 'class-validator';
 import { InvalidEventError } from '../errors/invalid-event.error';
 import { NotAllowedEventError } from '../errors/not-allowed-event.error';
 import { Validator } from '../validator';
+import { SAFETY_NET, SafetyNet } from '../../safety-net';
 
 @Injectable()
 export class LegacyEventsValidatorService implements Validator {
   constructor(
     @Inject(ALLOWED_EVENTS)
     private readonly allowedEvents: any,
+    @Inject(SAFETY_NET)
+    private readonly safetyNet: SafetyNet,
   ) {}
 
   public async validate(eventAsPayload: any): Promise<void> {
@@ -18,6 +21,7 @@ export class LegacyEventsValidatorService implements Validator {
 
     const concatErrors: ValidationError[] = await validate(eventInstance);
     if (concatErrors.length > 0) {
+      this.safetyNet.invalidEventHook(eventAsPayload);
       throw new InvalidEventError(JSON.stringify(concatErrors));
     }
   }
@@ -26,6 +30,7 @@ export class LegacyEventsValidatorService implements Validator {
     try {
       return new this.allowedEvents[eventAsPayload.event.eventType](data);
     } catch (e) {
+      this.safetyNet.invalidEventHook(eventAsPayload);
       throw new NotAllowedEventError(this.allowedEvents);
     }
   }

@@ -75,17 +75,17 @@ describe('HttpDriverService', () => {
     spyOn(esNodeConnection, 'appendToStream').mockImplementation(() => {
       throw Error();
     });
-    spyOn(safetyNet, 'hook');
+    spyOn(safetyNet, 'cannotWriteEventHook');
 
     await service.writeEvent(event);
 
-    expect(safetyNet.hook).toHaveBeenCalled();
+    expect(safetyNet.cannotWriteEventHook).toHaveBeenCalled();
   });
 
   it('should trigger safety net hook when write event timed out', async () => {
     jest.useFakeTimers();
     spyOn(global, 'setTimeout');
-    spyOn(safetyNet, 'hook');
+    spyOn(safetyNet, 'cannotWriteEventHook');
 
     spyOn(esNodeConnection, 'appendToStream').mockImplementation(
       async (): Promise<any> => {
@@ -102,6 +102,6 @@ describe('HttpDriverService', () => {
       expect.any(Function),
       EVENT_WRITER_TIMEOUT_IN_MS,
     );
-    expect(safetyNet.hook).toHaveBeenCalledWith(event, false);
+    expect(safetyNet.cannotWriteEventHook).toHaveBeenCalledWith(event, false);
   });
 });

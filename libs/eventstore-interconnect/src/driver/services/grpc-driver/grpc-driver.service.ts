@@ -30,7 +30,7 @@ export class GrpcDriverService implements Driver {
       );
     } catch (err) {
       this.logger.error(err.toString());
-      this.safetyNet.hook(event);
+      this.safetyNet.cannotWriteEventHook(event);
     }
   }
 
@@ -40,7 +40,7 @@ export class GrpcDriverService implements Driver {
   ): Promise<void> {
     let eventWritten = false;
     setTimeout(() => {
-      this.safetyNet.hook(event, eventWritten);
+      this.safetyNet.cannotWriteEventHook(event, eventWritten);
     }, timeout);
     this.appendEventToStreamteEvent(event).finally(() => (eventWritten = true));
   }
