@@ -23,7 +23,11 @@ import { SUBSCRIPTIONS } from '../reader/services/constants';
 import * as geteventstorePromise from 'geteventstore-promise';
 import { HTTPClient } from 'geteventstore-promise';
 import { Logger } from 'nestjs-pino-stackdriver';
-import { ALLOWED_EVENTS, CREDENTIALS } from '../constants';
+import {
+  ALLOWED_EVENTS,
+  CREDENTIALS,
+  INTERCONNECTION_CONNECTION_DEFAULT_NAME,
+} from '../constants';
 import { LegacyEventsValidatorService } from '../validator';
 import { DriverModule } from '../driver';
 import { EventStoreService } from './services/grpc-reader/event-store.service';
@@ -38,6 +42,7 @@ import {
   NextEventFormatterService,
 } from '../formatter';
 import { SafetyNet } from '../safety-net';
+import { nanoid } from 'nanoid';
 
 @Module({})
 export class ReaderModule {
@@ -118,7 +123,8 @@ export class ReaderModule {
             createConnection(
               esConnectionConf,
               tcpEndPoint,
-              'interco-module-connection',
+              configuration.connectionLabel ??
+                `${INTERCONNECTION_CONNECTION_DEFAULT_NAME}-${nanoid(11)}`,
             );
           await eventStoreConnection.connect();
 

@@ -20,11 +20,15 @@ import {
   EventStoreNodeConnection,
 } from 'node-eventstore-client';
 import { HTTP_CLIENT } from './services/http-driver/http-connection.constants';
-import { CREDENTIALS } from '../constants';
+import {
+  CREDENTIALS,
+  INTERCONNECTION_CONNECTION_DEFAULT_NAME,
+} from '../constants';
 import { NoGrpcConnectionError } from './errors/no-grpc-connection.error';
 import * as geteventstorePromise from 'geteventstore-promise';
 import { HTTPClient } from 'geteventstore-promise';
 import { SafetyNetModule } from '../safety-net';
+import { nanoid } from 'nanoid';
 
 @Module({})
 export class DriverModule {
@@ -33,7 +37,10 @@ export class DriverModule {
     customSafetyNetStrategy?: Type<SafetyNet>,
   ): DynamicModule {
     const driverProviders: Provider[] = isLegacyConf(configuration.destination)
-      ? this.getLegacyEventStoreDriver(configuration.destination)
+      ? this.getLegacyEventStoreDriver(
+          configuration.destination,
+          configuration.connectionLabel,
+        )
       : this.getNextEventStoreDriver(
           configuration.destination.connectionString,
           configuration.destination.credentials,
@@ -88,6 +95,7 @@ export class DriverModule {
 
   private static getLegacyEventStoreDriver(
     configuration: ConnectionConfiguration,
+    connectionLabel?: string,
   ): Provider[] {
     const esConnectionConf: ConnectionSettings = {
       // Buffer events if remote is slow or not available
@@ -139,7 +147,8 @@ export class DriverModule {
             createConnection(
               esConnectionConf,
               tcpEndPoint,
-              'interco-module-connection',
+              connectionLabel ??
+                `${INTERCONNECTION_CONNECTION_DEFAULT_NAME}-${nanoid(11)}`,
             );
           await eventStoreConnection.connect();
 

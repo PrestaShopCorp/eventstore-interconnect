@@ -6,6 +6,7 @@ export interface InterconnectionConfiguration {
   destination: ConnectionConfiguration;
   eventStoreSubsystems?: IEventStoreSubsystems;
   eventStoreBusConfig?: IEventStoreBusConfig;
+  connectionLabel?: string;
 }
 
 export interface ConnectionConfiguration {
