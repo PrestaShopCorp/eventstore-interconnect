@@ -1,4 +1,3 @@
-export * from './services/http-reader/http-connection.constants';
 export * from './services/http-reader/http-reader.service';
 export * from './services/grpc-reader/grpc-reader.service';
 export * from './services/constants';

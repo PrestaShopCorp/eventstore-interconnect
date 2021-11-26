@@ -2,7 +2,15 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declaration": false,
-    "outDir": "../../dist/apps/example"
+    "outDir": "../../dist/apps/example",
+    "paths": {
+      "@eventstore-interconnect": [
+        "libs/eventstore-interconnect/src"
+      ],
+      "@eventstore-interconnect/*": [
+        "libs/eventstore-interconnect/src/*"
+      ]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]

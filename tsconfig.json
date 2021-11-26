@@ -18,14 +18,6 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {
-      "@eventstore-interconnect": [
-        "libs/eventstore-interconnect/src"
-      ],
-      "@eventstore-interconnect/*": [
-        "libs/eventstore-interconnect/src/*"
-      ]
-    }
   },
   "include": [
     "libs/eventstore-interconnect/**/*"

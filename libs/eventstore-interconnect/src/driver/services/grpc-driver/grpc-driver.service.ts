@@ -1,8 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Driver } from '../../driver';
 import { ANY } from 'nestjs-geteventstore-next';
-import { EVENT_STORE_CONNECTOR } from 'nestjs-geteventstore-next/dist/event-store/services/event-store.constants';
-import { Client } from '@eventstore/db-client/dist/Client';
 import { CREDENTIALS, EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
 import { Credentials } from '../../../interconnection-configuration';
 import { jsonEvent } from '@eventstore/db-client';
@@ -10,12 +8,14 @@ import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { FormattedEvent } from '../../../formatter';
 import { EventData } from '@eventstore/db-client/dist/types/events';
+import { NextConnectionInitializerService } from '../connection-initializers/next-connection-initializer/next-connection-initializer.service';
+import { CONNECTION_INITIALIZER } from '../connection-initializers/connection-initializer';
 
 @Injectable()
 export class GrpcDriverService implements Driver {
   constructor(
-    @Inject(EVENT_STORE_CONNECTOR)
-    private readonly client: Client,
+    @Inject(CONNECTION_INITIALIZER)
+    private readonly client: NextConnectionInitializerService,
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
     @Inject(SAFETY_NET) protected readonly safetyNet: SafetyNet,
@@ -59,10 +59,12 @@ export class GrpcDriverService implements Driver {
       data,
       metadata,
     });
-    await this.client.appendToStream(streamId, formattedEvent, {
-      expectedRevision: ANY,
-      credentials: this.credentials,
-    });
+    await this.client
+      .getConnectedClient()
+      .appendToStream(streamId, formattedEvent, {
+        expectedRevision: ANY,
+        credentials: this.credentials,
+      });
     this.logger.log(`Event (id: ${event.eventId}) written`);
   }
 }

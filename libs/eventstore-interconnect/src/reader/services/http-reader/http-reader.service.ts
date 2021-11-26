@@ -1,31 +1,41 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Reader } from '../reader';
 import {
-  EVENTSTORE_PERSISTENT_CONNECTION,
-  HTTP_CLIENT,
-} from './http-connection.constants';
-import { Credentials } from '../../../interconnection-configuration';
+  Credentials,
+  InterconnectionConfiguration,
+  ProtocolConf,
+} from '../../../interconnection-configuration';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { SUBSCRIPTIONS } from '../constants';
+import * as geteventstorePromise from 'geteventstore-promise';
 import {
   HTTPClient,
   PersistentSubscriptionOptions,
 } from 'geteventstore-promise';
 import {
+  ConnectionSettings,
+  createConnection,
   EventStoreNodeConnection,
   ResolvedEvent,
 } from 'node-eventstore-client';
 import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
-import { CREDENTIALS } from '../../../constants';
+import {
+  CREDENTIALS,
+  INTERCONNECT_CONFIGURATION,
+  INTERCONNECTION_CONNECTION_DEFAULT_NAME,
+} from '../../../constants';
 import { EVENT_HANDLER, EventHandler } from '../../../event-handler';
+import { NoLegacyConnectionError } from '../../errors/no-legacy-connection.error';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {
+  private client: HTTPClient;
+  private eventStoreConnection: EventStoreNodeConnection;
+
   constructor(
-    @Inject(HTTP_CLIENT)
-    private readonly client: HTTPClient,
-    @Inject(EVENTSTORE_PERSISTENT_CONNECTION)
-    private readonly eventStoreConnection: EventStoreNodeConnection,
+    @Inject(INTERCONNECT_CONFIGURATION)
+    private readonly configuration: InterconnectionConfiguration,
     @Inject(SUBSCRIPTIONS)
     private readonly subscriptions: IEventStorePersistentSubscriptionConfig[],
     @Inject(CREDENTIALS)
@@ -36,7 +46,65 @@ export class HttpReaderService implements Reader, OnModuleInit {
   ) {}
 
   public async onModuleInit(): Promise<void> {
+    const tcpEndPoint: ProtocolConf = {
+      host: this.configuration.source.tcp.host,
+      port: this.configuration.source.tcp.port,
+    };
+    await this.connectToClient(tcpEndPoint);
+    await this.getEventstoreConnection(tcpEndPoint);
+
     await this.upsertPersistantSubscription();
+  }
+
+  private async getEventstoreConnection(tcpEndPoint: ProtocolConf) {
+    const esConnectionConf: ConnectionSettings = {
+      // Buffer events if remote is slow or not available
+      maxQueueSize: 100_000,
+      maxRetries: 10_000,
+      operationTimeout: 5_000,
+      operationTimeoutCheckPeriod: 1_000,
+      // Fail fast on connect
+      clientConnectionTimeout: 2_000,
+      failOnNoServerResponse: true,
+      // Try to reconnect every 10s for 30mn
+      maxReconnections: 200,
+      reconnectionDelay: 10_000,
+      // Production heartbeat
+      heartbeatInterval: 10_000,
+      heartbeatTimeout: 3_000,
+    };
+
+    this.logger.log(
+      'configuration.source.tcpConnectionName : ' +
+        this.configuration.source.tcpConnectionName ??
+        `${INTERCONNECTION_CONNECTION_DEFAULT_NAME}-${nanoid(11)}`,
+    );
+    this.eventStoreConnection = createConnection(
+      esConnectionConf,
+      tcpEndPoint,
+      this.configuration.source.tcpConnectionName ??
+        `${INTERCONNECTION_CONNECTION_DEFAULT_NAME}-${nanoid(11)}`,
+    );
+    await this.eventStoreConnection.connect();
+
+    this.logger.log(
+      'READER : Connected to legacy eventstore at ' +
+        tcpEndPoint.host +
+        ':' +
+        tcpEndPoint.port,
+    );
+  }
+
+  private async connectToClient(tcpEndPoint: ProtocolConf) {
+    this.client = new geteventstorePromise.HTTPClient({
+      hostname: this.configuration.source.http.host.replace(/^https?:\/\//, ''),
+      port: this.configuration.source.http.port,
+      credentials: {
+        username: this.configuration.source.credentials.username,
+        password: this.configuration.source.credentials.password,
+      },
+    });
+    await this.checkLegacyConnectionStatus(this.client, tcpEndPoint);
   }
 
   public async upsertPersistantSubscription(): Promise<void> {
@@ -79,6 +147,17 @@ export class HttpReaderService implements Reader, OnModuleInit {
         subscription.autoAck,
       );
       this.logger.log(`Connected.`);
+    }
+  }
+
+  public async checkLegacyConnectionStatus(
+    httpClient: HTTPClient,
+    tcpEndPoint: ProtocolConf,
+  ): Promise<void> {
+    try {
+      await httpClient.checkStreamExists('$all');
+    } catch (errMessage) {
+      throw new NoLegacyConnectionError(errMessage, tcpEndPoint);
     }
   }
 }

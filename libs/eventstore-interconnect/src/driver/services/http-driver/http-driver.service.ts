@@ -1,22 +1,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Driver } from '../../driver';
 import { ExpectedVersion } from 'nestjs-geteventstore-legacy';
-import {
-  createJsonEventData,
-  EventStoreNodeConnection,
-} from 'node-eventstore-client';
-import { HTTP_CLIENT } from './http-connection.constants';
+import { createJsonEventData } from 'node-eventstore-client';
 import { CREDENTIALS, EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
 import { Credentials } from '../../../interconnection-configuration';
 import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { FormattedEvent } from '../../../formatter';
+import { CONNECTION_INITIALIZER, ConnectionInitializer } from '../..';
 
 @Injectable()
 export class HttpDriverService implements Driver {
   constructor(
-    @Inject(HTTP_CLIENT)
-    private readonly eventStoreNodeConnection: EventStoreNodeConnection,
+    @Inject(CONNECTION_INITIALIZER)
+    private readonly clientConnectorService: ConnectionInitializer,
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
     @Inject(SAFETY_NET) protected readonly safetyNet: SafetyNet,
@@ -59,12 +56,14 @@ export class HttpDriverService implements Driver {
       event.metadata,
       event.type,
     );
-    await this.eventStoreNodeConnection.appendToStream(
-      event.streamId,
-      ExpectedVersion.Any,
-      jsonFormattedEvent,
-      this.credentials,
-    );
+    await this.clientConnectorService
+      .getConnectedClient()
+      .appendToStream(
+        event.streamId,
+        ExpectedVersion.Any,
+        jsonFormattedEvent,
+        this.credentials,
+      );
     this.logger.log(`Event (id: ${event.eventId}) written`);
   }
 }
