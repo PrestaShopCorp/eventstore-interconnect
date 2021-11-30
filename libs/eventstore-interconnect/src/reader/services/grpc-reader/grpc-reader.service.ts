@@ -7,7 +7,7 @@ import {
 } from '@eventstore/db-client';
 import { isNil } from '@nestjs/common/utils/shared.utils';
 import { Client } from '@eventstore/db-client/dist/Client';
-import { SUBSCRIPTIONS } from '../constants';
+import { EVENTSTORE_DB_CLIENT, SUBSCRIPTIONS } from '../constants';
 import {
   Credentials,
   InterconnectionConfiguration,
@@ -38,7 +38,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
     @Inject(SUBSCRIPTIONS)
     private readonly subscriptions: IPersistentSubscriptionConfig[],
     private readonly logger: Logger,
-    @Inject('test')
+    @Inject(EVENTSTORE_DB_CLIENT)
     private readonly eventStoreDBClient: any,
   ) {}
 
@@ -47,7 +47,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
     await this.upsertPersistantSubscription();
   }
 
-  private async startEventstoreClient() {
+  private async startEventstoreClient(): Promise<void> {
     this.eventStore = this.eventStoreDBClient.connectionString(
       this.configuration.source.connectionString,
     );

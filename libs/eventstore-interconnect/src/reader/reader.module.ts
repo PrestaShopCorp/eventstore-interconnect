@@ -4,7 +4,7 @@ import { READER } from './services/reader';
 import { isLegacyConf } from '../helpers';
 import { HttpReaderService } from './services/http-reader/http-reader.service';
 import { GrpcReaderService } from './services/grpc-reader/grpc-reader.service';
-import { SUBSCRIPTIONS } from './services/constants';
+import { EVENTSTORE_DB_CLIENT, SUBSCRIPTIONS } from './services/constants';
 import { Logger } from 'nestjs-pino-stackdriver';
 import {
   ALLOWED_EVENTS,
@@ -108,7 +108,7 @@ export class ReaderModule {
         useClass: GrpcReaderService,
       },
       {
-        provide: 'test',
+        provide: EVENTSTORE_DB_CLIENT,
         useValue: EventStoreDBClient,
       },
       {
