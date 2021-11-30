@@ -2,6 +2,8 @@
 
 ### 1.0.25
 - Connections initialized on module init (hooked to lifecycle)
+- Events are copied exactly as they are
+- metadata enriched with event Id, stream name, and event type
 
 ### 1.0.24
 update naming of the connection name for legacy event store
