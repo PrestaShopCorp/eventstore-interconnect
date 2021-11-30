@@ -9,9 +9,7 @@ import {
 import { DRIVER } from './driver';
 import { HttpDriverService } from './services/http-driver/http-driver.service';
 import { GrpcDriverService } from './services/grpc-driver/grpc-driver.service';
-import { Client } from '@eventstore/db-client/dist/Client';
 import { CREDENTIALS, INTERCONNECT_CONFIGURATION } from '../constants';
-import { NoGrpcConnectionError } from './errors/no-grpc-connection.error';
 import { SafetyNetModule } from '../safety-net';
 import { NextConnectionInitializerService } from './services/connection-initializers/next-connection-initializer/next-connection-initializer.service';
 import { LegacyConnectionInitializerService } from './services/connection-initializers/legacy-connection-initializer/legacy-connection-initializer.service';
@@ -55,17 +53,6 @@ export class DriverModule {
         useClass: NextConnectionInitializerService,
       },
     ];
-  }
-
-  public static async checkNextConnectionStatus(
-    eventStoreConnector: Client,
-    connectionString: string,
-  ): Promise<void> {
-    try {
-      await eventStoreConnector.getStreamMetadata('$all');
-    } catch (errMessage) {
-      throw new NoGrpcConnectionError(errMessage, connectionString);
-    }
   }
 
   private static getLegacyEventStoreDriver(

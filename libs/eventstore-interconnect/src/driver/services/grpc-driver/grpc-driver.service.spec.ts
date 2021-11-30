@@ -1,38 +1,46 @@
 import { GrpcDriverService } from './grpc-driver.service';
-import { Client } from '@eventstore/db-client/dist/Client';
 import { ANY } from 'nestjs-geteventstore-next';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { Credentials } from '../../../interconnection-configuration';
 import { SafetyNet } from '../../../safety-net';
-import spyOn = jest.spyOn;
 import { setTimeout } from 'timers/promises';
 import { FormattedEvent } from '../../../formatter';
+import spyOn = jest.spyOn;
 
 describe('GrpcDriverService', () => {
   let driver: GrpcDriverService;
 
-  const client: Client = { appendToStream: jest.fn() } as any as Client;
+  const connectionInitializer = {
+    getConnectedClient: jest.fn(),
+  };
+
   const credentials: Credentials = {
     username: '',
     password: '',
   };
   const safetyNet: SafetyNet = {
     hook: jest.fn(),
+    cannotWriteEventHook: jest.fn(),
   } as any as SafetyNet;
   const logger: Logger = { error: jest.fn(), log: jest.fn() } as any as Logger;
 
   const event: FormattedEvent = {
-    contentType: 'application/json',
     data: {},
-    metadata: {},
-    streamId: 'test',
-    type: 'toto',
-    eventId: 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab',
+    metadata: {
+      eventStreamId: 'test',
+      eventType: 'toto',
+      eventId: 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab',
+    },
   };
 
   beforeEach(async () => {
-    driver = new GrpcDriverService(client, credentials, safetyNet, logger);
+    driver = new GrpcDriverService(
+      connectionInitializer,
+      credentials,
+      safetyNet,
+      logger,
+    );
   });
 
   afterEach(() => {
@@ -41,23 +49,37 @@ describe('GrpcDriverService', () => {
   });
 
   it('should transmit write order to client with good options when writing event', async () => {
+    const appentToStreamSpy = jest.fn();
+    spyOn(connectionInitializer, 'getConnectedClient').mockReturnValue({
+      appendToStream: appentToStreamSpy,
+    });
+
     await driver.writeEvent(event);
 
-    expect(client.appendToStream).toHaveBeenCalled();
+    expect(appentToStreamSpy).toHaveBeenCalled();
   });
 
   it('should give the event Id for idempotency when writing event', async () => {
+    const appentToStreamSpy = jest.fn();
+    spyOn(connectionInitializer, 'getConnectedClient').mockReturnValue({
+      appendToStream: appentToStreamSpy,
+    });
+
     await driver.writeEvent(event);
 
-    expect(client.appendToStream).toHaveBeenCalledWith(
+    expect(appentToStreamSpy).toHaveBeenCalledWith(
       'test',
 
       {
         contentType: 'application/json',
         data: {},
-        id: 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab',
-        metadata: {},
-        type: 'toto',
+        id: event.metadata.eventId,
+        metadata: {
+          eventId: event.metadata.eventId,
+          eventType: event.metadata.eventType,
+          eventStreamId: event.metadata.eventStreamId,
+        },
+        type: event.metadata.eventType,
       },
       { expectedRevision: ANY, credentials },
     );
@@ -75,9 +97,12 @@ describe('GrpcDriverService', () => {
   });
 
   it('should trigger the safety net hook in case of failure when writing event', async () => {
-    spyOn(client, 'appendToStream').mockImplementation(() => {
-      throw Error();
+    spyOn(connectionInitializer, 'getConnectedClient').mockReturnValue({
+      appendToStream: () => {
+        throw Error();
+      },
     });
+
     spyOn(safetyNet, 'cannotWriteEventHook');
 
     await driver.writeEvent(event);
@@ -89,14 +114,15 @@ describe('GrpcDriverService', () => {
     jest.useFakeTimers('legacy');
     jest.spyOn(global, 'setTimeout');
 
-    spyOn(client, 'appendToStream').mockImplementation(
-      async (): Promise<any> => {
-        await setTimeout(EVENT_WRITER_TIMEOUT_IN_MS * 2);
+    spyOn(connectionInitializer, 'getConnectedClient').mockReturnValue({
+      appendToStream: () => {
+        setTimeout(EVENT_WRITER_TIMEOUT_IN_MS + 1000);
       },
-    );
+    });
 
-    await driver.writeEvent(event);
-
+    driver.writeEvent(event).then(() => {
+      // do nothing
+    });
     jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS);
 
     expect(safetyNet.cannotWriteEventHook).toHaveBeenCalledWith(event, false);

@@ -1,8 +1,9 @@
 export interface FormattedEvent {
-  eventId: string;
-  contentType: 'application/json';
-  type: string;
   data: any;
-  metadata: any;
-  streamId: string;
+  metadata: FormattedMetadata;
+}
+export interface FormattedMetadata {
+  eventStreamId: string;
+  eventType: string;
+  eventId: string;
 }

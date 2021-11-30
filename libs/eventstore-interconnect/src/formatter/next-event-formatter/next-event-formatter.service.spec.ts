@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NextEventFormatterService } from './next-event-formatter.service';
+import { FormattedEvent, FormattedMetadata } from '../formatted-event';
 
 describe('NextEventFormatterService', () => {
   let service: NextEventFormatterService;
@@ -17,21 +18,22 @@ describe('NextEventFormatterService', () => {
   });
 
   it('should return the event given in param', () => {
-    const event = service.format({
+    const metadata: FormattedMetadata = {
+      eventId: '123',
+      eventStreamId: 'toto',
+      eventType: 'tutu',
+    };
+    const event: FormattedEvent = service.format({
       event: {
-        id: 'toto',
+        id: '123',
         type: 'tutu',
         data: { plop: 'plop' },
         metadata: { pulp: 'pulp' },
-        streamId: 'sss',
+        streamId: 'toto',
       },
     });
 
-    expect(event.eventId).toEqual('toto');
-    expect(event.type).toEqual('tutu');
-    expect(event.data.plop).toEqual('plop');
-    expect(event.metadata.pulp).toEqual('pulp');
-    expect(event.contentType).toEqual('application/json');
-    expect(event.streamId).toEqual('sss');
+    expect(event.metadata).toEqual({ ...metadata, pulp: 'pulp' });
+    expect(event.data).toEqual(event.data);
   });
 });

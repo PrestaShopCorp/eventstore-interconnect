@@ -1,5 +1,8 @@
 # Major evlolutions of the project
 
+### 1.0.25
+- Connections initialized on module init (hooked to lifecycle)
+
 ### 1.0.24
 update naming of the connection name for legacy event store
 

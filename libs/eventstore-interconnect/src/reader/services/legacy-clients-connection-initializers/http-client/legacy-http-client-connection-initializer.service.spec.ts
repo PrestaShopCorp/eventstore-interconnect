@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NextConnectionInitializerService } from './next-connection-initializer.service';
-import { INTERCONNECT_CONFIGURATION } from '../../../../constants';
-import { InterconnectionConfiguration } from '../../../../interconnection-configuration';
 import { Logger } from 'nestjs-pino-stackdriver';
+import { InterconnectionConfiguration } from '../../../../interconnection-configuration';
+import { INTERCONNECT_CONFIGURATION } from '../../../../constants';
+import { LegacyHttpClientConnectionInitializerService } from './legacy-http-client-connection-initializer.service';
 
-describe('NextConnectionInitializerService', () => {
-  let service: NextConnectionInitializerService;
+describe('LegacyHttpClientConnectionInitializerService', () => {
+  let service: LegacyHttpClientConnectionInitializerService;
 
   const loggerMock = {
     log: jest.fn(),
@@ -29,7 +29,7 @@ describe('NextConnectionInitializerService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        NextConnectionInitializerService,
+        LegacyHttpClientConnectionInitializerService,
         {
           provide: Logger,
           useValue: loggerMock,
@@ -41,8 +41,8 @@ describe('NextConnectionInitializerService', () => {
       ],
     }).compile();
 
-    service = module.get<NextConnectionInitializerService>(
-      NextConnectionInitializerService,
+    service = module.get<LegacyHttpClientConnectionInitializerService>(
+      LegacyHttpClientConnectionInitializerService,
     );
   });
 

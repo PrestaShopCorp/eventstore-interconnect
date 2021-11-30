@@ -1,6 +1,5 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import {
-  EventStoreDBClient,
   EventType,
   PersistentSubscription,
   persistentSubscriptionSettingsFromDefaults,
@@ -17,7 +16,12 @@ import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
 import { CREDENTIALS, INTERCONNECT_CONFIGURATION } from '../../../constants';
 import { PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE } from 'nestjs-geteventstore-next/dist/event-store/services/errors.constant';
 import { Logger } from 'nestjs-pino-stackdriver';
-import { DriverModule, EVENT_HANDLER, EventHandler, Reader } from '../../../';
+import {
+  EVENT_HANDLER,
+  EventHandler,
+  NoGrpcConnectionError,
+  Reader,
+} from '../../../';
 
 @Injectable()
 export class GrpcReaderService implements Reader, OnModuleInit {
@@ -34,6 +38,8 @@ export class GrpcReaderService implements Reader, OnModuleInit {
     @Inject(SUBSCRIPTIONS)
     private readonly subscriptions: IPersistentSubscriptionConfig[],
     private readonly logger: Logger,
+    @Inject('test')
+    private readonly eventStoreDBClient: any,
   ) {}
 
   public async onModuleInit(): Promise<any> {
@@ -42,10 +48,10 @@ export class GrpcReaderService implements Reader, OnModuleInit {
   }
 
   private async startEventstoreClient() {
-    this.eventStore = EventStoreDBClient.connectionString(
+    this.eventStore = this.eventStoreDBClient.connectionString(
       this.configuration.source.connectionString,
     );
-    await DriverModule.checkNextConnectionStatus(
+    await this.checkNextConnectionStatus(
       this.eventStore,
       this.configuration.source.connectionString,
     );
@@ -53,6 +59,17 @@ export class GrpcReaderService implements Reader, OnModuleInit {
       'READER : Connected to Next eventstore on ' +
         this.configuration.source.connectionString,
     );
+  }
+
+  public async checkNextConnectionStatus(
+    eventStoreConnector: Client,
+    connectionString: string,
+  ): Promise<void> {
+    try {
+      await eventStoreConnector.getStreamMetadata('$all');
+    } catch (errMessage) {
+      throw new NoGrpcConnectionError(errMessage, connectionString);
+    }
   }
 
   public async upsertPersistantSubscription(): Promise<void> {

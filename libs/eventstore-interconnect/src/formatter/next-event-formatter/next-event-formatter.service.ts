@@ -6,12 +6,13 @@ import { FormattedEvent } from '../formatted-event';
 export class NextEventFormatterService implements Formatter {
   public format(readonlyEvent: any): FormattedEvent {
     return {
-      eventId: readonlyEvent.event.id,
-      type: readonlyEvent.event.type,
-      contentType: 'application/json',
       data: readonlyEvent.event.data,
-      metadata: readonlyEvent.event.metadata,
-      streamId: readonlyEvent.event.streamId,
+      metadata: {
+        ...readonlyEvent.event.metadata,
+        eventStreamId: readonlyEvent.event.streamId,
+        eventId: readonlyEvent.event.id,
+        eventType: readonlyEvent.event.type,
+      },
     };
   }
 }

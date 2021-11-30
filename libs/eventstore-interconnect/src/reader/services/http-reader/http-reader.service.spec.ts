@@ -1,21 +1,54 @@
 import { HttpReaderService } from './http-reader.service';
-import {
-  EventAppearedCallback,
-  EventStoreNodeConnection,
-  EventStorePersistentSubscription,
-} from 'node-eventstore-client';
 import { Logger } from 'nestjs-pino-stackdriver';
-import { HTTPClient } from 'geteventstore-promise';
 import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
 import { EventHandler } from '../../../event-handler';
+import { InterconnectionConfiguration } from '../../../interconnection-configuration';
+import { LegacyEventstoreClientsConnectionInitializer } from '../legacy-clients-connection-initializers/eventstore-client/legacy-eventstore-clients-connection-initializer';
+import { LegacyHttpClientsConnectionInitializer } from '../legacy-clients-connection-initializers/http-client/legacy-http-clients-connection-initializer';
 import spyOn = jest.spyOn;
 
 describe('HttpReaderService', () => {
   let service: HttpReaderService;
 
-  const client: HTTPClient = {
-    persistentSubscriptions: { assert: jest.fn() },
-  } as any as HTTPClient;
+  const intercoConf: InterconnectionConfiguration = {
+    destination: {
+      tcp: {
+        host: 'popo',
+        port: 1234,
+      },
+      http: {
+        host: 'popo',
+        port: 1234,
+      },
+      credentials: {
+        username: '',
+        password: '',
+      },
+    },
+    source: {
+      tcp: {
+        host: 'pupu',
+        port: 5678,
+      },
+      http: {
+        host: 'popo',
+        port: 1234,
+      },
+      credentials: {
+        username: '',
+        password: '',
+      },
+    },
+  };
+
+  const persubConnectionSpy = jest.fn();
+  const eventstoreClientsConnectionInitializer: LegacyEventstoreClientsConnectionInitializer =
+    {
+      initClient: jest.fn(),
+      getEventstoreConnectedClient: () => {
+        return { connectToPersistentSubscription: persubConnectionSpy };
+      },
+    } as any as LegacyEventstoreClientsConnectionInitializer;
   const eventHandlerMock: EventHandler = {
     handle: () => {
       return { catch: jest.fn() };
@@ -23,32 +56,47 @@ describe('HttpReaderService', () => {
   } as any as EventHandler;
   const logger: Logger = { log: jest.fn() } as any as Logger;
 
-  const esNodeConnection: EventStoreNodeConnection = {
-    connectToPersistentSubscription: jest.fn(),
-  } as any as EventStoreNodeConnection;
-
   const subscriptions: IEventStorePersistentSubscriptionConfig[] = [
     {
       autoAck: true,
       bufferSize: 1,
-      group: '',
+      group: 'eee',
       onSubscriptionDropped: () => {},
       onSubscriptionStart: () => {},
       options: {},
-      stream: '',
+      stream: 'eded',
+    },
+    {
+      autoAck: true,
+      bufferSize: 2,
+      group: 'rrr',
+      onSubscriptionDropped: () => {},
+      onSubscriptionStart: () => {},
+      options: {},
+      stream: 'tttt',
     },
   ];
 
+  const persubAssertSpy = jest.fn();
+  const legacyHttpClientsConnectionInitializer: LegacyHttpClientsConnectionInitializer =
+    {
+      initClient: jest.fn(),
+      getHttpClient: () => {
+        return {
+          persistentSubscriptions: {
+            assert: persubAssertSpy,
+          },
+        };
+      },
+    } as any as LegacyHttpClientsConnectionInitializer;
+
   beforeEach(async () => {
     service = new HttpReaderService(
-      client,
-      esNodeConnection,
+      intercoConf,
       subscriptions,
-      {
-        username: '',
-        password: '',
-      },
       eventHandlerMock,
+      legacyHttpClientsConnectionInitializer,
+      eventstoreClientsConnectionInitializer,
       logger,
     );
   });
@@ -57,60 +105,31 @@ describe('HttpReaderService', () => {
     jest.resetAllMocks();
   });
 
-  it('should upsert subscriptions when module init', () => {
-    spyOn(service, 'upsertPersistantSubscription');
+  it('should upsert each subscriptions at module init', async () => {
+    await service.onModuleInit();
 
-    service.onModuleInit();
-
-    expect(service.upsertPersistantSubscription).toHaveBeenCalled();
-  });
-
-  it('should assert subscriptions at startup', async () => {
-    spyOn(client.persistentSubscriptions, 'assert');
-
-    await service.upsertPersistantSubscription();
-
-    expect(client.persistentSubscriptions.assert).toHaveBeenCalled();
+    expect(persubAssertSpy).toHaveBeenCalledTimes(2);
   });
 
   it('should connect to each asserted subscription at startup', async () => {
-    spyOn(esNodeConnection, 'connectToPersistentSubscription');
+    await service.onModuleInit();
 
-    await service.upsertPersistantSubscription();
-
-    expect(esNodeConnection.connectToPersistentSubscription).toHaveBeenCalled();
+    expect(persubConnectionSpy).toHaveBeenCalledTimes(2);
   });
 
   it(`should handle the event when a event appears`, async () => {
-    expect.assertions(1);
-
     spyOn(eventHandlerMock, 'handle');
+    await service.onModuleInit();
 
-    spyOn(
-      esNodeConnection,
-      'connectToPersistentSubscription',
-    ).mockImplementation(
-      async (
-        stream: string,
-        groupName: string,
-        eventAppeared: EventAppearedCallback<EventStorePersistentSubscription>,
-      ): Promise<any> => {
-        await eventAppeared(
-          {
-            acknowledge(): void {},
-            fail(): void {},
-            stop(): void {},
-          },
-          {
-            isResolved: false,
-            originalEventNumber: undefined,
-            originalStreamId: '',
-          },
-        );
-        expect(eventHandlerMock.handle).toHaveBeenCalled();
+    const method = persubConnectionSpy.mock.calls[0][2];
+
+    await method(
+      {
+        acknowledge: jest.fn(),
       },
+      {},
     );
 
-    await service.upsertPersistantSubscription();
+    expect(eventHandlerMock.handle).toHaveBeenCalled();
   });
 });

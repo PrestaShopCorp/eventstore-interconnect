@@ -8,14 +8,17 @@ import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { FormattedEvent } from '../../../formatter';
 import { EventData } from '@eventstore/db-client/dist/types/events';
-import { NextConnectionInitializerService } from '../connection-initializers/next-connection-initializer/next-connection-initializer.service';
-import { CONNECTION_INITIALIZER } from '../connection-initializers/connection-initializer';
+import {
+  CONNECTION_INITIALIZER,
+  ConnectionInitializer,
+} from '../connection-initializers/connection-initializer';
+import { Client } from '@eventstore/db-client/dist/Client';
 
 @Injectable()
 export class GrpcDriverService implements Driver {
   constructor(
     @Inject(CONNECTION_INITIALIZER)
-    private readonly client: NextConnectionInitializerService,
+    private readonly connectionInitializer: ConnectionInitializer,
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
     @Inject(SAFETY_NET) protected readonly safetyNet: SafetyNet,
@@ -39,32 +42,37 @@ export class GrpcDriverService implements Driver {
     timeout: number,
   ): Promise<void> {
     let eventWritten = false;
-    setTimeout(() => {
-      this.safetyNet.cannotWriteEventHook(event, eventWritten);
-    }, timeout);
-    this.appendEventToStreamteEvent(event).finally(() => (eventWritten = true));
+    await Promise.race([
+      setTimeout(() => {
+        this.safetyNet.cannotWriteEventHook(event, eventWritten);
+      }, timeout),
+      this.appendEventToStreamteEvent(event).finally(
+        () => (eventWritten = true),
+      ),
+    ]);
   }
 
   private async appendEventToStreamteEvent(
     event: FormattedEvent,
   ): Promise<void> {
     this.logger.log(
-      `Trying to write ${event.type} (id: ${event.eventId}) on stream ${event.streamId}`,
+      `Trying to write ${event.metadata.eventType} (id: ${event.metadata.eventId}) on stream ${event.metadata.eventStreamId}`,
     );
-    const { type, data, metadata, eventId, streamId } = event;
+    const { data, metadata } = event;
 
     const formattedEvent: EventData = jsonEvent({
-      id: eventId,
-      type,
+      id: event.metadata.eventId,
+      type: event.metadata.eventType,
       data,
       metadata,
     });
-    await this.client
-      .getConnectedClient()
-      .appendToStream(streamId, formattedEvent, {
-        expectedRevision: ANY,
-        credentials: this.credentials,
-      });
-    this.logger.log(`Event (id: ${event.eventId}) written`);
+
+    const client = this.connectionInitializer.getConnectedClient() as Client;
+
+    await client.appendToStream(event.metadata.eventStreamId, formattedEvent, {
+      expectedRevision: ANY,
+      credentials: this.credentials,
+    });
+    this.logger.log(`Event (id: ${event.metadata.eventId}) written`);
   }
 }

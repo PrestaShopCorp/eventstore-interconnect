@@ -25,6 +25,11 @@ import {
   NextEventFormatterService,
 } from '../formatter';
 import { SafetyNet } from '../safety-net';
+import { EventStoreDBClient } from '@eventstore/db-client';
+import { LEGACY_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER } from './services/legacy-clients-connection-initializers/eventstore-client/legacy-eventstore-clients-connection-initializer';
+import { LegacyEventStoreConnectionInitializerService } from './services/legacy-clients-connection-initializers/eventstore-client/legacy-event-store-connection-initializer.service';
+import { LEGACY_HTTP_CLIENT_CONNECTION_INITIALIZER } from './services/legacy-clients-connection-initializers/http-client/legacy-http-clients-connection-initializer';
+import { LegacyHttpClientConnectionInitializerService } from './services/legacy-clients-connection-initializers/http-client/legacy-http-client-connection-initializer.service';
 
 @Module({})
 export class ReaderModule {
@@ -72,16 +77,20 @@ export class ReaderModule {
         useValue: configuration.eventStoreBusConfig.subscriptions.persistent,
       },
       {
-        provide: CREDENTIALS,
-        useValue: configuration.source.credentials,
-      },
-      {
         provide: VALIDATOR,
         useClass: LegacyEventsValidatorService,
       },
       {
         provide: FORMATTER,
         useClass: LegacyEventFormatterService,
+      },
+      {
+        provide: LEGACY_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
+        useClass: LegacyEventStoreConnectionInitializerService,
+      },
+      {
+        provide: LEGACY_HTTP_CLIENT_CONNECTION_INITIALIZER,
+        useClass: LegacyHttpClientConnectionInitializerService,
       },
     ];
   }
@@ -97,6 +106,10 @@ export class ReaderModule {
       {
         provide: READER,
         useClass: GrpcReaderService,
+      },
+      {
+        provide: 'test',
+        useValue: EventStoreDBClient,
       },
       {
         provide: SUBSCRIPTIONS,
