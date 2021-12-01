@@ -12,7 +12,7 @@ export const getEvent = (valid: boolean, version: number): ResolvedEvent => {
       data: {
         id: 'test-id',
         isOk: true,
-        nestor: valid ? { isNestor: false } : 123,
+        nestor: { isNestor: valid ? false : 123 },
       },
       metadata: {
         correlation_id: 'fff',
@@ -35,7 +35,7 @@ export const getEvent = (valid: boolean, version: number): ResolvedEvent => {
       data: {
         id: 'test-id',
         isOk: true,
-        nestor: valid ? { isNestor: false } : 123,
+        nestor: { isNestor: valid ? false : 123 },
       },
       metadata: {
         correlation_id: 'fff',

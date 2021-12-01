@@ -5,6 +5,7 @@ import { InvalidEventError } from '../errors/invalid-event.error';
 import { NotAllowedEventError } from '../errors/not-allowed-event.error';
 import { Validator } from '../validator';
 import { SAFETY_NET, SafetyNet } from '../../safety-net';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class NextEventsValidatorService implements Validator {
@@ -27,7 +28,8 @@ export class NextEventsValidatorService implements Validator {
 
   private tryToInstantiateEvent(event: any): any {
     try {
-      return new this.allowedEvents[event.type](event.data);
+      const instance = new this.allowedEvents[event.type](event.data);
+      return plainToClass(this.allowedEvents[event.type], instance);
     } catch (e) {
       this.safetyNet.invalidEventHook(event);
       throw new NotAllowedEventError(this.allowedEvents);
