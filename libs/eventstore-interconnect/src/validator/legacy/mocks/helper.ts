@@ -13,7 +13,7 @@ export const getEvent = (valid: boolean, version: number): any => {
         JSON.stringify({
           id: 'test-id',
           isOk: true,
-          nestor: valid ? { isNestor: false } : 123,
+          nestor: { isNestor: valid ? false : 123 },
         }),
       ),
       metadata: Buffer.from(
@@ -40,7 +40,7 @@ export const getEvent = (valid: boolean, version: number): any => {
         JSON.stringify({
           id: 'test-id',
           isOk: true,
-          nestor: valid ? { isNestor: false } : 123,
+          nestor: { isNestor: valid ? false : 123 },
         }),
       ),
       metadata: Buffer.from(
