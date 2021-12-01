@@ -46,6 +46,9 @@ EVENTSTORE_INTERCO_CONNECTION_STRING_DST
 
 # This one is the duration of the timeout. By default it's 5000ms.
 EVENTSTORE_INTERCO_EVENT_WRITER_TIMEOUT_IN_MS
+
+# The interval both destination and source eventstore connection are tested. Default is 10_000ms
+CONNECTION_LINK_CHECK_INTERVAL_IN_MS
 ```
 
 So the only thing to do when an upgrade is needed : change these env variables, and restart the project. The detect will be auto (if http conf is provided, then the legacy eventstore will be used.)
@@ -72,3 +75,8 @@ import { SAFETY_NET } from '@eventstore-interconnect';
 You have an example showing that [in the usecase of this project](apps/example/README.md). That is why it doesn't exit the process while running the example. 
 
 **Note** that your class needs to implement the interface `SafetyNet`.
+
+## Auto kill
+
+Every 10 seconds by default, the lib will check the connection to source and dest is ok. If the connection does not respond in this time lapse, process will exit with 1 (the timeout here is the same as the one for writting an event (`EVENTSTORE_INTERCO_EVENT_WRITER_TIMEOUT_IN_MS`)).
+You can change the value of 10 seconds by changing the env variable `CONNECTION_LINK_CHECK_INTERVAL_IN_MS`

@@ -1,11 +1,16 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Client } from '@eventstore/db-client/dist/Client';
-import { EventStoreDBClient } from '@eventstore/db-client';
-import { NoGrpcConnectionError } from '../../../errors/no-grpc-connection.error';
-import { INTERCONNECT_CONFIGURATION } from '../../../../constants';
+import {
+  EVENTSTORE_DB_CLIENT,
+  INTERCONNECT_CONFIGURATION,
+} from '../../../../constants';
 import { InterconnectionConfiguration } from '../../../../interconnection-configuration';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { ConnectionInitializer } from '../connection-initializer';
+import {
+  ConnectionGuard,
+  EVENTSTORE_CONNECTION_GUARD,
+} from '../../../../connections-guards';
 
 @Injectable()
 export class NextConnectionInitializerService
@@ -16,16 +21,20 @@ export class NextConnectionInitializerService
   constructor(
     @Inject(INTERCONNECT_CONFIGURATION)
     private readonly interconnectionConfiguration: InterconnectionConfiguration,
+    @Inject(EVENTSTORE_CONNECTION_GUARD)
+    private readonly connectionGuard: ConnectionGuard,
+    @Inject(EVENTSTORE_DB_CLIENT)
+    private readonly eventStoreDBClient: any,
     private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<any> {
-    this.client = EventStoreDBClient.connectionString(
+    this.client = this.eventStoreDBClient.connectionString(
       this.interconnectionConfiguration.destination.connectionString,
     );
-    await this.checkNextConnectionStatus(
+    await this.connectionGuard.startConnectionLinkPinger(
       this.client,
-      this.interconnectionConfiguration.destination.connectionString,
+      this.interconnectionConfiguration.destination,
     );
     this.logger.log(
       'DRIVER : Connected to Next eventstore on ' +
@@ -35,16 +44,5 @@ export class NextConnectionInitializerService
 
   public getConnectedClient(): Client {
     return this.client;
-  }
-
-  public async checkNextConnectionStatus(
-    eventStoreConnector: Client,
-    connectionString: string,
-  ): Promise<void> {
-    try {
-      await eventStoreConnector.getStreamMetadata('$all');
-    } catch (errMessage) {
-      throw new NoGrpcConnectionError(errMessage, connectionString);
-    }
   }
 }

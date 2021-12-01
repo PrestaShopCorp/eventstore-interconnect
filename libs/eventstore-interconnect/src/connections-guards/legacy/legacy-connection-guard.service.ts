@@ -4,20 +4,21 @@ import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
 import { ConnectionConfiguration } from '../../interconnection-configuration';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { ConnectionGuard } from '../connection-guard';
+import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
 
 @Injectable()
 export class LegacyConnectionGuardService implements ConnectionGuard {
   constructor(private readonly logger: Logger) {}
 
-  public async checkTcpConnection(
+  public async startConnectionLinkPinger(
     connection: EventStoreNodeConnection,
     connectionConfiguration: ConnectionConfiguration,
   ): Promise<void> {
-    const tcpEndPoint = connectionConfiguration.tcp;
+    setTimeout(() => {
+      this.startConnectionLinkPinger(connection, connectionConfiguration);
+    }, CONNECTION_LINK_CHECK_INTERVAL_IN_MS);
 
-    this.logger.log(
-      `Checking connection to ${tcpEndPoint.host} on port ${tcpEndPoint.port}...`,
-    );
+    const tcpEndPoint = connectionConfiguration.tcp;
 
     const timeout: NodeJS.Timeout = setTimeout(() => {
       this.logger.error(
@@ -26,21 +27,25 @@ export class LegacyConnectionGuardService implements ConnectionGuard {
       process.exit(1);
     }, EVENT_WRITER_TIMEOUT_IN_MS);
 
-    await LegacyConnectionGuardService.getMetadatasFromMainStream(
-      connection,
-      connectionConfiguration,
-    ).then(() => {
-      clearTimeout(timeout);
-    });
+    await this.getMetadatasFromMainStream(connection, connectionConfiguration);
+    clearTimeout(timeout);
   }
 
-  private static async getMetadatasFromMainStream(
+  private async getMetadatasFromMainStream(
     connection: EventStoreNodeConnection,
     connectionConfiguration: ConnectionConfiguration,
   ): Promise<void> {
+    this.logger.log(
+      `Checking connection to ${connectionConfiguration.tcp.host} on port ${connectionConfiguration.tcp.port}...`,
+    );
+
     await connection.getStreamMetadataRaw(
       '$all',
       connectionConfiguration.credentials,
+    );
+
+    this.logger.log(
+      `Connection on ${connectionConfiguration.connectionString} is OK`,
     );
   }
 }

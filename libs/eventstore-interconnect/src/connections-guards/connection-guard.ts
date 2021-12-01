@@ -1,11 +1,12 @@
 import { EventStoreNodeConnection } from 'node-eventstore-client';
 import { ConnectionConfiguration } from '../interconnection-configuration';
+import { Client } from '@eventstore/db-client/dist/Client';
 
 export const EVENTSTORE_CONNECTION_GUARD = Symbol();
 
 export interface ConnectionGuard {
-  checkTcpConnection(
-    connection: EventStoreNodeConnection,
-    connectionConfiguration: ConnectionConfiguration,
+  startConnectionLinkPinger(
+    connection: EventStoreNodeConnection | Client,
+    connectionConfiguration?: ConnectionConfiguration,
   ): Promise<void>;
 }

@@ -52,7 +52,7 @@ describe('LegacyEventStoreConnectionInitializerService', () => {
   };
 
   const connectionGuardMock = {
-    checkTcpConnection: jest.fn(),
+    startConnectionLinkPinger: jest.fn(),
   } as ConnectionGuard;
 
   beforeEach(async () => {
@@ -97,6 +97,6 @@ describe('LegacyEventStoreConnectionInitializerService', () => {
 
     await service.initClient();
 
-    expect(connectionGuardMock.checkTcpConnection).toHaveBeenCalled();
+    expect(connectionGuardMock.startConnectionLinkPinger).toHaveBeenCalled();
   });
 });

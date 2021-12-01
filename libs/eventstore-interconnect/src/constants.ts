@@ -5,3 +5,4 @@ export const EVENT_WRITER_TIMEOUT_IN_MS =
 export const INTERCONNECTION_CONNECTION_DEFAULT_NAME =
   'interco-module-connection';
 export const INTERCONNECT_CONFIGURATION = Symbol();
+export const EVENTSTORE_DB_CLIENT = Symbol();

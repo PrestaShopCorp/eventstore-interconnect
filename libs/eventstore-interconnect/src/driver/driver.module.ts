@@ -5,16 +5,22 @@ import {
   EVENTSTORE_CONNECTION_GUARD,
   InterconnectionConfiguration,
   isLegacyConf,
+  NextConnectionGuardService,
   SafetyNet,
 } from '..';
 import { DRIVER } from './driver';
 import { HttpDriverService } from './services/http-driver/http-driver.service';
 import { GrpcDriverService } from './services/grpc-driver/grpc-driver.service';
-import { CREDENTIALS, INTERCONNECT_CONFIGURATION } from '../constants';
+import {
+  CREDENTIALS,
+  EVENTSTORE_DB_CLIENT,
+  INTERCONNECT_CONFIGURATION,
+} from '../constants';
 import { SafetyNetModule } from '../safety-net';
 import { NextConnectionInitializerService } from './services/connection-initializers/next-connection-initializer/next-connection-initializer.service';
 import { LegacyConnectionInitializerService } from './services/connection-initializers/legacy-connection-initializer/legacy-connection-initializer.service';
 import { LegacyConnectionGuardService } from '../connections-guards/legacy/legacy-connection-guard.service';
+import { EventStoreDBClient } from '@eventstore/db-client';
 
 @Module({})
 export class DriverModule {
@@ -53,6 +59,14 @@ export class DriverModule {
       {
         provide: CONNECTION_INITIALIZER,
         useClass: NextConnectionInitializerService,
+      },
+      {
+        provide: EVENTSTORE_DB_CLIENT,
+        useValue: EventStoreDBClient,
+      },
+      {
+        provide: EVENTSTORE_CONNECTION_GUARD,
+        useClass: NextConnectionGuardService,
       },
     ];
   }

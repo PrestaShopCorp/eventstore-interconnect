@@ -4,11 +4,12 @@ import { READER } from './services/reader';
 import { isLegacyConf } from '../helpers';
 import { HttpReaderService } from './services/http-reader/http-reader.service';
 import { GrpcReaderService } from './services/grpc-reader/grpc-reader.service';
-import { EVENTSTORE_DB_CLIENT, SUBSCRIPTIONS } from './services/constants';
+import { SUBSCRIPTIONS } from './services/constants';
 import { Logger } from 'nestjs-pino-stackdriver';
 import {
   ALLOWED_EVENTS,
   CREDENTIALS,
+  EVENTSTORE_DB_CLIENT,
   INTERCONNECT_CONFIGURATION,
 } from '../constants';
 import {
@@ -30,7 +31,10 @@ import { LEGACY_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER } from './services/lega
 import { LegacyEventStoreConnectionInitializerService } from './services/legacy-clients-connection-initializers/eventstore-client/legacy-event-store-connection-initializer.service';
 import { LEGACY_HTTP_CLIENT_CONNECTION_INITIALIZER } from './services/legacy-clients-connection-initializers/http-client/legacy-http-clients-connection-initializer';
 import { LegacyHttpClientConnectionInitializerService } from './services/legacy-clients-connection-initializers/http-client/legacy-http-client-connection-initializer.service';
-import { EVENTSTORE_CONNECTION_GUARD } from '../connections-guards';
+import {
+  EVENTSTORE_CONNECTION_GUARD,
+  NextConnectionGuardService,
+} from '../connections-guards';
 import { LegacyConnectionGuardService } from '../connections-guards/legacy/legacy-connection-guard.service';
 
 @Module({})
@@ -128,6 +132,10 @@ export class ReaderModule {
       {
         provide: FORMATTER,
         useClass: NextEventFormatterService,
+      },
+      {
+        provide: EVENTSTORE_CONNECTION_GUARD,
+        useClass: NextConnectionGuardService,
       },
     ];
   }

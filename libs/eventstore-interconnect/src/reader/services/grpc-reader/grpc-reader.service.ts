@@ -7,26 +7,31 @@ import {
 } from '@eventstore/db-client';
 import { isNil } from '@nestjs/common/utils/shared.utils';
 import { Client } from '@eventstore/db-client/dist/Client';
-import { EVENTSTORE_DB_CLIENT, SUBSCRIPTIONS } from '../constants';
+import { SUBSCRIPTIONS } from '../constants';
 import {
   Credentials,
   InterconnectionConfiguration,
 } from '../../../interconnection-configuration';
 import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
-import { CREDENTIALS, INTERCONNECT_CONFIGURATION } from '../../../constants';
+import {
+  CREDENTIALS,
+  EVENTSTORE_DB_CLIENT,
+  INTERCONNECT_CONFIGURATION,
+} from '../../../constants';
 import { PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE } from 'nestjs-geteventstore-next/dist/event-store/services/errors.constant';
 import { Logger } from 'nestjs-pino-stackdriver';
 import {
+  ConnectionGuard,
   EVENT_HANDLER,
   EventHandler,
-  NoGrpcConnectionError,
+  EVENTSTORE_CONNECTION_GUARD,
   Reader,
 } from '../../../';
 
 @Injectable()
 export class GrpcReaderService implements Reader, OnModuleInit {
   private persistentSubscriptions: PersistentSubscription[];
-  private eventStore: Client;
+  private client: Client;
 
   constructor(
     @Inject(INTERCONNECT_CONFIGURATION)
@@ -37,9 +42,11 @@ export class GrpcReaderService implements Reader, OnModuleInit {
     private readonly credentials: Credentials,
     @Inject(SUBSCRIPTIONS)
     private readonly subscriptions: IPersistentSubscriptionConfig[],
-    private readonly logger: Logger,
     @Inject(EVENTSTORE_DB_CLIENT)
     private readonly eventStoreDBClient: any,
+    @Inject(EVENTSTORE_CONNECTION_GUARD)
+    private readonly connectionGuard: ConnectionGuard,
+    private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<any> {
@@ -48,28 +55,17 @@ export class GrpcReaderService implements Reader, OnModuleInit {
   }
 
   private async startEventstoreClient(): Promise<void> {
-    this.eventStore = this.eventStoreDBClient.connectionString(
+    this.client = this.eventStoreDBClient.connectionString(
       this.configuration.source.connectionString,
     );
-    await this.checkNextConnectionStatus(
-      this.eventStore,
-      this.configuration.source.connectionString,
+    await this.connectionGuard.startConnectionLinkPinger(
+      this.client,
+      this.configuration.source,
     );
     this.logger.log(
       'READER : Connected to Next eventstore on ' +
         this.configuration.source.connectionString,
     );
-  }
-
-  public async checkNextConnectionStatus(
-    eventStoreConnector: Client,
-    connectionString: string,
-  ): Promise<void> {
-    try {
-      await eventStoreConnector.getStreamMetadata('$all');
-    } catch (errMessage) {
-      throw new NoGrpcConnectionError(errMessage, connectionString);
-    }
   }
 
   public async upsertPersistantSubscription(): Promise<void> {
@@ -109,7 +105,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
             `Connecting to persistent subscription "${subscription.group}" on stream "${subscription.stream}"...`,
           );
           const persistentSubscription: PersistentSubscription =
-            this.eventStore.connectToPersistentSubscription(
+            this.client.connectToPersistentSubscription(
               subscription.stream,
               subscription.group,
             );
@@ -166,7 +162,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
     subscription: IPersistentSubscriptionConfig,
   ): Promise<void> {
     try {
-      await this.eventStore.createPersistentSubscription(
+      await this.client.createPersistentSubscription(
         subscription.stream,
         subscription.group,
         {
@@ -184,7 +180,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
         this.logger.error('Subscription creation try : ', e);
         throw new Error(e);
       }
-      await this.eventStore.updatePersistentSubscription(
+      await this.client.updatePersistentSubscription(
         subscription.stream,
         subscription.group,
         {

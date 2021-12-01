@@ -80,7 +80,10 @@ export class LegacyConnectionInitializerService
     );
     await this.eventStoreNodeConnection.connect();
 
-    await this.connectionGuard.checkTcpConnection(
+    this.logger.log(
+      `Starting to ping connection on ${tcpEndPoint.host}:${tcpEndPoint.port}...`,
+    );
+    await this.connectionGuard.startConnectionLinkPinger(
       this.eventStoreNodeConnection,
       this.configuration.destination,
     );

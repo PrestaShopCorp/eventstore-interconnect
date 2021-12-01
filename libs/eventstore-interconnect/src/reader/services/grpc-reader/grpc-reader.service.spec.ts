@@ -4,6 +4,7 @@ import { EventHandler } from '../../../event-handler';
 import spyOn = jest.spyOn;
 import { InterconnectionConfiguration } from '../../../interconnection-configuration';
 import { PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE } from 'nestjs-geteventstore-next/dist/event-store/services/errors.constant';
+import { ConnectionGuard } from '../../../connections-guards';
 
 describe('GrpcReaderService', () => {
   let service: GrpcReaderService;
@@ -12,11 +13,18 @@ describe('GrpcReaderService', () => {
     handle: jest.fn(),
   } as any as EventHandler;
 
-  const logger = { log: jest.fn() } as any as Logger;
+  const logger = {
+    log: jest.fn(),
+    error: jest.fn(),
+  } as any as Logger;
 
   const connectionClientMock = {
     connectionString: jest.fn(),
   };
+
+  const connectionGuardMock = {
+    startConnectionLinkPinger: jest.fn(),
+  } as any as ConnectionGuard;
 
   const eventstoreClientMock = {
     getStreamMetadata: jest.fn(),
@@ -55,8 +63,9 @@ describe('GrpcReaderService', () => {
           settingsForCreation: {},
         },
       ],
-      logger,
       connectionClientMock,
+      connectionGuardMock,
+      logger,
     );
   });
 
@@ -64,7 +73,7 @@ describe('GrpcReaderService', () => {
     jest.resetAllMocks();
   });
 
-  it('should init a connection on source eventstore on module init', async () => {
+  it('should start the eventstore connection pinger on module init', async () => {
     jest
       .spyOn(connectionClientMock, 'connectionString')
       .mockReturnValue(eventstoreClientMock);
@@ -87,9 +96,6 @@ describe('GrpcReaderService', () => {
     jest
       .spyOn(connectionClientMock, 'connectionString')
       .mockReturnValue(eventstoreClientMock);
-    jest
-      .spyOn(eventstoreClientMock, 'getStreamMetadata')
-      .mockResolvedValue(null);
     spyOn(
       eventstoreClientMock,
       'connectToPersistentSubscription',
@@ -99,7 +105,7 @@ describe('GrpcReaderService', () => {
 
     await service.onModuleInit();
 
-    expect(eventstoreClientMock.getStreamMetadata).toHaveBeenCalledWith('$all');
+    expect(connectionGuardMock.startConnectionLinkPinger).toHaveBeenCalled();
   });
 
   it('should try to create each subscriptions at module init', async () => {

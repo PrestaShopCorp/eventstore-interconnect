@@ -6,9 +6,10 @@ import {
   ConnectionConfiguration,
   Credentials,
 } from '../../interconnection-configuration';
-import spyOn = jest.spyOn;
 import { setTimeout } from 'timers/promises';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
+import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
+import spyOn = jest.spyOn;
 
 describe('LegacyConnectionGuardService', () => {
   let service: LegacyConnectionGuardService;
@@ -60,7 +61,7 @@ describe('LegacyConnectionGuardService', () => {
   });
 
   it('should exit process with error 1 when connection is timed out', async () => {
-    jest.useFakeTimers('legacy');
+    jest.useFakeTimers();
     jest.spyOn(process, 'exit').mockReturnValue(null as never);
 
     spyOn(
@@ -72,19 +73,39 @@ describe('LegacyConnectionGuardService', () => {
     });
 
     service
-      .checkTcpConnection(eventStoreNodeConnectionMock, configuration)
+      .startConnectionLinkPinger(eventStoreNodeConnectionMock, configuration)
       .then(() => {
         // do nothing
       });
     jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS + 10);
 
     expect(process.exit).toHaveBeenCalledWith(1);
-    jest.runAllTimers();
+  });
+
+  it('should not process exit 1 when connection is ok', async () => {
+    jest.useFakeTimers();
+    jest.spyOn(process, 'exit');
+
+    spyOn(
+      eventStoreNodeConnectionMock,
+      'getStreamMetadataRaw',
+    ).mockResolvedValue(null);
+
+    const req = service.startConnectionLinkPinger(
+      eventStoreNodeConnectionMock,
+      configuration,
+    );
+
+    jest.advanceTimersByTime(100);
+    await req;
+    jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS - 100);
+
+    expect(process.exit).not.toHaveBeenCalled();
   });
 
   it(`should check the '$all' stream metadata for checking connection`, async () => {
-    jest.useFakeTimers('legacy');
-    await service.checkTcpConnection(
+    jest.useFakeTimers();
+    await service.startConnectionLinkPinger(
       eventStoreNodeConnectionMock,
       configuration,
     );
@@ -92,6 +113,25 @@ describe('LegacyConnectionGuardService', () => {
     expect(
       eventStoreNodeConnectionMock.getStreamMetadataRaw,
     ).toHaveBeenCalledWith('$all', configuration.credentials);
-    jest.runAllTimers();
+  });
+
+  it(`should check the connection link every ${CONNECTION_LINK_CHECK_INTERVAL_IN_MS} seconds`, async () => {
+    jest.useFakeTimers();
+    spyOn(service, 'startConnectionLinkPinger');
+    spyOn(
+      eventStoreNodeConnectionMock,
+      'getStreamMetadataRaw',
+    ).mockResolvedValue(null);
+
+    const req = service.startConnectionLinkPinger(
+      eventStoreNodeConnectionMock,
+      configuration,
+    );
+
+    jest.advanceTimersByTime(100);
+    await req;
+    jest.advanceTimersByTime(CONNECTION_LINK_CHECK_INTERVAL_IN_MS);
+
+    expect(service.startConnectionLinkPinger).toHaveBeenCalledTimes(2);
   });
 });

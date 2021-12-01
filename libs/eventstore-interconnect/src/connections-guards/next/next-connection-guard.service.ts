@@ -1,0 +1,44 @@
+import { Injectable } from '@nestjs/common';
+import { ConnectionGuard } from '../connection-guard';
+import { Client } from '@eventstore/db-client/dist/Client';
+import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
+import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
+import { Logger } from 'nestjs-pino-stackdriver';
+import { ConnectionConfiguration } from '../../interconnection-configuration';
+
+@Injectable()
+export class NextConnectionGuardService implements ConnectionGuard {
+  constructor(private readonly logger: Logger) {}
+
+  public async startConnectionLinkPinger(
+    connection: Client,
+    connectionConfiguration: ConnectionConfiguration,
+  ): Promise<void> {
+    this.loadNextPing(connection, connectionConfiguration);
+
+    const timer = setTimeout(() => {
+      this.logger.error(
+        `Connection broken on ${connectionConfiguration.connectionString}`,
+      );
+      process.exit(1);
+    }, EVENT_WRITER_TIMEOUT_IN_MS);
+
+    this.logger.log(
+      `Checking connection on ${connectionConfiguration.connectionString}...`,
+    );
+    await connection.getStreamMetadata('$all');
+    clearTimeout(timer);
+    this.logger.log(
+      `Connection on ${connectionConfiguration.connectionString} is OK`,
+    );
+  }
+
+  private loadNextPing(
+    connection: Client,
+    connectionConfiguration: ConnectionConfiguration,
+  ) {
+    setTimeout(() => {
+      this.startConnectionLinkPinger(connection, connectionConfiguration);
+    }, CONNECTION_LINK_CHECK_INTERVAL_IN_MS);
+  }
+}
