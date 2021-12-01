@@ -39,12 +39,11 @@ export class HttpDriverService implements Driver {
     event: FormattedEvent,
     timeout: number,
   ): Promise<void> {
-    let eventWritten = false;
-    await setTimeout(() => {
-      this.safetyNet.cannotWriteEventHook(event, eventWritten);
+    const safety: NodeJS.Timeout = setTimeout(() => {
+      this.safetyNet.cannotWriteEventHook(event);
     }, timeout);
     await this.appendEventToStreamteEvent(event);
-    eventWritten = true;
+    clearTimeout(safety);
   }
 
   private async appendEventToStreamteEvent(

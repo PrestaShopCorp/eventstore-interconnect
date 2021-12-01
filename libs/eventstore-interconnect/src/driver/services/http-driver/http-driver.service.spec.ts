@@ -107,7 +107,9 @@ describe('HttpDriverService', () => {
       },
     );
 
-    service.writeEvent(event);
+    service.writeEvent(event).then(() => {
+      // Do nothing
+    });
 
     jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS);
 
@@ -116,6 +118,6 @@ describe('HttpDriverService', () => {
       expect.any(Function),
       EVENT_WRITER_TIMEOUT_IN_MS,
     );
-    expect(safetyNet.cannotWriteEventHook).toHaveBeenCalledWith(event, false);
+    expect(safetyNet.cannotWriteEventHook).toHaveBeenCalledWith(event);
   });
 });

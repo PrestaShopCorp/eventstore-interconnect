@@ -41,15 +41,11 @@ export class GrpcDriverService implements Driver {
     event: FormattedEvent,
     timeout: number,
   ): Promise<void> {
-    let eventWritten = false;
-    await Promise.race([
-      setTimeout(() => {
-        this.safetyNet.cannotWriteEventHook(event, eventWritten);
-      }, timeout),
-      this.appendEventToStreamteEvent(event).finally(
-        () => (eventWritten = true),
-      ),
-    ]);
+    const safety: NodeJS.Timeout = setTimeout(() => {
+      this.safetyNet.cannotWriteEventHook(event);
+    }, timeout);
+    await this.appendEventToStreamteEvent(event);
+    clearTimeout(safety);
   }
 
   private async appendEventToStreamteEvent(

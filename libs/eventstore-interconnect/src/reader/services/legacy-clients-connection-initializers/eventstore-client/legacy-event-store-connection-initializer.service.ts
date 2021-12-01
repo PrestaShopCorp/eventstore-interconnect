@@ -12,6 +12,10 @@ import {
 } from '../../../../constants';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { LegacyEventstoreClientsConnectionInitializer } from './legacy-eventstore-clients-connection-initializer';
+import {
+  ConnectionGuard,
+  EVENTSTORE_CONNECTION_GUARD,
+} from '../../../../connections-guards';
 
 @Injectable()
 export class LegacyEventStoreConnectionInitializerService
@@ -22,6 +26,8 @@ export class LegacyEventStoreConnectionInitializerService
   constructor(
     @Inject(INTERCONNECT_CONFIGURATION)
     private readonly configuration: InterconnectionConfiguration,
+    @Inject(EVENTSTORE_CONNECTION_GUARD)
+    private readonly connectionGuard: ConnectionGuard,
     private readonly logger: Logger,
   ) {}
 
@@ -54,7 +60,14 @@ export class LegacyEventStoreConnectionInitializerService
       this.configuration.source.tcpConnectionName ??
         `${INTERCONNECTION_CONNECTION_DEFAULT_NAME}-${nanoid(11)}`,
     );
+
     await this.eventStoreNodeConnection.connect();
+
+    await this.connectionGuard.checkTcpConnection(
+      this.eventStoreNodeConnection,
+      this.configuration.source,
+    );
+
     this.logger.log(
       'READER : EventstoreClient created (at ' +
         tcpEndPoint.host +

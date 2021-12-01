@@ -6,10 +6,7 @@ import { SafetyNet } from './safety-net.service.interface';
 export class DefaultSafetyNetService implements SafetyNet {
   constructor(private readonly logger: Logger) {}
 
-  public cannotWriteEventHook(event: any, eventWritten?: boolean): void {
-    if (eventWritten) {
-      return;
-    }
+  public cannotWriteEventHook(event: any): void {
     this.logger.error(
       `Timeout while writing event (eventId ${event.eventId} and others after this one)`,
     );

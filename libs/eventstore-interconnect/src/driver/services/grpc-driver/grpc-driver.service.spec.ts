@@ -121,11 +121,11 @@ describe('GrpcDriverService', () => {
     });
 
     driver.writeEvent(event).then(() => {
-      // do nothing
+      // Do nothing
     });
     jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS);
 
-    expect(safetyNet.cannotWriteEventHook).toHaveBeenCalledWith(event, false);
+    expect(safetyNet.cannotWriteEventHook).toHaveBeenCalledWith(event);
     jest.runAllTimers();
   });
 });

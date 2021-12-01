@@ -1,3 +1,4 @@
+export * from './connections-guards';
 export * from './driver';
 export * from './event-handler';
 export * from './formatter';

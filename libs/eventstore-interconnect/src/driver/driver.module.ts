@@ -2,6 +2,7 @@ import { DynamicModule, Module, Type } from '@nestjs/common';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import {
   CONNECTION_INITIALIZER,
+  EVENTSTORE_CONNECTION_GUARD,
   InterconnectionConfiguration,
   isLegacyConf,
   SafetyNet,
@@ -13,6 +14,7 @@ import { CREDENTIALS, INTERCONNECT_CONFIGURATION } from '../constants';
 import { SafetyNetModule } from '../safety-net';
 import { NextConnectionInitializerService } from './services/connection-initializers/next-connection-initializer/next-connection-initializer.service';
 import { LegacyConnectionInitializerService } from './services/connection-initializers/legacy-connection-initializer/legacy-connection-initializer.service';
+import { LegacyConnectionGuardService } from '../connections-guards/legacy/legacy-connection-guard.service';
 
 @Module({})
 export class DriverModule {
@@ -74,6 +76,10 @@ export class DriverModule {
       {
         provide: CONNECTION_INITIALIZER,
         useClass: LegacyConnectionInitializerService,
+      },
+      {
+        provide: EVENTSTORE_CONNECTION_GUARD,
+        useClass: LegacyConnectionGuardService,
       },
     ];
   }

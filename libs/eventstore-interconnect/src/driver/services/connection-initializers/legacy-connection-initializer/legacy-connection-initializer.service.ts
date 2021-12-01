@@ -18,6 +18,10 @@ import {
 import { Logger } from 'nestjs-pino-stackdriver';
 import { NoLegacyConnectionError } from '../../../../reader/errors/no-legacy-connection.error';
 import { ConnectionInitializer } from '../connection-initializer';
+import {
+  ConnectionGuard,
+  EVENTSTORE_CONNECTION_GUARD,
+} from '../../../../connections-guards';
 
 @Injectable()
 export class LegacyConnectionInitializerService
@@ -28,6 +32,8 @@ export class LegacyConnectionInitializerService
   constructor(
     @Inject(INTERCONNECT_CONFIGURATION)
     private readonly configuration: InterconnectionConfiguration,
+    @Inject(EVENTSTORE_CONNECTION_GUARD)
+    private readonly connectionGuard: ConnectionGuard,
     private readonly logger: Logger,
   ) {}
 
@@ -65,6 +71,7 @@ export class LegacyConnectionInitializerService
         password: this.configuration.destination.credentials.password,
       },
     });
+
     this.eventStoreNodeConnection = createConnection(
       esConnectionConf,
       tcpEndPoint,
@@ -72,6 +79,12 @@ export class LegacyConnectionInitializerService
         `${INTERCONNECTION_CONNECTION_DEFAULT_NAME}-${nanoid(11)}`,
     );
     await this.eventStoreNodeConnection.connect();
+
+    await this.connectionGuard.checkTcpConnection(
+      this.eventStoreNodeConnection,
+      this.configuration.destination,
+    );
+
     this.logger.log(
       'DRIVER : Connected to legacy eventstore at ' +
         tcpEndPoint.host +
@@ -79,9 +92,10 @@ export class LegacyConnectionInitializerService
         tcpEndPoint.port,
     );
 
-    await this.checkLegacyConnectionStatus(httpClient, tcpEndPoint);
+    await this.checkHttpConnectionStatus(httpClient, tcpEndPoint);
   }
-  public async checkLegacyConnectionStatus(
+
+  public async checkHttpConnectionStatus(
     httpClient: HTTPClient,
     tcpEndPoint: ProtocolConf,
   ): Promise<void> {
