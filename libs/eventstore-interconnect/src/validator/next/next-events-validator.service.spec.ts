@@ -43,6 +43,10 @@ describe('NextEventsValidatorService', () => {
     );
   });
 
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('should throw an InvalidEventError when event is invalid', async () => {
     expect.assertions(1);
     const expectedError: InvalidEventError = new InvalidEventError('');
@@ -56,6 +60,10 @@ describe('NextEventsValidatorService', () => {
 
   it('should throw no exception when event is valid', async () => {
     expect.assertions(1);
+    const classValidatorMock = jest.fn();
+    require('class-validator').validate = classValidatorMock;
+    classValidatorMock.mockResolvedValue([]);
+
     const evidenceValidateDidNotFail = new Error("didn't throw");
     try {
       const validEvent: ResolvedEvent = getEvent(true, 1);
@@ -83,6 +91,9 @@ describe('NextEventsValidatorService', () => {
 
   it('should trigger the safety hook for invalid event when event is invalid', async () => {
     expect.assertions(1);
+    const classValidatorMock = jest.fn();
+    require('class-validator').validate = classValidatorMock;
+    classValidatorMock.mockResolvedValue([{}]);
     spyOn(safetynetMock, 'invalidEventHook');
 
     const invalidEvent = getEvent(false, 1);
@@ -96,14 +107,22 @@ describe('NextEventsValidatorService', () => {
 
   it('should trigger the safety hook for invalid invent when event is not allowed', async () => {
     spyOn(safetynetMock, 'invalidEventHook');
+    const classTransformerMock = jest.fn();
+    require('class-transformer').plainToClass = classTransformerMock;
+    classTransformerMock.mockImplementation(() => {
+      throw Error();
+    });
     const notAllowedEvent: ResolvedEvent = getEvent(false, 1);
     try {
       await service.validate(notAllowedEvent);
     } catch (e) {
       // do nothing
     }
-    expect(safetynetMock.invalidEventHook).toHaveBeenCalledWith(
-      notAllowedEvent,
+    expect(safetynetMock.invalidEventHook.mock.calls[0][0].data).toEqual(
+      notAllowedEvent.event.data,
+    );
+    expect(safetynetMock.invalidEventHook.mock.calls[0][0].metadata).toEqual(
+      notAllowedEvent.event.metadata,
     );
   });
 });

@@ -42,8 +42,15 @@ describe('LegacyEventsValidatorService', () => {
     );
   });
 
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('should throw an InvalidEventError when event is invalid', async () => {
     expect.assertions(1);
+    const classValidatorMock = jest.fn();
+    require('class-validator').validate = classValidatorMock;
+    classValidatorMock.mockResolvedValue([{}]);
     const expectedError: InvalidEventError = new InvalidEventError('');
     try {
       const invalidEvent = getEvent(false, 1);
@@ -55,6 +62,10 @@ describe('LegacyEventsValidatorService', () => {
 
   it('should throw no exception when event is valid', async () => {
     expect.assertions(1);
+    const classValidatorMock = jest.fn();
+    require('class-validator').validate = classValidatorMock;
+    classValidatorMock.mockResolvedValue([]);
+
     const evidenceValidateDidNotFail = new Error("didn't throw");
     try {
       const validEvent = getEvent(true, 1);
@@ -83,6 +94,9 @@ describe('LegacyEventsValidatorService', () => {
 
   it('should trigger the safety hook for invalid event when event is invalid', async () => {
     expect.assertions(1);
+    const classValidatorMock = jest.fn();
+    require('class-validator').validate = classValidatorMock;
+    classValidatorMock.mockResolvedValue([{}]);
     spyOn(safetynetMock, 'invalidEventHook');
 
     const invalidEvent = getEvent(false, 1);
