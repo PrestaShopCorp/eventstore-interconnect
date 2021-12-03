@@ -19,6 +19,14 @@ docker run -d --name eventstore-next-source-version-21133-11133 -it -p 21133:211
 docker run -d --name eventstore-next-dest-version-21134-11134 -it -p 21134:2113 -p 11134:1113 eventstore/eventstore:latest --insecure --run-projections=All --enable-atom-pub-over-http
 ```
 
+Special not for people working on arm64 architecture (for example, M1 Silicon...) The docker images are yet a alpha releases. Today, you can get this v21 with silicon arch this way : 
+
+```shell
+docker run -d --name M1-eventstore-next-source-version-21133-11133 -it -p 21133:2113 -p 11133:1113 ghcr.io/eventstore/eventstore:21.10.0-alpha-arm64v8 --insecure --run-projections=All --enable-atom-pub-over-http
+docker run -d --name M1-eventstore-next-dest-version-21134-11134 -it -p 21134:2113 -p 11134:1113 ghcr.io/eventstore/eventstore:21.10.0-alpha-arm64v8 --insecure --run-projections=All --enable-atom-pub-over-http
+
+```
+
 ### Start the correct example
 
 You will see in the package.json that there are 4 examples you can run. These are the 4 situation the lib aims to help

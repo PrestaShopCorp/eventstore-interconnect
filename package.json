@@ -9,6 +9,10 @@
     "helper",
     "interconnect"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PrestaShopCorp/eventstore-interconnect"
+  },
   "private": false,
   "license": "MIT",
   "main": "dist/index.js",
@@ -64,6 +68,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"
   },
+
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
