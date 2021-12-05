@@ -22,6 +22,10 @@ docker run -d --name eventstore-next-dest-version-21134-11134 -it -p 21134:2113 
 Special not for people working on arm64 architecture (for example, M1 Silicon...) The docker images are yet a alpha releases. Today, you can get this v21 with silicon arch this way : 
 
 ```shell
+### The legacy one (v5, src and dest) :
+docker run -d --name M1-eventstore-source-legacy-21131-11131 -it -p 21131:2113 -p 11131:1113 ghcr.io/eventstore/eventstore:21.10.0-alpha-arm64v8 --insecure --run-projections=All --enable-atom-pub-over-http --enable-external-tcp
+docker run -d --name M1-eventstore-dest-legacy-21132-11132 -it -p 21132:2113 -p 11132:1113 ghcr.io/eventstore/eventstore:21.10.0-alpha-arm64v8 --insecure --run-projections=All --enable-atom-pub-over-http --enable-external-tcp
+### The next one (v21, src and dest):
 docker run -d --name M1-eventstore-next-source-version-21133-11133 -it -p 21133:2113 -p 11133:1113 ghcr.io/eventstore/eventstore:21.10.0-alpha-arm64v8 --insecure --run-projections=All --enable-atom-pub-over-http
 docker run -d --name M1-eventstore-next-dest-version-21134-11134 -it -p 21134:2113 -p 11134:1113 ghcr.io/eventstore/eventstore:21.10.0-alpha-arm64v8 --insecure --run-projections=All --enable-atom-pub-over-http
 

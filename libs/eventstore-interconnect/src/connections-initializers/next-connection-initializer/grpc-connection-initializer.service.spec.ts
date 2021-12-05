@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NextConnectionInitializerService } from './next-connection-initializer.service';
+import { GrpcConnectionInitializerService } from './grpc-connection-initializer.service';
 import {
   EVENTSTORE_DB_CLIENT,
   INTERCONNECT_CONFIGURATION,
-} from '../../../../constants';
-import { InterconnectionConfiguration } from '../../../../interconnection-configuration';
+} from '../../constants';
+import { InterconnectionConfiguration } from '../../interconnection-configuration';
 import { Logger } from 'nestjs-pino-stackdriver';
-import { EVENTSTORE_CONNECTION_GUARD } from '../../../../connections-guards';
+import { EVENTSTORE_CONNECTION_GUARD } from '../../connections-guards';
 
-describe('NextConnectionInitializerService', () => {
-  let service: NextConnectionInitializerService;
+describe('GrpcConnectionInitializerService', () => {
+  let service: GrpcConnectionInitializerService;
 
   const loggerMock = {
     log: jest.fn(),
@@ -42,7 +42,7 @@ describe('NextConnectionInitializerService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        NextConnectionInitializerService,
+        GrpcConnectionInitializerService,
         {
           provide: Logger,
           useValue: loggerMock,
@@ -62,8 +62,8 @@ describe('NextConnectionInitializerService', () => {
       ],
     }).compile();
 
-    service = module.get<NextConnectionInitializerService>(
-      NextConnectionInitializerService,
+    service = module.get<GrpcConnectionInitializerService>(
+      GrpcConnectionInitializerService,
     );
   });
 
@@ -71,16 +71,16 @@ describe('NextConnectionInitializerService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should start connection on module init', async () => {
-    await service.onModuleInit();
+  it('should start connection on init', async () => {
+    await service.init();
 
     expect(esClientMock.connectionString).toHaveBeenCalledWith(
       'destConnectionString',
     );
   });
 
-  it('should start to ping connection at module init', async () => {
-    await service.onModuleInit();
+  it('should start to ping connection at init', async () => {
+    await service.init();
 
     expect(esConnectionGuardMock.startConnectionLinkPinger).toHaveBeenCalled();
   });

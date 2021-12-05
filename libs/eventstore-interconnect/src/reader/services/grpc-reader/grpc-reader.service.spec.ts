@@ -33,6 +33,11 @@ describe('GrpcReaderService', () => {
     updatePersistentSubscription: jest.fn(),
   };
 
+  const connectionInitializerMock = {
+    init: jest.fn(),
+    getConnectedClient: jest.fn(),
+  };
+
   const config: InterconnectionConfiguration = {
     destination: {
       credentials: { password: '', username: '' },
@@ -48,7 +53,6 @@ describe('GrpcReaderService', () => {
     service = new GrpcReaderService(
       config,
       eventHandlerMock,
-      { username: '', password: '' },
       [
         {
           stream: '1',
@@ -64,6 +68,7 @@ describe('GrpcReaderService', () => {
         },
       ],
       connectionClientMock,
+      connectionInitializerMock,
       connectionGuardMock,
       logger,
     );
@@ -115,7 +120,7 @@ describe('GrpcReaderService', () => {
     jest
       .spyOn(eventstoreClientMock, 'getStreamMetadata')
       .mockResolvedValue(null);
-    spyOn(service, 'upsertPersistantSubscription');
+    spyOn(service, 'upsertPersistantSubscriptions');
     spyOn(
       eventstoreClientMock,
       'connectToPersistentSubscription',
@@ -144,7 +149,7 @@ describe('GrpcReaderService', () => {
         error['code'] = PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE;
         throw error;
       });
-    spyOn(service, 'upsertPersistantSubscription');
+    spyOn(service, 'upsertPersistantSubscriptions');
     spyOn(
       eventstoreClientMock,
       'connectToPersistentSubscription',

@@ -1,20 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyConnectionInitializerService } from './legacy-connection-initializer.service';
-import { InterconnectionConfiguration } from '../../../../interconnection-configuration';
 import { Logger } from 'nestjs-pino-stackdriver';
-import { INTERCONNECT_CONFIGURATION } from '../../../../constants';
+import { InterconnectionConfiguration } from '../../../interconnection-configuration';
+import { INTERCONNECT_CONFIGURATION } from '../../../constants';
 import {
   ConnectionGuard,
   EVENTSTORE_CONNECTION_GUARD,
-} from '../../../../connections-guards';
+} from '../../../connections-guards';
 import { createConnection } from 'node-eventstore-client';
 import * as geteventstorePromise from 'geteventstore-promise';
+import { TCPEventStoreConnectionInitializerService } from "./tcp-event-store-connection-initializer.service";
 
 jest.mock('geteventstore-promise');
 jest.mock('node-eventstore-client');
 
-describe('LegacyConnectionInitializerService', () => {
-  let service: LegacyConnectionInitializerService;
+describe('TCPEventStoreConnectionInitializerService', () => {
+  let service: TCPEventStoreConnectionInitializerService;
 
   const loggerMock = {
     log: jest.fn(),
@@ -58,7 +58,7 @@ describe('LegacyConnectionInitializerService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        LegacyConnectionInitializerService,
+        TCPEventStoreConnectionInitializerService,
         {
           provide: Logger,
           useValue: loggerMock,
@@ -74,20 +74,16 @@ describe('LegacyConnectionInitializerService', () => {
       ],
     }).compile();
 
-    service = module.get<LegacyConnectionInitializerService>(
-      LegacyConnectionInitializerService,
+    service = module.get<TCPEventStoreConnectionInitializerService>(
+      TCPEventStoreConnectionInitializerService,
     );
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it('should check the connection is ok on module init', async () => {
+  it('should check the connection is ok on initialization', async () => {
     (createConnection as any).mockImplementation(() => {
       return {
         connect: jest.fn(),
@@ -99,7 +95,7 @@ describe('LegacyConnectionInitializerService', () => {
       };
     });
 
-    await service.onModuleInit();
+    await service.init();
 
     expect(connectionGuardMock.startConnectionLinkPinger).toHaveBeenCalled();
   });

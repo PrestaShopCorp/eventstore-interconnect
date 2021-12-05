@@ -3,9 +3,11 @@ import { Logger } from 'nestjs-pino-stackdriver';
 import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
 import { EventHandler } from '../../../event-handler';
 import { InterconnectionConfiguration } from '../../../interconnection-configuration';
-import { LegacyEventstoreClientsConnectionInitializer } from '../legacy-clients-connection-initializers/eventstore-client/legacy-eventstore-clients-connection-initializer';
-import { LegacyHttpClientsConnectionInitializer } from '../legacy-clients-connection-initializers/http-client/legacy-http-clients-connection-initializer';
 import spyOn = jest.spyOn;
+import {
+  HttpClientsConnectionInitializer,
+  TCPEventstoreClientsConnectionInitializer
+} from "../../../connections-initializers";
 
 describe('HttpReaderService', () => {
   let service: HttpReaderService;
@@ -42,13 +44,13 @@ describe('HttpReaderService', () => {
   };
 
   const persubConnectionSpy = jest.fn();
-  const eventstoreClientsConnectionInitializer: LegacyEventstoreClientsConnectionInitializer =
+  const eventstoreClientsConnectionInitializer: TCPEventstoreClientsConnectionInitializer =
     {
-      initClient: jest.fn(),
-      getEventstoreConnectedClient: () => {
+      init: jest.fn(),
+      getConnectedClient: () => {
         return { connectToPersistentSubscription: persubConnectionSpy };
       },
-    } as any as LegacyEventstoreClientsConnectionInitializer;
+    } as any as TCPEventstoreClientsConnectionInitializer;
   const eventHandlerMock: EventHandler = {
     handle: () => {
       return { catch: jest.fn() };
@@ -78,7 +80,7 @@ describe('HttpReaderService', () => {
   ];
 
   const persubAssertSpy = jest.fn();
-  const legacyHttpClientsConnectionInitializer: LegacyHttpClientsConnectionInitializer =
+  const legacyHttpClientsConnectionInitializer: HttpClientsConnectionInitializer =
     {
       initClient: jest.fn(),
       getHttpClient: () => {
@@ -88,7 +90,7 @@ describe('HttpReaderService', () => {
           },
         };
       },
-    } as any as LegacyHttpClientsConnectionInitializer;
+    } as any as HttpClientsConnectionInitializer;
 
   beforeEach(async () => {
     service = new HttpReaderService(

@@ -1,26 +1,28 @@
 import { DynamicModule, Module, Type } from '@nestjs/common';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import {
-  CONNECTION_INITIALIZER,
   EVENTSTORE_CONNECTION_GUARD,
+  GrpcConnectionInitializerService,
   InterconnectionConfiguration,
   isLegacyConf,
   NextConnectionGuardService,
   SafetyNet,
+  TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
+  TCPEventStoreConnectionInitializerService,
 } from '..';
 import { DRIVER } from './driver';
 import { HttpDriverService } from './services/http-driver/http-driver.service';
 import { GrpcDriverService } from './services/grpc-driver/grpc-driver.service';
 import {
+  CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENTSTORE_DB_CLIENT,
   INTERCONNECT_CONFIGURATION,
 } from '../constants';
 import { SafetyNetModule } from '../safety-net';
-import { NextConnectionInitializerService } from './services/connection-initializers/next-connection-initializer/next-connection-initializer.service';
-import { LegacyConnectionInitializerService } from './services/connection-initializers/legacy-connection-initializer/legacy-connection-initializer.service';
-import { LegacyConnectionGuardService } from '../connections-guards/legacy/legacy-connection-guard.service';
+import { LegacyConnectionGuardService } from '../connections-guards';
 import { EventStoreDBClient } from '@eventstore/db-client';
+import { GRPC_CONNECTION_INITIALIZER } from '../connections-initializers';
 
 @Module({})
 export class DriverModule {
@@ -45,8 +47,8 @@ export class DriverModule {
   ): Provider[] {
     return [
       {
-        provide: INTERCONNECT_CONFIGURATION,
-        useValue: configuration,
+        provide: CONNECTION_CONFIGURATION,
+        useValue: configuration.destination,
       },
       {
         provide: DRIVER,
@@ -57,8 +59,8 @@ export class DriverModule {
         useValue: configuration.destination.credentials,
       },
       {
-        provide: CONNECTION_INITIALIZER,
-        useClass: NextConnectionInitializerService,
+        provide: GRPC_CONNECTION_INITIALIZER,
+        useClass: GrpcConnectionInitializerService,
       },
       {
         provide: EVENTSTORE_DB_CLIENT,
@@ -88,8 +90,8 @@ export class DriverModule {
         useValue: configuration,
       },
       {
-        provide: CONNECTION_INITIALIZER,
-        useClass: LegacyConnectionInitializerService,
+        provide: TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
+        useClass: TCPEventStoreConnectionInitializerService,
       },
       {
         provide: EVENTSTORE_CONNECTION_GUARD,

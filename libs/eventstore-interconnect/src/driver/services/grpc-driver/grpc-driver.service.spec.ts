@@ -12,6 +12,7 @@ describe('GrpcDriverService', () => {
   let driver: GrpcDriverService;
 
   const connectionInitializer = {
+    init: jest.fn(),
     getConnectedClient: jest.fn(),
   };
 
@@ -48,15 +49,21 @@ describe('GrpcDriverService', () => {
     jest.useRealTimers();
   });
 
+  it("should initialize a grpc connection at module init", async () => {
+    await driver.onModuleInit()
+
+    expect(connectionInitializer.init).toHaveBeenCalled();
+  });
+
   it('should transmit write order to client with good options when writing event', async () => {
-    const appentToStreamSpy = jest.fn();
+    const appendedToStreamSpy = jest.fn();
     spyOn(connectionInitializer, 'getConnectedClient').mockReturnValue({
-      appendToStream: appentToStreamSpy,
+      appendToStream: appendedToStreamSpy,
     });
 
     await driver.writeEvent(event);
 
-    expect(appentToStreamSpy).toHaveBeenCalled();
+    expect(appendedToStreamSpy).toHaveBeenCalled();
   });
 
   it('should give the event Id for idempotency when writing event', async () => {

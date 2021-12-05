@@ -8,13 +8,9 @@ import {
 import { isNil } from '@nestjs/common/utils/shared.utils';
 import { Client } from '@eventstore/db-client/dist/Client';
 import { SUBSCRIPTIONS } from '../constants';
-import {
-  Credentials,
-  InterconnectionConfiguration,
-} from '../../../interconnection-configuration';
+import { InterconnectionConfiguration } from '../../../interconnection-configuration';
 import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
 import {
-  CREDENTIALS,
   EVENTSTORE_DB_CLIENT,
   INTERCONNECT_CONFIGURATION,
 } from '../../../constants';
@@ -25,6 +21,8 @@ import {
   EVENT_HANDLER,
   EventHandler,
   EVENTSTORE_CONNECTION_GUARD,
+  GRPC_CONNECTION_INITIALIZER,
+  GrpcConnectionInitializer,
   Reader,
 } from '../../../';
 
@@ -38,23 +36,25 @@ export class GrpcReaderService implements Reader, OnModuleInit {
     private readonly configuration: InterconnectionConfiguration,
     @Inject(EVENT_HANDLER)
     private readonly eventHandler: EventHandler,
-    @Inject(CREDENTIALS)
-    private readonly credentials: Credentials,
     @Inject(SUBSCRIPTIONS)
     private readonly subscriptions: IPersistentSubscriptionConfig[],
     @Inject(EVENTSTORE_DB_CLIENT)
     private readonly eventStoreDBClient: any,
+    @Inject(GRPC_CONNECTION_INITIALIZER)
+    private readonly grpcConnectionInitializer: GrpcConnectionInitializer,
     @Inject(EVENTSTORE_CONNECTION_GUARD)
     private readonly connectionGuard: ConnectionGuard,
     private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<any> {
+    await this.grpcConnectionInitializer.init();
     await this.startEventstoreClient();
-    await this.upsertPersistantSubscription();
+    await this.upsertPersistantSubscriptions();
   }
 
   private async startEventstoreClient(): Promise<void> {
+    this.client = this.grpcConnectionInitializer.getConnectedClient();
     this.client = this.eventStoreDBClient.connectionString(
       this.configuration.source.connectionString,
     );
@@ -68,7 +68,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
     );
   }
 
-  public async upsertPersistantSubscription(): Promise<void> {
+  public async upsertPersistantSubscriptions(): Promise<void> {
     await this.init(async (event: any) => {
       try {
         await this.eventHandler.handle(event);

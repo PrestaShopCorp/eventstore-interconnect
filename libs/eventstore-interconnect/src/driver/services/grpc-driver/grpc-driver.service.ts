@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Driver } from '../../driver';
 import { ANY } from 'nestjs-geteventstore-next';
 import { CREDENTIALS, EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
@@ -8,22 +8,26 @@ import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { FormattedEvent } from '../../../formatter';
 import { EventData } from '@eventstore/db-client/dist/types/events';
-import {
-  CONNECTION_INITIALIZER,
-  ConnectionInitializer,
-} from '../connection-initializers/connection-initializer';
 import { Client } from '@eventstore/db-client/dist/Client';
+import {
+  GRPC_CONNECTION_INITIALIZER,
+  GrpcConnectionInitializer,
+} from '../../../connections-initializers';
 
 @Injectable()
-export class GrpcDriverService implements Driver {
+export class GrpcDriverService implements Driver, OnModuleInit {
   constructor(
-    @Inject(CONNECTION_INITIALIZER)
-    private readonly connectionInitializer: ConnectionInitializer,
+    @Inject(GRPC_CONNECTION_INITIALIZER)
+    private readonly connectionInitializer: GrpcConnectionInitializer,
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
     @Inject(SAFETY_NET) protected readonly safetyNet: SafetyNet,
     private readonly logger: Logger,
   ) {}
+
+  public async onModuleInit(): Promise<void> {
+    await this.connectionInitializer.init();
+  }
 
   public async writeEvent(event: FormattedEvent): Promise<void> {
     try {
@@ -63,7 +67,7 @@ export class GrpcDriverService implements Driver {
       metadata,
     });
 
-    const client = this.connectionInitializer.getConnectedClient() as Client;
+    const client: Client = this.connectionInitializer.getConnectedClient();
 
     await client.appendToStream(event.metadata.eventStreamId, formattedEvent, {
       expectedRevision: ANY,
