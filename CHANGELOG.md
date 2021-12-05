@@ -1,13 +1,21 @@
 # Major evlolutions of the project
 
+### 1.0.27
+
+- logs are clearer
+- arch is cleaned, some code duplication avoided
+
 ### 1.0.26
-- New feature : Each  $CONNECTION_LINK_CHECK_INTERVAL_IN_MS milliseconds, the connection to both source and destination will be checked. When the connection timeout, process will exit with code 1
+
+- New feature : Each $CONNECTION_LINK_CHECK_INTERVAL_IN_MS milliseconds, the connection to both source and destination
+  will be checked. When the connection timeout, process will exit with code 1
 
 ### 1.0.25
+
 - Connections initialized on module init (hooked to lifecycle)
 - Events are copied exactly as they are
 - metadata enriched with event Id, stream name, and event type
-- aggressive timeout when connecting to event store at startup 
+- aggressive timeout when connecting to event store at startup
 - fixing nested validation when handling an event
 
 ### 1.0.24
