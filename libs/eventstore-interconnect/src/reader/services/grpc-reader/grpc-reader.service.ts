@@ -8,15 +8,11 @@ import {
 import { isNil } from '@nestjs/common/utils/shared.utils';
 import { Client } from '@eventstore/db-client/dist/Client';
 import { SUBSCRIPTIONS } from '../constants';
-import {
-  Credentials,
-  InterconnectionConfiguration,
-} from '../../../interconnection-configuration';
+import { ConnectionConfiguration } from '../../../interconnection-configuration';
 import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
 import {
-  CREDENTIALS,
+  CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
-  INTERCONNECT_CONFIGURATION,
 } from '../../../constants';
 import { PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE } from 'nestjs-geteventstore-next/dist/event-store/services/errors.constant';
 import { Logger } from 'nestjs-pino-stackdriver';
@@ -25,50 +21,49 @@ import {
   EVENT_HANDLER,
   EventHandler,
   EVENTSTORE_CONNECTION_GUARD,
+  GRPC_CONNECTION_INITIALIZER,
+  GrpcConnectionInitializer,
   Reader,
 } from '../../../';
 
 @Injectable()
 export class GrpcReaderService implements Reader, OnModuleInit {
-  private persistentSubscriptions: PersistentSubscription[];
   private client: Client;
 
   constructor(
-    @Inject(INTERCONNECT_CONFIGURATION)
-    private readonly configuration: InterconnectionConfiguration,
+    @Inject(CONNECTION_CONFIGURATION)
+    private readonly connectionConfiguration: ConnectionConfiguration,
     @Inject(EVENT_HANDLER)
     private readonly eventHandler: EventHandler,
-    @Inject(CREDENTIALS)
-    private readonly credentials: Credentials,
     @Inject(SUBSCRIPTIONS)
     private readonly subscriptions: IPersistentSubscriptionConfig[],
     @Inject(EVENTSTORE_DB_CLIENT)
     private readonly eventStoreDBClient: any,
+    @Inject(GRPC_CONNECTION_INITIALIZER)
+    private readonly grpcConnectionInitializer: GrpcConnectionInitializer,
     @Inject(EVENTSTORE_CONNECTION_GUARD)
     private readonly connectionGuard: ConnectionGuard,
     private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<any> {
+    await this.grpcConnectionInitializer.init();
     await this.startEventstoreClient();
-    await this.upsertPersistantSubscription();
+    await this.upsertPersistantSubscriptions();
+    this.logger.log(
+      'READER : connected to ' + this.connectionConfiguration.connectionString,
+    );
   }
 
   private async startEventstoreClient(): Promise<void> {
-    this.client = this.eventStoreDBClient.connectionString(
-      this.configuration.source.connectionString,
-    );
+    this.client = this.grpcConnectionInitializer.getConnectedClient();
     await this.connectionGuard.startConnectionLinkPinger(
       this.client,
-      this.configuration.source,
-    );
-    this.logger.log(
-      'READER : Connected to Next eventstore on ' +
-        this.configuration.source.connectionString,
+      this.connectionConfiguration,
     );
   }
 
-  public async upsertPersistantSubscription(): Promise<void> {
+  public async upsertPersistantSubscriptions(): Promise<void> {
     await this.init(async (event: any) => {
       try {
         await this.eventHandler.handle(event);
@@ -81,11 +76,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
   }
 
   public async init(onEvent: (event: any) => void): Promise<void> {
-    this.persistentSubscriptions =
-      await this.subscribeToPersistentSubscriptions(
-        this.subscriptions,
-        onEvent,
-      );
+    await this.subscribeToPersistentSubscriptions(this.subscriptions, onEvent);
 
     this.logger.log(`EventStore v21 connected`);
   }
@@ -142,7 +133,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
 
           persistentSubscription.on('error', async (): Promise<void> => {});
           this.logger.log(
-            `Connected to persistent subscription "${subscription.group}" on stream "${subscription.stream}" !`,
+            `Connected to "${subscription.group}" on stream ${subscription.stream}.`,
           );
           return persistentSubscription;
         },
@@ -194,9 +185,5 @@ export class GrpcReaderService implements Reader, OnModuleInit {
 
   private static isNotAlreadyExistsError(e) {
     return e.code !== PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE;
-  }
-
-  public getPersistentSubscriptions(): PersistentSubscription[] {
-    return this.persistentSubscriptions;
   }
 }

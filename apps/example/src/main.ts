@@ -12,6 +12,7 @@ async function bootstrap() {
     logger.error(
       `Cannot init nestjs app, error: ${error}\n exiting with code E#5#`,
     );
+    process.exit(1)
   }
 }
 

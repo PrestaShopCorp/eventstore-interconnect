@@ -8,9 +8,9 @@ import { SUBSCRIPTIONS } from './services/constants';
 import { Logger } from 'nestjs-pino-stackdriver';
 import {
   ALLOWED_EVENTS,
+  CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENTSTORE_DB_CLIENT,
-  INTERCONNECT_CONFIGURATION,
 } from '../constants';
 import {
   LegacyEventsValidatorService,
@@ -27,15 +27,19 @@ import {
 } from '../formatter';
 import { SafetyNet } from '../safety-net';
 import { EventStoreDBClient } from '@eventstore/db-client';
-import { LEGACY_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER } from './services/legacy-clients-connection-initializers/eventstore-client/legacy-eventstore-clients-connection-initializer';
-import { LegacyEventStoreConnectionInitializerService } from './services/legacy-clients-connection-initializers/eventstore-client/legacy-event-store-connection-initializer.service';
-import { LEGACY_HTTP_CLIENT_CONNECTION_INITIALIZER } from './services/legacy-clients-connection-initializers/http-client/legacy-http-clients-connection-initializer';
-import { LegacyHttpClientConnectionInitializerService } from './services/legacy-clients-connection-initializers/http-client/legacy-http-client-connection-initializer.service';
+import {
+  GRPC_CONNECTION_INITIALIZER,
+  GrpcConnectionInitializerService,
+  HTTP_CLIENT_CONNECTION_INITIALIZER,
+  HttpClientConnectionInitializerService,
+  TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
+  TCPEventStoreConnectionInitializerService,
+} from '../connections-initializers';
 import {
   EVENTSTORE_CONNECTION_GUARD,
+  LegacyConnectionGuardService,
   NextConnectionGuardService,
 } from '../connections-guards';
-import { LegacyConnectionGuardService } from '../connections-guards/legacy/legacy-connection-guard.service';
 
 @Module({})
 export class ReaderModule {
@@ -58,8 +62,8 @@ export class ReaderModule {
           useValue: allowedEvents ?? {},
         },
         {
-          provide: INTERCONNECT_CONFIGURATION,
-          useValue: configuration,
+          provide: CONNECTION_CONFIGURATION,
+          useValue: configuration.source,
         },
         {
           provide: EVENT_HANDLER,
@@ -91,12 +95,12 @@ export class ReaderModule {
         useClass: LegacyEventFormatterService,
       },
       {
-        provide: LEGACY_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
-        useClass: LegacyEventStoreConnectionInitializerService,
+        provide: TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
+        useClass: TCPEventStoreConnectionInitializerService,
       },
       {
-        provide: LEGACY_HTTP_CLIENT_CONNECTION_INITIALIZER,
-        useClass: LegacyHttpClientConnectionInitializerService,
+        provide: HTTP_CLIENT_CONNECTION_INITIALIZER,
+        useClass: HttpClientConnectionInitializerService,
       },
       {
         provide: EVENTSTORE_CONNECTION_GUARD,
@@ -120,6 +124,10 @@ export class ReaderModule {
       {
         provide: EVENTSTORE_DB_CLIENT,
         useValue: EventStoreDBClient,
+      },
+      {
+        provide: GRPC_CONNECTION_INITIALIZER,
+        useClass: GrpcConnectionInitializerService,
       },
       {
         provide: SUBSCRIPTIONS,

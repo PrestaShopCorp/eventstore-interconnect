@@ -1,50 +1,61 @@
-import { ExpectedVersion } from 'nestjs-geteventstore-legacy';
-import { HttpDriverService } from './http-driver.service';
-import {
-  createJsonEventData,
-  EventStoreNodeConnection,
-} from 'node-eventstore-client';
-import { Credentials } from '../../../interconnection-configuration';
-import { SafetyNet } from '../../../safety-net';
-import { Logger } from 'nestjs-pino-stackdriver';
-import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
-import { setTimeout } from 'timers/promises';
-import { FormattedEvent } from '../../../formatter';
+import { ExpectedVersion } from "nestjs-geteventstore-legacy";
+import { HttpDriverService } from "./http-driver.service";
+import { createJsonEventData, EventStoreNodeConnection } from "node-eventstore-client";
+import { ConnectionConfiguration, Credentials } from "../../../interconnection-configuration";
+import { SafetyNet } from "../../../safety-net";
+import { Logger } from "nestjs-pino-stackdriver";
+import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../../constants";
+import { setTimeout } from "timers/promises";
+import { FormattedEvent } from "../../../formatter";
 import spyOn = jest.spyOn;
 
-describe('HttpDriverService', () => {
+describe("HttpDriverService", () => {
   let service: HttpDriverService;
 
   const connectionInitializerMock = {
-    getConnectedClient: jest.fn(),
+    init: jest.fn(),
+    getConnectedClient: jest.fn()
   };
   const esNodeConnection: EventStoreNodeConnection = {
-    appendToStream: jest.fn(),
+    appendToStream: jest.fn()
   } as any as EventStoreNodeConnection;
-  const credentials: Credentials = { username: '', password: '' };
+  const credentials: Credentials = { username: "", password: "" };
   const safetyNet: SafetyNet = {
     hook: jest.fn(),
-    cannotWriteEventHook: jest.fn(),
+    cannotWriteEventHook: jest.fn()
   } as any as SafetyNet;
   const logger: Logger = { log: jest.fn(), error: jest.fn() } as any as Logger;
 
-  const eventId = 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab';
+  const eventId = "a4817909-c6d6-4a0b-bc54-467a2dfad4ab";
 
   const event: FormattedEvent = {
     data: { toto: 123 },
     metadata: {
-      eventType: '',
-      eventStreamId: 'a',
-      eventId: eventId,
+      eventType: "",
+      eventStreamId: "a",
+      eventId: eventId
+    }
+  };
+
+  const connectionConf: ConnectionConfiguration = {
+    tcp: {
+      port: 1234,
+      host: "toto"
     },
+    http: {
+      port: 1234,
+      host: "toto"
+    },
+    credentials: { username: "", password: "" }
   };
 
   beforeEach(async () => {
     service = new HttpDriverService(
+      connectionConf,
       connectionInitializerMock,
       credentials,
       safetyNet,
-      logger,
+      logger
     );
   });
 

@@ -1,45 +1,59 @@
-import { GrpcDriverService } from './grpc-driver.service';
-import { ANY } from 'nestjs-geteventstore-next';
-import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
-import { Logger } from 'nestjs-pino-stackdriver';
-import { Credentials } from '../../../interconnection-configuration';
-import { SafetyNet } from '../../../safety-net';
-import { setTimeout } from 'timers/promises';
-import { FormattedEvent } from '../../../formatter';
+import { GrpcDriverService } from "./grpc-driver.service";
+import { ANY } from "nestjs-geteventstore-next";
+import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../../constants";
+import { Logger } from "nestjs-pino-stackdriver";
+import { ConnectionConfiguration, Credentials } from "../../../interconnection-configuration";
+import { SafetyNet } from "../../../safety-net";
+import { setTimeout } from "timers/promises";
+import { FormattedEvent } from "../../../formatter";
 import spyOn = jest.spyOn;
 
-describe('GrpcDriverService', () => {
+describe("GrpcDriverService", () => {
   let driver: GrpcDriverService;
 
   const connectionInitializer = {
-    getConnectedClient: jest.fn(),
+    init: jest.fn(),
+    getConnectedClient: jest.fn()
   };
 
   const credentials: Credentials = {
-    username: '',
-    password: '',
+    username: "",
+    password: ""
   };
   const safetyNet: SafetyNet = {
     hook: jest.fn(),
-    cannotWriteEventHook: jest.fn(),
+    cannotWriteEventHook: jest.fn()
   } as any as SafetyNet;
   const logger: Logger = { error: jest.fn(), log: jest.fn() } as any as Logger;
 
   const event: FormattedEvent = {
     data: {},
     metadata: {
-      eventStreamId: 'test',
-      eventType: 'toto',
-      eventId: 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab',
+      eventStreamId: "test",
+      eventType: "toto",
+      eventId: "a4817909-c6d6-4a0b-bc54-467a2dfad4ab"
+    }
+  };
+
+  const connectionConf: ConnectionConfiguration = {
+    tcp: {
+      port: 1234,
+      host: "toto"
     },
+    http: {
+      port: 1234,
+      host: "toto"
+    },
+    credentials: { username: "", password: "" }
   };
 
   beforeEach(async () => {
     driver = new GrpcDriverService(
+      connectionConf,
       connectionInitializer,
       credentials,
       safetyNet,
-      logger,
+      logger
     );
   });
 
@@ -48,15 +62,21 @@ describe('GrpcDriverService', () => {
     jest.useRealTimers();
   });
 
+  it("should initialize a grpc connection at module init", async () => {
+    await driver.onModuleInit()
+
+    expect(connectionInitializer.init).toHaveBeenCalled();
+  });
+
   it('should transmit write order to client with good options when writing event', async () => {
-    const appentToStreamSpy = jest.fn();
+    const appendedToStreamSpy = jest.fn();
     spyOn(connectionInitializer, 'getConnectedClient').mockReturnValue({
-      appendToStream: appentToStreamSpy,
+      appendToStream: appendedToStreamSpy,
     });
 
     await driver.writeEvent(event);
 
-    expect(appentToStreamSpy).toHaveBeenCalled();
+    expect(appendedToStreamSpy).toHaveBeenCalled();
   });
 
   it('should give the event Id for idempotency when writing event', async () => {

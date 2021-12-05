@@ -5,33 +5,33 @@ import {
   EventStoreNodeConnection,
 } from 'node-eventstore-client';
 import { nanoid } from 'nanoid';
-import { InterconnectionConfiguration } from '../../../../interconnection-configuration';
+import { ConnectionConfiguration } from '../../../interconnection-configuration';
 import {
-  INTERCONNECT_CONFIGURATION,
+  CONNECTION_CONFIGURATION,
   INTERCONNECTION_CONNECTION_DEFAULT_NAME,
-} from '../../../../constants';
+} from '../../../constants';
 import { Logger } from 'nestjs-pino-stackdriver';
-import { LegacyEventstoreClientsConnectionInitializer } from './legacy-eventstore-clients-connection-initializer';
 import {
   ConnectionGuard,
   EVENTSTORE_CONNECTION_GUARD,
-} from '../../../../connections-guards';
+} from '../../../connections-guards';
+import { TCPEventstoreClientsConnectionInitializer } from './tcp-eventstore-clients-connection-initializer';
 
 @Injectable()
-export class LegacyEventStoreConnectionInitializerService
-  implements LegacyEventstoreClientsConnectionInitializer
+export class TCPEventStoreConnectionInitializerService
+  implements TCPEventstoreClientsConnectionInitializer
 {
   private eventStoreNodeConnection: EventStoreNodeConnection;
 
   constructor(
-    @Inject(INTERCONNECT_CONFIGURATION)
-    private readonly configuration: InterconnectionConfiguration,
+    @Inject(CONNECTION_CONFIGURATION)
+    private readonly configuration: ConnectionConfiguration,
     @Inject(EVENTSTORE_CONNECTION_GUARD)
     private readonly connectionGuard: ConnectionGuard,
     private readonly logger: Logger,
   ) {}
 
-  public async initClient(): Promise<void> {
+  public async init(): Promise<void> {
     const esConnectionConf: ConnectionSettings = {
       // Buffer events if remote is slow or not available
       maxQueueSize: 100_000,
@@ -50,14 +50,14 @@ export class LegacyEventStoreConnectionInitializerService
     };
 
     const tcpEndPoint = {
-      host: this.configuration.source.tcp.host,
-      port: this.configuration.source.tcp.port,
+      host: this.configuration.tcp.host,
+      port: this.configuration.tcp.port,
     };
 
     this.eventStoreNodeConnection = createConnection(
       esConnectionConf,
       tcpEndPoint,
-      this.configuration.source.tcpConnectionName ??
+      this.configuration.tcpConnectionName ??
         `${INTERCONNECTION_CONNECTION_DEFAULT_NAME}-${nanoid(11)}`,
     );
 
@@ -68,19 +68,11 @@ export class LegacyEventStoreConnectionInitializerService
     );
     await this.connectionGuard.startConnectionLinkPinger(
       this.eventStoreNodeConnection,
-      this.configuration.source,
-    );
-
-    this.logger.log(
-      'READER : EventstoreClient created (at ' +
-        tcpEndPoint.host +
-        ':' +
-        tcpEndPoint.port +
-        ')',
+      this.configuration,
     );
   }
 
-  public getEventstoreConnectedClient(): EventStoreNodeConnection {
+  public getConnectedClient(): EventStoreNodeConnection {
     return this.eventStoreNodeConnection;
   }
 }

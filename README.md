@@ -7,11 +7,11 @@ v21.2.0 (also working with 2 eventstores with same version)
   source and dest eventstore, and connect to it.
 
 ## Connection
-It will automatically create/connect to subscriptions into the source, and write events into the
-destination one, after checking that the events are allowed and valid.
+It will automatically create/connect to subscriptions into the source, and write events into the destination one, after
+checking that the events are allowed and valid.
 
-You just have to give the correct env variables, and the version is automattically detected. So no need for redeploy
-when you want to upgrade your eventStore, or the one you want to write on.
+You just have to give the correct env variables, and the version is automatically detected. So no need for redeploy when
+you want to upgrade your eventStore, or the one you want to write on.
 
 Here is the list of the global env variable you might want to provide :
 
@@ -51,24 +51,34 @@ EVENTSTORE_INTERCO_EVENT_WRITER_TIMEOUT_IN_MS
 CONNECTION_LINK_CHECK_INTERVAL_IN_MS
 ```
 
-So the only thing to do when an upgrade is needed : change these env variables, and restart the project. The detect will be auto (if http conf is provided, then the legacy eventstore will be used.)
+So the only thing to do when an upgrade is needed : change these env variables, and restart the project. Defining what
+to run (tcp connection on legacy eventstore or grpc connection on new event store) is automatic (if http conf is
+provided, then the legacy eventstore will be used.)
 
-## Handlers
-You have to provide handlers for your events, like in the nest default CQRS lib. These handlers have to extend `InterconnectionHandler`. It will force your handlers to implement the validation of your event and/or your datas. You have one example [here](apps/example/src/events/example1.handler.ts).
+## Events
 
-This `InterconnectionHandler` will write the event on the correct version of eventStore based on the conf, and then will ack the event synchronously. 
-
+You have to provide an object containing the different events allowed to be copied. Note that you can add a validation
+on them, using the libs class-validator and class transformer. You have an example of no validated
+event [with Example2Event](apps/example/src/events/example2.event.ts) and an example of validated
+event [with Example1Event](apps/example/src/events/example1.event.ts)
 
 ## Safety strategy
-Sometimes it can happen the destination eventstore is down. In order not to miss events, an aggressive timeout is used. That means that after a custom duration, by default 5 seconds (but you can give your using the `EVENTSTORE_INTERCO_EVENT_WRITER_TIMEOUT_IN_MS` env variable), the process will exit brutally by default (and nack the event). This is called the Safety net. This basic behavior can be extended, very easily by using another provider, like this :
+
+Sometimes it can happen the destination eventstore is down. In order not to miss events, an aggressive timeout is used.
+That means that after a custom duration, by default 5 seconds (but you can give your using
+the `EVENTSTORE_INTERCO_EVENT_WRITER_TIMEOUT_IN_MS` env variable), the process will exit brutally by default (and nack
+the event). This is called the Safety net. This basic behavior can be extended, very easily by using another provider,
+like this :
 
 ```typescript
 import { SAFETY_NET } from '@eventstore-interconnect';
 
 //...
 {
-  provide: SAFETY_NET, 
-  useClass: MyCustomBehavior
+  provide: SAFETY_NET,
+          useClass
+:
+  MyCustomBehavior
 }
 //...
 ```
