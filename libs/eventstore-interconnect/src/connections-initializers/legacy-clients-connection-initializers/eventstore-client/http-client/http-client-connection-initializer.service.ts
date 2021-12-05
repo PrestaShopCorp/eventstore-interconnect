@@ -4,9 +4,9 @@ import { HTTPClient } from 'geteventstore-promise';
 import {
   ConnectionConfiguration,
   ProtocolConf,
-} from '../../../interconnection-configuration';
-import { CONNECTION_CONFIGURATION } from '../../../constants';
-import { NoLegacyConnectionError } from '../../../reader/errors/no-legacy-connection.error';
+} from '../../../../interconnection-configuration';
+import { CONNECTION_CONFIGURATION } from '../../../../constants';
+import { NoLegacyConnectionError } from '../../../../reader/errors/no-legacy-connection.error';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { HttpClientsConnectionInitializer } from './http-clients-connection-initializer';
 

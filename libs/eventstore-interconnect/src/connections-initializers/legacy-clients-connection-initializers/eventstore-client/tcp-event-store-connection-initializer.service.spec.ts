@@ -1,58 +1,39 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from 'nestjs-pino-stackdriver';
-import { InterconnectionConfiguration } from '../../../interconnection-configuration';
-import { INTERCONNECT_CONFIGURATION } from '../../../constants';
-import {
-  ConnectionGuard,
-  EVENTSTORE_CONNECTION_GUARD,
-} from '../../../connections-guards';
-import { createConnection } from 'node-eventstore-client';
-import * as geteventstorePromise from 'geteventstore-promise';
+import { Test, TestingModule } from "@nestjs/testing";
+import { Logger } from "nestjs-pino-stackdriver";
+import { ConnectionConfiguration } from "../../../interconnection-configuration";
+import { CONNECTION_CONFIGURATION } from "../../../constants";
+import { ConnectionGuard, EVENTSTORE_CONNECTION_GUARD } from "../../../connections-guards";
+import { createConnection } from "node-eventstore-client";
+import * as geteventstorePromise from "geteventstore-promise";
 import { TCPEventStoreConnectionInitializerService } from "./tcp-event-store-connection-initializer.service";
 
-jest.mock('geteventstore-promise');
-jest.mock('node-eventstore-client');
+jest.mock("geteventstore-promise");
+jest.mock("node-eventstore-client");
 
-describe('TCPEventStoreConnectionInitializerService', () => {
+describe("TCPEventStoreConnectionInitializerService", () => {
   let service: TCPEventStoreConnectionInitializerService;
 
   const loggerMock = {
-    log: jest.fn(),
+    log: jest.fn()
   };
 
-  const intercoConf: InterconnectionConfiguration = {
-    destination: {
-      credentials: {
-        username: '',
-        password: '',
-      },
-      tcp: {
-        host: '',
-        port: 123,
-      },
-      http: {
-        host: '',
-        port: 456,
-      },
+  const connectionConf: ConnectionConfiguration = {
+    credentials: {
+      username: "",
+      password: ""
     },
-    source: {
-      credentials: {
-        username: '',
-        password: '',
-      },
-      tcp: {
-        host: '',
-        port: 456,
-      },
-      http: {
-        host: '',
-        port: 456,
-      },
+    tcp: {
+      host: "",
+      port: 123
     },
+    http: {
+      host: "",
+      port: 456
+    }
   };
 
   const connectionGuardMock = {
-    startConnectionLinkPinger: jest.fn(),
+    startConnectionLinkPinger: jest.fn()
   } as ConnectionGuard;
 
   beforeEach(async () => {
@@ -61,37 +42,37 @@ describe('TCPEventStoreConnectionInitializerService', () => {
         TCPEventStoreConnectionInitializerService,
         {
           provide: Logger,
-          useValue: loggerMock,
+          useValue: loggerMock
         },
         {
-          provide: INTERCONNECT_CONFIGURATION,
-          useValue: intercoConf,
+          provide: CONNECTION_CONFIGURATION,
+          useValue: connectionConf
         },
         {
           provide: EVENTSTORE_CONNECTION_GUARD,
-          useValue: connectionGuardMock,
-        },
-      ],
+          useValue: connectionGuardMock
+        }
+      ]
     }).compile();
 
     service = module.get<TCPEventStoreConnectionInitializerService>(
-      TCPEventStoreConnectionInitializerService,
+      TCPEventStoreConnectionInitializerService
     );
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it('should check the connection is ok on initialization', async () => {
+  it("should check the connection is ok on initialization", async () => {
     (createConnection as any).mockImplementation(() => {
       return {
-        connect: jest.fn(),
+        connect: jest.fn()
       };
     });
     (geteventstorePromise.HTTPClient as any).mockImplementation(() => {
       return {
-        checkStreamExists: jest.fn(),
+        checkStreamExists: jest.fn()
       };
     });
 

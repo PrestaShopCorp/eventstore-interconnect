@@ -17,7 +17,6 @@ import {
   CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENTSTORE_DB_CLIENT,
-  INTERCONNECT_CONFIGURATION,
 } from '../constants';
 import { SafetyNetModule } from '../safety-net';
 import { LegacyConnectionGuardService } from '../connections-guards';
@@ -86,8 +85,8 @@ export class DriverModule {
         useValue: configuration.destination.credentials,
       },
       {
-        provide: INTERCONNECT_CONFIGURATION,
-        useValue: configuration,
+        provide: CONNECTION_CONFIGURATION,
+        useValue: configuration.destination,
       },
       {
         provide: TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,

@@ -1,26 +1,24 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyConnectionGuardService } from './legacy-connection-guard.service';
-import { Logger } from 'nestjs-pino-stackdriver';
-import { EventStoreNodeConnection } from 'node-eventstore-client';
-import {
-  ConnectionConfiguration,
-  Credentials,
-} from '../../interconnection-configuration';
-import { setTimeout } from 'timers/promises';
-import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
-import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
+import { Test, TestingModule } from "@nestjs/testing";
+import { LegacyConnectionGuardService } from "./legacy-connection-guard.service";
+import { Logger } from "nestjs-pino-stackdriver";
+import { EventStoreNodeConnection } from "node-eventstore-client";
+import { ConnectionConfiguration, Credentials } from "../../interconnection-configuration";
+import { setTimeout } from "timers/promises";
+import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../constants";
+import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from "../connection-guard.constants";
 import spyOn = jest.spyOn;
 
-describe('LegacyConnectionGuardService', () => {
+describe("LegacyConnectionGuardService", () => {
   let service: LegacyConnectionGuardService;
 
   const loggerMock = {
     log: jest.fn(),
     error: jest.fn(),
+    debug: jest.fn()
   };
 
   const eventStoreNodeConnectionMock = {
-    getStreamMetadataRaw: jest.fn(),
+    getStreamMetadataRaw: jest.fn()
   } as any as EventStoreNodeConnection;
 
   const credentials: Credentials = { username: '', password: '' };

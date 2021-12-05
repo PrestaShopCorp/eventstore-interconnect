@@ -70,14 +70,6 @@ export class TCPEventStoreConnectionInitializerService
       this.eventStoreNodeConnection,
       this.configuration,
     );
-
-    this.logger.log(
-      'READER : connection to eventstore created (at ' +
-        tcpEndPoint.host +
-        ':' +
-        tcpEndPoint.port +
-        ')',
-    );
   }
 
   public getConnectedClient(): EventStoreNodeConnection {

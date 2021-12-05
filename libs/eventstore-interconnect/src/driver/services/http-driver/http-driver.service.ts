@@ -5,8 +5,15 @@ import {
   createJsonEventData,
   EventStoreNodeConnection,
 } from 'node-eventstore-client';
-import { CREDENTIALS, EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
-import { Credentials } from '../../../interconnection-configuration';
+import {
+  CONNECTION_CONFIGURATION,
+  CREDENTIALS,
+  EVENT_WRITER_TIMEOUT_IN_MS,
+} from '../../../constants';
+import {
+  ConnectionConfiguration,
+  Credentials,
+} from '../../../interconnection-configuration';
 import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { Logger } from 'nestjs-pino-stackdriver';
 import { FormattedEvent } from '../../../formatter';
@@ -18,6 +25,8 @@ import {
 @Injectable()
 export class HttpDriverService implements Driver, OnModuleInit {
   constructor(
+    @Inject(CONNECTION_CONFIGURATION)
+    private readonly connectionConfiguration: ConnectionConfiguration,
     @Inject(TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER)
     private readonly connectionInitializer: TCPEventstoreClientsConnectionInitializer,
     @Inject(CREDENTIALS)
@@ -28,6 +37,9 @@ export class HttpDriverService implements Driver, OnModuleInit {
 
   public async onModuleInit(): Promise<void> {
     await this.connectionInitializer.init();
+    this.logger.log(
+      `DRIVER : connected to ${this.connectionConfiguration.tcp.host}:${this.connectionConfiguration.tcp.port}`,
+    );
   }
 
   public async writeEvent(event: FormattedEvent): Promise<void> {

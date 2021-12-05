@@ -39,10 +39,6 @@ export class GrpcConnectionInitializerService
       this.client,
       this.connectionConfiguration,
     );
-    this.logger.log(
-      'DRIVER : Connected to Next eventstore on ' +
-        this.connectionConfiguration.connectionString,
-    );
   }
 
   public getConnectedClient(): Client {

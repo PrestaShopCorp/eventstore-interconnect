@@ -1,8 +1,15 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Driver } from '../../driver';
 import { ANY } from 'nestjs-geteventstore-next';
-import { CREDENTIALS, EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
-import { Credentials } from '../../../interconnection-configuration';
+import {
+  CONNECTION_CONFIGURATION,
+  CREDENTIALS,
+  EVENT_WRITER_TIMEOUT_IN_MS,
+} from '../../../constants';
+import {
+  ConnectionConfiguration,
+  Credentials,
+} from '../../../interconnection-configuration';
 import { jsonEvent } from '@eventstore/db-client';
 import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { Logger } from 'nestjs-pino-stackdriver';
@@ -17,6 +24,8 @@ import {
 @Injectable()
 export class GrpcDriverService implements Driver, OnModuleInit {
   constructor(
+    @Inject(CONNECTION_CONFIGURATION)
+    private readonly connectionConfiguration: ConnectionConfiguration,
     @Inject(GRPC_CONNECTION_INITIALIZER)
     private readonly connectionInitializer: GrpcConnectionInitializer,
     @Inject(CREDENTIALS)
@@ -27,6 +36,9 @@ export class GrpcDriverService implements Driver, OnModuleInit {
 
   public async onModuleInit(): Promise<void> {
     await this.connectionInitializer.init();
+    this.logger.log(
+      `DRIVER : connected to ${this.connectionConfiguration.connectionString}`,
+    );
   }
 
   public async writeEvent(event: FormattedEvent): Promise<void> {

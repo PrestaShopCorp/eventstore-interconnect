@@ -1,26 +1,27 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { NextConnectionGuardService } from './next-connection-guard.service';
-import { Client } from '@eventstore/db-client/dist/Client';
-import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
-import { setTimeout } from 'timers/promises';
+import { Test, TestingModule } from "@nestjs/testing";
+import { NextConnectionGuardService } from "./next-connection-guard.service";
+import { Client } from "@eventstore/db-client/dist/Client";
+import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../constants";
+import { setTimeout } from "timers/promises";
+import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from "../connection-guard.constants";
+import { ConnectionConfiguration } from "../../interconnection-configuration";
+import { Logger } from "nestjs-pino-stackdriver";
 import spyOn = jest.spyOn;
-import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
-import { ConnectionConfiguration } from '../../interconnection-configuration';
-import { Logger } from 'nestjs-pino-stackdriver';
 
-describe('NextConnectionGuardService', () => {
+describe("NextConnectionGuardService", () => {
   let service: NextConnectionGuardService;
 
   const connection = { getStreamMetadata: jest.fn() } as any as Client;
 
   const connectionConfiguration: ConnectionConfiguration = {
     credentials: undefined,
-    connectionString: 'toto',
+    connectionString: "toto"
   };
 
   const loggerMock = {
     log: jest.fn(),
     error: jest.fn(),
+    debug: jest.fn()
   };
 
   beforeEach(async () => {
