@@ -1,9 +1,15 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
-import { Client } from "@eventstore/db-client/dist/Client";
-import { CONNECTION_CONFIGURATION, EVENTSTORE_DB_CLIENT } from "../../constants";
-import { ConnectionConfiguration } from "../../interconnection-configuration";
-import { ConnectionGuard, EVENTSTORE_CONNECTION_GUARD } from "../../connections-guards";
-import { GrpcConnectionInitializer } from "./grpc-connection-initializer";
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Client } from '@eventstore/db-client/dist/Client';
+import {
+  CONNECTION_CONFIGURATION,
+  EVENTSTORE_DB_CLIENT,
+} from '../../constants';
+import { ConnectionConfiguration } from '../../interconnection-configuration';
+import {
+  ConnectionGuard,
+  EVENTSTORE_CONNECTION_GUARD,
+} from '../../connections-guards';
+import { GrpcConnectionInitializer } from './grpc-connection-initializer';
 
 @Injectable()
 export class GrpcConnectionInitializerService

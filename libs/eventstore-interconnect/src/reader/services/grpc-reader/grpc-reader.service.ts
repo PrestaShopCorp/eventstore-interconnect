@@ -1,19 +1,20 @@
-import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import {
   EventType,
   PersistentSubscription,
   persistentSubscriptionSettingsFromDefaults,
-  ResolvedEvent
-} from "@eventstore/db-client";
-import { isNil } from "@nestjs/common/utils/shared.utils";
-import { Client } from "@eventstore/db-client/dist/Client";
-import { SUBSCRIPTIONS } from "../constants";
-import { ConnectionConfiguration } from "../../../interconnection-configuration";
-import { IPersistentSubscriptionConfig } from "nestjs-geteventstore-next";
-import { CONNECTION_CONFIGURATION, EVENTSTORE_DB_CLIENT } from "../../../constants";
+  ResolvedEvent,
+} from '@eventstore/db-client';
+import { isNil } from '@nestjs/common/utils/shared.utils';
+import { Client } from '@eventstore/db-client/dist/Client';
+import { SUBSCRIPTIONS } from '../constants';
+import { ConnectionConfiguration } from '../../../interconnection-configuration';
+import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
 import {
-  PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE
-} from "nestjs-geteventstore-next/dist/event-store/services/errors.constant";
+  CONNECTION_CONFIGURATION,
+  EVENTSTORE_DB_CLIENT,
+} from '../../../constants';
+import { PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE } from 'nestjs-geteventstore-next/dist/event-store/services/errors.constant';
 import {
   ConnectionGuard,
   EVENT_HANDLER,
@@ -21,8 +22,8 @@ import {
   EVENTSTORE_CONNECTION_GUARD,
   GRPC_CONNECTION_INITIALIZER,
   GrpcConnectionInitializer,
-  Reader
-} from "../../../";
+  Reader,
+} from '../../../';
 
 @Injectable()
 export class GrpcReaderService implements Reader, OnModuleInit {

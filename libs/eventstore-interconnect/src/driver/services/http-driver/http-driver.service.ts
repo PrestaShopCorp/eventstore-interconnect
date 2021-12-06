@@ -1,15 +1,25 @@
-import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { Driver } from "../../driver";
-import { ExpectedVersion } from "nestjs-geteventstore-legacy";
-import { createJsonEventData, EventStoreNodeConnection } from "node-eventstore-client";
-import { CONNECTION_CONFIGURATION, CREDENTIALS, EVENT_WRITER_TIMEOUT_IN_MS } from "../../../constants";
-import { ConnectionConfiguration, Credentials } from "../../../interconnection-configuration";
-import { SAFETY_NET, SafetyNet } from "../../../hooks/safety-net";
-import { FormattedEvent } from "../../../formatter";
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Driver } from '../../driver';
+import { ExpectedVersion } from 'nestjs-geteventstore-legacy';
+import {
+  createJsonEventData,
+  EventStoreNodeConnection,
+} from 'node-eventstore-client';
+import {
+  CONNECTION_CONFIGURATION,
+  CREDENTIALS,
+  EVENT_WRITER_TIMEOUT_IN_MS,
+} from '../../../constants';
+import {
+  ConnectionConfiguration,
+  Credentials,
+} from '../../../interconnection-configuration';
+import { SAFETY_NET, SafetyNet } from '../../../hooks/safety-net';
+import { FormattedEvent } from '../../../formatter';
 import {
   TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
-  TCPEventstoreClientsConnectionInitializer
-} from "../../../connections-initializers";
+  TCPEventstoreClientsConnectionInitializer,
+} from '../../../connections-initializers';
 
 @Injectable()
 export class HttpDriverService implements Driver, OnModuleInit {

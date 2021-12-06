@@ -1,10 +1,13 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
-import * as geteventstorePromise from "geteventstore-promise";
-import { HTTPClient } from "geteventstore-promise";
-import { ConnectionConfiguration, ProtocolConf } from "../../../../interconnection-configuration";
-import { CONNECTION_CONFIGURATION } from "../../../../constants";
-import { NoLegacyConnectionError } from "../../../../reader/errors/no-legacy-connection.error";
-import { HttpClientsConnectionInitializer } from "./http-clients-connection-initializer";
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import * as geteventstorePromise from 'geteventstore-promise';
+import { HTTPClient } from 'geteventstore-promise';
+import {
+  ConnectionConfiguration,
+  ProtocolConf,
+} from '../../../../interconnection-configuration';
+import { CONNECTION_CONFIGURATION } from '../../../../constants';
+import { NoLegacyConnectionError } from '../../../../reader/errors/no-legacy-connection.error';
+import { HttpClientsConnectionInitializer } from './http-clients-connection-initializer';
 
 @Injectable()
 export class HttpClientConnectionInitializerService
