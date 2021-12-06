@@ -9,44 +9,44 @@ import { setTimeout } from "timers/promises";
 import { FormattedEvent } from "../../../formatter";
 import spyOn = jest.spyOn;
 
-describe("HttpDriverService", () => {
+describe('HttpDriverService', () => {
   let service: HttpDriverService;
 
   const connectionInitializerMock = {
     init: jest.fn(),
-    getConnectedClient: jest.fn()
+    getConnectedClient: jest.fn(),
   };
   const esNodeConnection: EventStoreNodeConnection = {
-    appendToStream: jest.fn()
+    appendToStream: jest.fn(),
   } as any as EventStoreNodeConnection;
-  const credentials: Credentials = { username: "", password: "" };
+  const credentials: Credentials = { username: '', password: '' };
   const safetyNet: SafetyNet = {
     hook: jest.fn(),
-    cannotWriteEventHook: jest.fn()
+    cannotWriteEventHook: jest.fn(),
   } as any as SafetyNet;
   const logger: Logger = { log: jest.fn(), error: jest.fn() } as any as Logger;
 
-  const eventId = "a4817909-c6d6-4a0b-bc54-467a2dfad4ab";
+  const eventId = 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab';
 
   const event: FormattedEvent = {
     data: { toto: 123 },
     metadata: {
-      eventType: "",
-      eventStreamId: "a",
-      eventId: eventId
-    }
+      eventType: '',
+      eventStreamId: 'a',
+      eventId: eventId,
+    },
   };
 
   const connectionConf: ConnectionConfiguration = {
     tcp: {
       port: 1234,
-      host: "toto"
+      host: 'toto',
     },
     http: {
       port: 1234,
-      host: "toto"
+      host: 'toto',
     },
-    credentials: { username: "", password: "" }
+    credentials: { username: '', password: '' },
   };
 
   beforeEach(async () => {
@@ -55,7 +55,7 @@ describe("HttpDriverService", () => {
       connectionInitializerMock,
       credentials,
       safetyNet,
-      logger
+      logger,
     );
   });
 

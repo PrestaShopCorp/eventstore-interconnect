@@ -4,18 +4,18 @@ import { ConnectionConfiguration } from "../../../../interconnection-configurati
 import { CONNECTION_CONFIGURATION } from "../../../../constants";
 import { HttpClientConnectionInitializerService } from "./http-client-connection-initializer.service";
 
-describe("HttpClientConnectionInitializerService", () => {
+describe('HttpClientConnectionInitializerService', () => {
   let service: HttpClientConnectionInitializerService;
 
   const loggerMock = {
-    log: jest.fn()
+    log: jest.fn(),
   };
 
   const connectionConfiguration: ConnectionConfiguration = {
     credentials: {
-      username: "",
-      password: ""
-    }
+      username: '',
+      password: '',
+    },
   };
 
   beforeEach(async () => {
@@ -24,12 +24,12 @@ describe("HttpClientConnectionInitializerService", () => {
         HttpClientConnectionInitializerService,
         {
           provide: Logger,
-          useValue: loggerMock
+          useValue: loggerMock,
         },
         {
           provide: CONNECTION_CONFIGURATION,
-          useValue: connectionConfiguration
-        }
+          useValue: connectionConfiguration,
+        },
       ],
     }).compile();
 
