@@ -21,16 +21,16 @@ import { CustomWriterHookService } from "./custom-writer-hook/custom-writer-hook
 let configuration: InterconnectionConfiguration;
 
 switch (process.env.CASE) {
-  case 'LEGLEG':
+  case "LEGLEG":
     configuration = legSrcLegDestConfiguration;
     break;
-  case 'LEGNEXT':
+  case "LEGNEXT":
     configuration = legSrcNextDestConfiguration;
     break;
-  case 'NEXTLEG':
+  case "NEXTLEG":
     configuration = nextSrcLegDestConfiguration;
     break;
-  case 'NEXTNEXT':
+  case "NEXTNEXT":
     configuration = nextSrcNextDestConfiguration;
     break;
 }
@@ -38,7 +38,7 @@ switch (process.env.CASE) {
 const allowedEvents: any = {
   Example1Event,
   Example2Event,
-  Example3Event,
+  Example3Event
 };
 
 @Module({
@@ -48,9 +48,10 @@ const allowedEvents: any = {
       allowedEvents,
       {
         customSafetyNetStrategy: CustomSafetyNet,
-        customWriterHook: CustomWriterHookService,
-      },
-    ),
-  ],
+        customWriterHook: CustomWriterHookService
+      }
+    )
+  ]
 })
-export class UsecaseModule {}
+export class UsecaseModule {
+}

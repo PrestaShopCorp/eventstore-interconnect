@@ -1,7 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { WriterHook } from "@eventstore-interconnect/hooks/writer-hook/writer-hook";
 import { FormattedEvent } from "@eventstore-interconnect";
-import { Logger } from "nestjs-pino-stackdriver";
 
 @Injectable()
 export class CustomWriterHookService implements WriterHook {
