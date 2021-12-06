@@ -5,27 +5,27 @@ import { ConnectionConfiguration } from "../../interconnection-configuration";
 import { Logger } from "nestjs-pino-stackdriver";
 import { EVENTSTORE_CONNECTION_GUARD } from "../../connections-guards";
 
-describe("GrpcConnectionInitializerService", () => {
+describe('GrpcConnectionInitializerService', () => {
   let service: GrpcConnectionInitializerService;
 
   const loggerMock = {
-    log: jest.fn()
+    log: jest.fn(),
   };
 
   const esConnectionGuardMock = {
-    startConnectionLinkPinger: jest.fn()
+    startConnectionLinkPinger: jest.fn(),
   };
 
   const connectionConf: ConnectionConfiguration = {
     credentials: {
-      username: "",
-      password: ""
+      username: '',
+      password: '',
     },
-    connectionString: "destConnectionString"
+    connectionString: 'destConnectionString',
   };
 
   const esClientMock = {
-    connectionString: jest.fn()
+    connectionString: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -38,7 +38,7 @@ describe("GrpcConnectionInitializerService", () => {
         },
         {
           provide: CONNECTION_CONFIGURATION,
-          useValue: connectionConf
+          useValue: connectionConf,
         },
         {
           provide: EVENTSTORE_CONNECTION_GUARD,
