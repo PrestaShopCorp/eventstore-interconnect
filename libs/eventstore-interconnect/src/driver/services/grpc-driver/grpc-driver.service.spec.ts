@@ -8,43 +8,43 @@ import { setTimeout } from "timers/promises";
 import { FormattedEvent } from "../../../formatter";
 import spyOn = jest.spyOn;
 
-describe("GrpcDriverService", () => {
+describe('GrpcDriverService', () => {
   let driver: GrpcDriverService;
 
   const connectionInitializer = {
     init: jest.fn(),
-    getConnectedClient: jest.fn()
+    getConnectedClient: jest.fn(),
   };
 
   const credentials: Credentials = {
-    username: "",
-    password: ""
+    username: '',
+    password: '',
   };
   const safetyNet: SafetyNet = {
     hook: jest.fn(),
-    cannotWriteEventHook: jest.fn()
+    cannotWriteEventHook: jest.fn(),
   } as any as SafetyNet;
   const logger: Logger = { error: jest.fn(), log: jest.fn() } as any as Logger;
 
   const event: FormattedEvent = {
     data: {},
     metadata: {
-      eventStreamId: "test",
-      eventType: "toto",
-      eventId: "a4817909-c6d6-4a0b-bc54-467a2dfad4ab"
-    }
+      eventStreamId: 'test',
+      eventType: 'toto',
+      eventId: 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab',
+    },
   };
 
   const connectionConf: ConnectionConfiguration = {
     tcp: {
       port: 1234,
-      host: "toto"
+      host: 'toto',
     },
     http: {
       port: 1234,
-      host: "toto"
+      host: 'toto',
     },
-    credentials: { username: "", password: "" }
+    credentials: { username: '', password: '' },
   };
 
   beforeEach(async () => {
@@ -53,7 +53,7 @@ describe("GrpcDriverService", () => {
       connectionInitializer,
       credentials,
       safetyNet,
-      logger
+      logger,
     );
   });
 
@@ -62,8 +62,8 @@ describe("GrpcDriverService", () => {
     jest.useRealTimers();
   });
 
-  it("should initialize a grpc connection at module init", async () => {
-    await driver.onModuleInit()
+  it('should initialize a grpc connection at module init', async () => {
+    await driver.onModuleInit();
 
     expect(connectionInitializer.init).toHaveBeenCalled();
   });

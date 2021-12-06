@@ -8,20 +8,20 @@ import { ConnectionConfiguration } from "../../interconnection-configuration";
 import { Logger } from "nestjs-pino-stackdriver";
 import spyOn = jest.spyOn;
 
-describe("NextConnectionGuardService", () => {
+describe('NextConnectionGuardService', () => {
   let service: NextConnectionGuardService;
 
   const connection = { getStreamMetadata: jest.fn() } as any as Client;
 
   const connectionConfiguration: ConnectionConfiguration = {
     credentials: undefined,
-    connectionString: "toto"
+    connectionString: 'toto',
   };
 
   const loggerMock = {
     log: jest.fn(),
     error: jest.fn(),
-    debug: jest.fn()
+    debug: jest.fn(),
   };
 
   beforeEach(async () => {

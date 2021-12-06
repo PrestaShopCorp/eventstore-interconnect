@@ -81,7 +81,7 @@ describe('EventHandlerService', () => {
     expect(driverMock.writeEvent).toHaveBeenCalledWith(formattedEvent);
   });
 
-  it("should trigger writer hook when the event is valid", async () => {
+  it('should trigger writer hook when the event is valid', async () => {
     const formattedEvent = {
       id: 'toto',
     };
@@ -93,7 +93,7 @@ describe('EventHandlerService', () => {
     expect(writerHookMock.hook).toHaveBeenCalledWith(formattedEvent);
   });
 
-  it("should not trigger writer hook when the event is invalid", async () => {
+  it('should not trigger writer hook when the event is invalid', async () => {
     const formattedEvent = {
       id: 'toto',
     };

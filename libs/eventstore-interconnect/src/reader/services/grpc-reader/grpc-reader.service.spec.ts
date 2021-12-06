@@ -8,16 +8,16 @@ import {
 import { ConnectionGuard } from "../../../connections-guards";
 import spyOn = jest.spyOn;
 
-describe("GrpcReaderService", () => {
+describe('GrpcReaderService', () => {
   let service: GrpcReaderService;
 
   const eventHandlerMock: EventHandler = {
-    handle: jest.fn()
+    handle: jest.fn(),
   } as any as EventHandler;
 
   const logger = {
     log: jest.fn(),
-    error: jest.fn()
+    error: jest.fn(),
   } as any as Logger;
 
   const connectionClientMock = {
@@ -32,24 +32,24 @@ describe("GrpcReaderService", () => {
     getStreamMetadata: jest.fn(),
     createPersistentSubscription: jest.fn(),
     connectToPersistentSubscription: jest.fn(),
-    updatePersistentSubscription: jest.fn()
+    updatePersistentSubscription: jest.fn(),
   };
 
   const connectionInitializerMock = {
     init: jest.fn(),
-    getConnectedClient: jest.fn()
+    getConnectedClient: jest.fn(),
   };
 
   const connectionConfig: ConnectionConfiguration = {
     tcp: {
       port: 1234,
-      host: "toto"
+      host: 'toto',
     },
     http: {
       port: 1234,
-      host: "toto"
+      host: 'toto',
     },
-    credentials: { username: "", password: "" }
+    credentials: { username: '', password: '' },
   };
 
   beforeEach(async () => {
@@ -58,17 +58,17 @@ describe("GrpcReaderService", () => {
       eventHandlerMock,
       [
         {
-          stream: "1",
-          group: "1g",
+          stream: '1',
+          group: '1g',
           optionsForConnection: {},
-          settingsForCreation: {}
+          settingsForCreation: {},
         },
         {
-          stream: "2",
-          group: "2g",
+          stream: '2',
+          group: '2g',
           optionsForConnection: {},
-          settingsForCreation: {}
-        }
+          settingsForCreation: {},
+        },
       ],
       connectionClientMock,
       connectionInitializerMock,
@@ -83,17 +83,14 @@ describe("GrpcReaderService", () => {
 
   it('should start the eventstore connection pinger on module init', async () => {
     jest
-      .spyOn(connectionInitializerMock, "getConnectedClient")
+      .spyOn(connectionInitializerMock, 'getConnectedClient')
       .mockReturnValue(eventstoreClientMock);
+    spyOn(eventstoreClientMock, 'createPersistentSubscription');
     spyOn(
       eventstoreClientMock,
-      "createPersistentSubscription"
-    );
-    spyOn(
-      eventstoreClientMock,
-      "connectToPersistentSubscription"
+      'connectToPersistentSubscription',
     ).mockReturnValue({
-      on: jest.fn()
+      on: jest.fn(),
     });
 
     await service.onModuleInit();
@@ -103,7 +100,7 @@ describe("GrpcReaderService", () => {
 
   it('should check if the connection on source eventstore is ok on module init', async () => {
     jest
-      .spyOn(connectionInitializerMock, "getConnectedClient")
+      .spyOn(connectionInitializerMock, 'getConnectedClient')
       .mockReturnValue(eventstoreClientMock);
     spyOn(
       eventstoreClientMock,
@@ -119,7 +116,7 @@ describe("GrpcReaderService", () => {
 
   it('should try to create each subscriptions at module init', async () => {
     jest
-      .spyOn(connectionInitializerMock, "getConnectedClient")
+      .spyOn(connectionInitializerMock, 'getConnectedClient')
       .mockReturnValue(eventstoreClientMock);
     jest
       .spyOn(eventstoreClientMock, 'getStreamMetadata')
@@ -141,7 +138,7 @@ describe("GrpcReaderService", () => {
 
   it('should update  each subscriptions at module init when they already exist', async () => {
     jest
-      .spyOn(connectionInitializerMock, "getConnectedClient")
+      .spyOn(connectionInitializerMock, 'getConnectedClient')
       .mockReturnValue(eventstoreClientMock);
     jest
       .spyOn(eventstoreClientMock, 'getStreamMetadata')

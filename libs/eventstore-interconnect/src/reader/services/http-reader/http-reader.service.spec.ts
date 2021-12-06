@@ -11,22 +11,22 @@ import {
 } from "../../../connections-initializers";
 import spyOn = jest.spyOn;
 
-describe("HttpReaderService", () => {
+describe('HttpReaderService', () => {
   let service: HttpReaderService;
 
   const intercoConf: ConnectionConfiguration = {
     tcp: {
-      host: "popo",
-      port: 1234
+      host: 'popo',
+      port: 1234,
     },
     http: {
-      host: "popo",
-      port: 1234
+      host: 'popo',
+      port: 1234,
     },
     credentials: {
-      username: "",
-      password: ""
-    }
+      username: '',
+      password: '',
+    },
   };
 
   const persubConnectionSpy = jest.fn();
@@ -35,7 +35,7 @@ describe("HttpReaderService", () => {
       init: jest.fn(),
       getConnectedClient: () => {
         return { connectToPersistentSubscription: persubConnectionSpy };
-      }
+      },
     } as any as TCPEventstoreClientsConnectionInitializer;
   const eventHandlerMock: EventHandler = {
     handle: () => {
@@ -72,10 +72,10 @@ describe("HttpReaderService", () => {
       getHttpClient: () => {
         return {
           persistentSubscriptions: {
-            assert: persubAssertSpy
-          }
+            assert: persubAssertSpy,
+          },
         };
-      }
+      },
     } as any as HttpClientsConnectionInitializer;
 
   beforeEach(async () => {

@@ -8,17 +8,17 @@ import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../constants";
 import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from "../connection-guard.constants";
 import spyOn = jest.spyOn;
 
-describe("LegacyConnectionGuardService", () => {
+describe('LegacyConnectionGuardService', () => {
   let service: LegacyConnectionGuardService;
 
   const loggerMock = {
     log: jest.fn(),
     error: jest.fn(),
-    debug: jest.fn()
+    debug: jest.fn(),
   };
 
   const eventStoreNodeConnectionMock = {
-    getStreamMetadataRaw: jest.fn()
+    getStreamMetadataRaw: jest.fn(),
   } as any as EventStoreNodeConnection;
 
   const credentials: Credentials = { username: '', password: '' };

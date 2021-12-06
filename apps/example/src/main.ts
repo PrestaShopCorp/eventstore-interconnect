@@ -1,6 +1,6 @@
-import { Logger } from 'nestjs-pino-stackdriver';
-import { NestFactory } from '@nestjs/core';
-import { UsecaseModule } from './usecase.module';
+import { Logger } from "nestjs-pino-stackdriver";
+import { NestFactory } from "@nestjs/core";
+import { UsecaseModule } from "./usecase.module";
 
 async function bootstrap() {
   const logger = new Logger();
@@ -12,7 +12,7 @@ async function bootstrap() {
     logger.error(
       `Cannot init nestjs app, error: ${error}\n exiting with code E#5#`,
     );
-    process.exit(1)
+    process.exit(1);
   }
 }
 
