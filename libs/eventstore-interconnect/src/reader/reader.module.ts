@@ -1,4 +1,4 @@
-import { DynamicModule, Logger, Module, Type } from "@nestjs/common";
+import { DynamicModule, Logger, Module } from "@nestjs/common";
 import { InterconnectionConfiguration } from "../interconnection-configuration";
 import { READER } from "./services/reader";
 import { isLegacyConf } from "../helpers";
@@ -11,7 +11,6 @@ import { DriverModule } from "../driver";
 import { Provider } from "@nestjs/common/interfaces/modules/provider.interface";
 import { EVENT_HANDLER, EventHandlerService } from "../event-handler";
 import { FORMATTER, LegacyEventFormatterService, NextEventFormatterService } from "../formatter";
-import { SafetyNet } from "../safety-net";
 import { EventStoreDBClient } from "@eventstore/db-client";
 import {
   GRPC_CONNECTION_INITIALIZER,
@@ -26,9 +25,9 @@ import {
   LegacyConnectionGuardService,
   NextConnectionGuardService
 } from "../connections-guards";
-import { Hooks } from '../hooks/hooks';
-import { WRITER_HOOK } from '../hooks/writer-hook/writer-hook';
-import { DefaultWriterHookService } from '../hooks/writer-hook';
+import { Hooks } from "../hooks/hooks";
+import { WRITER_HOOK } from "../hooks/writer-hook/writer-hook";
+import { DefaultWriterHookService } from "../hooks/writer-hook";
 
 @Module({})
 export class ReaderModule {
