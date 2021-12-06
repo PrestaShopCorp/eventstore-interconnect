@@ -1,7 +1,7 @@
-import { DynamicModule, Module } from "@nestjs/common";
-import { InterconnectionConfiguration } from "./interconnection-configuration";
-import { ReaderModule } from "./reader";
-import { Hooks } from "./hooks/hooks";
+import { DynamicModule, Module } from '@nestjs/common';
+import { InterconnectionConfiguration } from './interconnection-configuration';
+import { ReaderModule } from './reader';
+import { Hooks } from './hooks/hooks';
 
 @Module({})
 export class EventstoreInterconnectModule {

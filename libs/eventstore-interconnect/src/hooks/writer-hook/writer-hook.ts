@@ -1,4 +1,4 @@
-import { FormattedEvent } from "../../formatter";
+import { FormattedEvent } from '../../formatter';
 
 export const WRITER_HOOK = Symbol();
 

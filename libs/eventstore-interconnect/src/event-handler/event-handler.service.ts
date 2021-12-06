@@ -1,9 +1,9 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { EventHandler } from "./event-handler";
-import { Validator, VALIDATOR } from "../validator";
-import { FormattedEvent, FORMATTER, Formatter } from "../formatter";
-import { Driver, DRIVER } from "../driver";
-import { WRITER_HOOK, WriterHook } from "../hooks/writer-hook/writer-hook";
+import { Inject, Injectable } from '@nestjs/common';
+import { EventHandler } from './event-handler';
+import { Validator, VALIDATOR } from '../validator';
+import { FormattedEvent, FORMATTER, Formatter } from '../formatter';
+import { Driver, DRIVER } from '../driver';
+import { WRITER_HOOK, WriterHook } from '../hooks/writer-hook/writer-hook';
 
 @Injectable()
 export class EventHandlerService implements EventHandler {
