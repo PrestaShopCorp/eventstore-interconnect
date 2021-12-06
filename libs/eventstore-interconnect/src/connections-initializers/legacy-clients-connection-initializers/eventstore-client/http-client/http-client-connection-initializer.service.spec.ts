@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { Logger } from "nestjs-pino-stackdriver";
+import { Logger } from '@nestjs/common';
 import { ConnectionConfiguration } from "../../../../interconnection-configuration";
 import { CONNECTION_CONFIGURATION } from "../../../../constants";
 import { HttpClientConnectionInitializerService } from "./http-client-connection-initializer.service";

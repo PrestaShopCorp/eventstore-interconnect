@@ -3,7 +3,7 @@ import { HttpDriverService } from "./http-driver.service";
 import { createJsonEventData, EventStoreNodeConnection } from "node-eventstore-client";
 import { ConnectionConfiguration, Credentials } from "../../../interconnection-configuration";
 import { SafetyNet } from "../../../safety-net";
-import { Logger } from "nestjs-pino-stackdriver";
+import { Logger } from '@nestjs/common';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../../constants";
 import { setTimeout } from "timers/promises";
 import { FormattedEvent } from "../../../formatter";

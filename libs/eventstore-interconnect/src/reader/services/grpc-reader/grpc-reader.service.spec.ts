@@ -1,5 +1,5 @@
 import { GrpcReaderService } from "./grpc-reader.service";
-import { Logger } from "nestjs-pino-stackdriver";
+import { Logger } from '@nestjs/common';
 import { EventHandler } from "../../../event-handler";
 import { ConnectionConfiguration } from "../../../interconnection-configuration";
 import {

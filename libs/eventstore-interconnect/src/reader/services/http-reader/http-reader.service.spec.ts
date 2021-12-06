@@ -1,5 +1,5 @@
 import { HttpReaderService } from "./http-reader.service";
-import { Logger } from "nestjs-pino-stackdriver";
+import { Logger } from '@nestjs/common';
 import {
   IEventStorePersistentSubscriptionConfig
 } from "nestjs-geteventstore-legacy/dist/interfaces/subscription.interface";

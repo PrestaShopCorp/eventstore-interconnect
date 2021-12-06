@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { GrpcConnectionInitializerService } from "./grpc-connection-initializer.service";
 import { CONNECTION_CONFIGURATION, EVENTSTORE_DB_CLIENT } from "../../constants";
 import { ConnectionConfiguration } from "../../interconnection-configuration";
-import { Logger } from "nestjs-pino-stackdriver";
+import { Logger } from '@nestjs/common';
 import { EVENTSTORE_CONNECTION_GUARD } from "../../connections-guards";
 
 describe('GrpcConnectionInitializerService', () => {

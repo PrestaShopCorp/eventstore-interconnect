@@ -1,7 +1,7 @@
 import { GrpcDriverService } from "./grpc-driver.service";
 import { ANY } from "nestjs-geteventstore-next";
 import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../../constants";
-import { Logger } from "nestjs-pino-stackdriver";
+import { Logger } from '@nestjs/common';
 import { ConnectionConfiguration, Credentials } from "../../../interconnection-configuration";
 import { SafetyNet } from "../../../safety-net";
 import { setTimeout } from "timers/promises";

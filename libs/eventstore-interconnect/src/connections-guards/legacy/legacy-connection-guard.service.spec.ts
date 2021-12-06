@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { LegacyConnectionGuardService } from "./legacy-connection-guard.service";
-import { Logger } from "nestjs-pino-stackdriver";
+import { Logger } from '@nestjs/common';
 import { EventStoreNodeConnection } from "node-eventstore-client";
 import { ConnectionConfiguration, Credentials } from "../../interconnection-configuration";
 import { setTimeout } from "timers/promises";
