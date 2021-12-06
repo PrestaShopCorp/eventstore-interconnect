@@ -3,7 +3,7 @@ import { ANY } from "nestjs-geteventstore-next";
 import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../../constants";
 import { Logger } from "nestjs-pino-stackdriver";
 import { ConnectionConfiguration, Credentials } from "../../../interconnection-configuration";
-import { SafetyNet } from "../../../safety-net";
+import { SafetyNet } from "../../../hooks/safety-net";
 import { setTimeout } from "timers/promises";
 import { FormattedEvent } from "../../../formatter";
 import spyOn = jest.spyOn;

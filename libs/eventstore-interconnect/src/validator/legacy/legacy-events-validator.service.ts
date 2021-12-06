@@ -1,11 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ALLOWED_EVENTS } from '../../constants';
-import { validate, ValidationError } from 'class-validator';
-import { InvalidEventError } from '../errors/invalid-event.error';
-import { NotAllowedEventError } from '../errors/not-allowed-event.error';
-import { Validator } from '../validator';
-import { SAFETY_NET, SafetyNet } from '../../safety-net';
-import { plainToClass } from 'class-transformer';
+import { Inject, Injectable } from "@nestjs/common";
+import { ALLOWED_EVENTS } from "../../constants";
+import { validate, ValidationError } from "class-validator";
+import { InvalidEventError } from "../errors/invalid-event.error";
+import { NotAllowedEventError } from "../errors/not-allowed-event.error";
+import { Validator } from "../validator";
+import { SAFETY_NET, SafetyNet } from "../../hooks/safety-net";
+import { plainToClass } from "class-transformer";
 
 @Injectable()
 export class LegacyEventsValidatorService implements Validator {

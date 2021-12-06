@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyEventsValidatorService } from './legacy-events-validator.service';
-import { ALLOWED_EVENTS } from '../../constants';
-import { Dumb1Event } from './mocks/dumb1.event';
-import { Dumb2Event } from './mocks/dumb2.event';
-import { Dumb3Event } from './mocks/dumb3.event';
-import { getEvent } from './mocks/helper';
-import { InvalidEventError } from '../errors/invalid-event.error';
-import { NotAllowedEventError } from '../errors/not-allowed-event.error';
-import { SAFETY_NET } from '../../safety-net';
+import { Test, TestingModule } from "@nestjs/testing";
+import { LegacyEventsValidatorService } from "./legacy-events-validator.service";
+import { ALLOWED_EVENTS } from "../../constants";
+import { Dumb1Event } from "./mocks/dumb1.event";
+import { Dumb2Event } from "./mocks/dumb2.event";
+import { Dumb3Event } from "./mocks/dumb3.event";
+import { getEvent } from "./mocks/helper";
+import { InvalidEventError } from "../errors/invalid-event.error";
+import { NotAllowedEventError } from "../errors/not-allowed-event.error";
+import { SAFETY_NET } from "../../hooks/safety-net";
 import spyOn = jest.spyOn;
 
 describe('LegacyEventsValidatorService', () => {

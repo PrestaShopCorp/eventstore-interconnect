@@ -1,59 +1,48 @@
-import { DynamicModule, Module, Type } from '@nestjs/common';
-import { InterconnectionConfiguration } from '../interconnection-configuration';
-import { READER } from './services/reader';
-import { isLegacyConf } from '../helpers';
-import { HttpReaderService } from './services/http-reader/http-reader.service';
-import { GrpcReaderService } from './services/grpc-reader/grpc-reader.service';
-import { SUBSCRIPTIONS } from './services/constants';
-import { Logger } from 'nestjs-pino-stackdriver';
-import {
-  ALLOWED_EVENTS,
-  CONNECTION_CONFIGURATION,
-  CREDENTIALS,
-  EVENTSTORE_DB_CLIENT,
-} from '../constants';
-import {
-  LegacyEventsValidatorService,
-  NextEventsValidatorService,
-  VALIDATOR,
-} from '../validator';
-import { DriverModule } from '../driver';
-import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
-import { EVENT_HANDLER, EventHandlerService } from '../event-handler';
-import {
-  FORMATTER,
-  LegacyEventFormatterService,
-  NextEventFormatterService,
-} from '../formatter';
-import { SafetyNet } from '../safety-net';
-import { EventStoreDBClient } from '@eventstore/db-client';
+import { DynamicModule, Module } from "@nestjs/common";
+import { InterconnectionConfiguration } from "../interconnection-configuration";
+import { READER } from "./services/reader";
+import { isLegacyConf } from "../helpers";
+import { HttpReaderService } from "./services/http-reader/http-reader.service";
+import { GrpcReaderService } from "./services/grpc-reader/grpc-reader.service";
+import { SUBSCRIPTIONS } from "./services/constants";
+import { Logger } from "nestjs-pino-stackdriver";
+import { ALLOWED_EVENTS, CONNECTION_CONFIGURATION, CREDENTIALS, EVENTSTORE_DB_CLIENT } from "../constants";
+import { LegacyEventsValidatorService, NextEventsValidatorService, VALIDATOR } from "../validator";
+import { DriverModule } from "../driver";
+import { Provider } from "@nestjs/common/interfaces/modules/provider.interface";
+import { EVENT_HANDLER, EventHandlerService } from "../event-handler";
+import { FORMATTER, LegacyEventFormatterService, NextEventFormatterService } from "../formatter";
+import { EventStoreDBClient } from "@eventstore/db-client";
 import {
   GRPC_CONNECTION_INITIALIZER,
   GrpcConnectionInitializerService,
   HTTP_CLIENT_CONNECTION_INITIALIZER,
   HttpClientConnectionInitializerService,
   TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
-  TCPEventStoreConnectionInitializerService,
-} from '../connections-initializers';
+  TCPEventStoreConnectionInitializerService
+} from "../connections-initializers";
 import {
   EVENTSTORE_CONNECTION_GUARD,
   LegacyConnectionGuardService,
-  NextConnectionGuardService,
-} from '../connections-guards';
+  NextConnectionGuardService
+} from "../connections-guards";
+import { Hooks } from "../hooks/hooks";
+import { WRITER_HOOK } from "../hooks/writer-hook/writer-hook";
+import { DefaultWriterHookService } from "../hooks/writer-hook";
 
 @Module({})
 export class ReaderModule {
   public static get(
     configuration: InterconnectionConfiguration,
     allowedEvents?: any,
-    customStrategy?: Type<SafetyNet>,
+    hooks?: Hooks,
   ): DynamicModule {
     const providersForReader: Provider[] = isLegacyConf(configuration.source)
       ? ReaderModule.getLegacyReaderProviders(configuration)
       : ReaderModule.getNextReaderProviders(configuration);
     return {
       module: ReaderModule,
-      imports: [DriverModule.get(configuration, customStrategy)],
+      imports: [DriverModule.get(configuration, hooks)],
       exports: [DriverModule],
       providers: [
         ...providersForReader,
@@ -68,6 +57,10 @@ export class ReaderModule {
         {
           provide: EVENT_HANDLER,
           useClass: EventHandlerService,
+        },
+        {
+          provide: WRITER_HOOK,
+          useClass: hooks.customWriterHook ?? DefaultWriterHookService,
         },
         Logger,
       ],

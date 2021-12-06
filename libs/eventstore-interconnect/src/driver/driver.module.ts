@@ -1,33 +1,29 @@
-import { DynamicModule, Module, Type } from '@nestjs/common';
-import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
+import { DynamicModule, Module } from "@nestjs/common";
+import { Provider } from "@nestjs/common/interfaces/modules/provider.interface";
 import {
   EVENTSTORE_CONNECTION_GUARD,
   GrpcConnectionInitializerService,
   InterconnectionConfiguration,
   isLegacyConf,
   NextConnectionGuardService,
-  SafetyNet,
   TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
-  TCPEventStoreConnectionInitializerService,
-} from '..';
-import { DRIVER } from './driver';
-import { HttpDriverService } from './services/http-driver/http-driver.service';
-import { GrpcDriverService } from './services/grpc-driver/grpc-driver.service';
-import {
-  CONNECTION_CONFIGURATION,
-  CREDENTIALS,
-  EVENTSTORE_DB_CLIENT,
-} from '../constants';
-import { SafetyNetModule } from '../safety-net';
-import { LegacyConnectionGuardService } from '../connections-guards';
-import { EventStoreDBClient } from '@eventstore/db-client';
-import { GRPC_CONNECTION_INITIALIZER } from '../connections-initializers';
+  TCPEventStoreConnectionInitializerService
+} from "..";
+import { DRIVER } from "./driver";
+import { HttpDriverService } from "./services/http-driver/http-driver.service";
+import { GrpcDriverService } from "./services/grpc-driver/grpc-driver.service";
+import { CONNECTION_CONFIGURATION, CREDENTIALS, EVENTSTORE_DB_CLIENT } from "../constants";
+import { SafetyNetModule } from "../hooks/safety-net";
+import { LegacyConnectionGuardService } from "../connections-guards";
+import { EventStoreDBClient } from "@eventstore/db-client";
+import { GRPC_CONNECTION_INITIALIZER } from "../connections-initializers";
+import { Hooks } from "../hooks/hooks";
 
 @Module({})
 export class DriverModule {
   public static get(
     configuration: InterconnectionConfiguration,
-    customSafetyNetStrategy?: Type<SafetyNet>,
+    hooks?: Hooks,
   ): DynamicModule {
     const driverProviders: Provider[] = isLegacyConf(configuration.destination)
       ? this.getLegacyEventStoreDriver(configuration)
@@ -35,7 +31,7 @@ export class DriverModule {
 
     return {
       module: DriverModule,
-      imports: [SafetyNetModule.use(customSafetyNetStrategy)],
+      imports: [SafetyNetModule.use(hooks.customSafetyNetStrategy)],
       providers: [...driverProviders],
       exports: [...driverProviders, SafetyNetModule],
     };

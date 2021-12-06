@@ -1,6 +1,6 @@
-import { DynamicModule, Module, Type } from '@nestjs/common';
-import { DefaultSafetyNetService, SAFETY_NET, SafetyNet } from '.';
-import { Logger } from 'nestjs-pino-stackdriver';
+import { DynamicModule, Module, Type } from "@nestjs/common";
+import { DefaultSafetyNetService, SAFETY_NET, SafetyNet } from "./index";
+import { Logger } from "nestjs-pino-stackdriver";
 
 @Module({})
 export class SafetyNetModule {

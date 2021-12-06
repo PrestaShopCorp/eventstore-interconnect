@@ -1,5 +1,5 @@
-import { DefaultSafetyNetService } from './default-safety-net.service';
-import { Logger } from 'nestjs-pino-stackdriver';
+import { DefaultSafetyNetService } from "./default-safety-net.service";
+import { Logger } from "nestjs-pino-stackdriver";
 
 describe('DefaultSafetyNetService', () => {
   let hook: DefaultSafetyNetService;
