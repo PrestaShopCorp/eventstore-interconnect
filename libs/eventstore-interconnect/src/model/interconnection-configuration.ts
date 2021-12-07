@@ -1,6 +1,6 @@
-import { IEventStoreBusConfig } from 'nestjs-geteventstore-legacy';
 import { IEventStoreSubsystems } from './eventstore-subsystem';
 import { ConnectionConfiguration } from './connecion-configuration';
+import { IEventStoreBusConfig } from './v5/eventstore-bus-config';
 
 export interface InterconnectionConfiguration {
   source: ConnectionConfiguration;

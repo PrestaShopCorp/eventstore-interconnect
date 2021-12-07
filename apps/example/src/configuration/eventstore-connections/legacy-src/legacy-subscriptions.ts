@@ -1,4 +1,4 @@
-import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy';
+import { IEventStorePersistentSubscriptionConfig } from '@eventstore-interconnect';
 
 export const legacySubscriptions: IEventStorePersistentSubscriptionConfig[] = [
   {

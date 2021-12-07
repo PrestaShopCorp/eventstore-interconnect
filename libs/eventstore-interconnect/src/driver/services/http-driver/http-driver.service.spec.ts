@@ -1,10 +1,13 @@
-import { ExpectedVersion } from 'nestjs-geteventstore-legacy';
 import { HttpDriverService } from './http-driver.service';
 import {
   createJsonEventData,
   EventStoreNodeConnection,
 } from 'node-eventstore-client';
-import { ConnectionConfiguration, Credentials } from '../../../model';
+import {
+  ConnectionConfiguration,
+  Credentials,
+  ExpectedVersion,
+} from '../../../model';
 import { SafetyNet } from '../../../safety-net';
 import { Logger } from '@nestjs/common';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';

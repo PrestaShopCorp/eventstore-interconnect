@@ -1,6 +1,5 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Driver } from '../../driver';
-import { ExpectedVersion } from 'nestjs-geteventstore-legacy';
 import {
   createJsonEventData,
   EventStoreNodeConnection,
@@ -10,7 +9,11 @@ import {
   CREDENTIALS,
   EVENT_WRITER_TIMEOUT_IN_MS,
 } from '../../../constants';
-import { ConnectionConfiguration, Credentials } from '../../../model/';
+import {
+  ConnectionConfiguration,
+  Credentials,
+  ExpectedVersion,
+} from '../../../model/';
 import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { FormattedEvent } from '../../../formatter';
 import {

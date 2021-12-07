@@ -1,4 +1,4 @@
-import { IPersistentSubscriptionConfig } from './persistent-subscription.configuration';
+import { IPersistentSubscriptionConfig } from './v21/persistent-subscription.configuration';
 
 export interface IEventStoreSubsystems {
   subscriptions?: {

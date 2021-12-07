@@ -1,8 +1,4 @@
 import {
-  AcknowledgeableEventStoreEvent,
-  IEventStoreEventOptions,
-} from 'nestjs-geteventstore-legacy';
-import {
   IsBoolean,
   IsOptional,
   IsString,
@@ -35,13 +31,12 @@ export class ValidableDatasDto {
   nestor: Nestor;
 }
 
-export class Dumb1Event extends AcknowledgeableEventStoreEvent {
+export class Dumb1Event {
   @ValidateNested()
   @Type(() => ValidableDatasDto)
   public data: ValidableDatasDto;
 
-  constructor(data: ValidableDatasDto, options?: IEventStoreEventOptions) {
-    super(data, options);
+  constructor(data: ValidableDatasDto) {
     this.data = new ValidableDatasDto(data);
   }
 }
