@@ -88,17 +88,3 @@ you can write other types of events, with custom handler behavior, you can remov
 cf SAFETY_NET part), you can try the env variable, and you also can try to validate your way the events. Enjoy! (if you
 see bugs, feel free to create an issue, it'll be very appreciated)
 
-#### SAFETY_NET:
-
-It is possible to override the default safety net strategy, as you can see in
-the [usecase module](src/usecase.module.ts) :
-
-```typescript
-    {
-      provide: SAFETY_NET,
-      useClass:  CustomSafetyNet, // here, you can provide your custom strategy
-    }
-```
-
-Note that you can use this safety net in order to log thing, using an external system like Sentry, that would not be
-provided by the lib.

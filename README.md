@@ -1,13 +1,12 @@
 # EventstoreInterconnect
 
-The project give a hand on interconnecting 2 different versions of 2 eventstores. These versions are : v5.0.1 and
-v21.2.0 (also working with 2 eventstores with same version)
+The main purpose of the lib is to copy/paste an event from an eventstore to another one. The versions allowed are : v5.0.1 and v21.2.0 (also working with 2 eventstores with same version)
 
-[A usecase](apps/example/README.md) has been prepared in order to test the different possibilities : Given a specific configuration, the system should automaticcally detect the version of the
-  source and dest eventstore, and connect to it.
+[A usecase](apps/example/README.md) has been prepared in order to test the different possibilities : Given a specific configuration, the system should automatically detect the version of the
+  source and dest Eventstore, and connect to it.
 
 ## Connection
-It will automatically create/connect to subscriptions into the source, and write events into the destination one, after
+It will automatically upsert the persistent subscriptions into the source, and write events into the destination one, after
 checking that the events are allowed and valid.
 
 You just have to give the correct env variables, and the version is automatically detected. So no need for redeploy when
@@ -58,33 +57,35 @@ provided, then the legacy eventstore will be used.)
 ## Events
 
 You have to provide an object containing the different events allowed to be copied. Note that you can add a validation
-on them, using the libs class-validator and class transformer. You have an example of no validated
-event [with Example2Event](apps/example/src/events/example2.event.ts) and an example of validated
+on them, using the libs class-validator and class transformer. You have an example of event with no validation
+[with Example2Event](apps/example/src/events/example2.event.ts) and an example of an event that can be validated
 event [with Example1Event](apps/example/src/events/example1.event.ts)
 
 ## Safety strategy
 
-Sometimes it can happen the destination eventstore is down. In order not to miss events, an aggressive timeout is used.
+Some issues can append during the workflow. Sometimes it can happen the destination eventstore is down. Sometimes, the event won't be valid. 
+
+When an event is not writable during the timeout, the process is killed by an agressive timeout.
 That means that after a custom duration, by default 5 seconds (but you can give your using
-the `EVENTSTORE_INTERCO_EVENT_WRITER_TIMEOUT_IN_MS` env variable), the process will exit brutally by default (and nack
-the event). This is called the Safety net. This basic behavior can be extended, very easily by using another provider,
-like this :
+the `EVENTSTORE_INTERCO_EVENT_WRITER_TIMEOUT_IN_MS` env variable), the process will exit with code 1 by default.
+
+When the event is invalid, it wont do anything by default, but you can override that behavior in a custom implementation.
+
+This is called the Safety net. This basic behavior can be extended very easily when importing EventstoreInterconnectModule : 
 
 ```typescript
-import { SAFETY_NET } from '@eventstore-interconnect';
-
-//...
-{
-  provide: SAFETY_NET,
-          useClass
-:
-  MyCustomBehavior
-}
-//...
+@Module({
+  imports: [
+    EventstoreInterconnectModule.connectToSrcAndDest(
+      configuration,
+      allowedEvents,
+      CustomSafetyNet, // Here is the optionnal custom safty strategy you can provide
+    ),
+  ],
+})
+export class UsecaseModule {}
 ```
-You have an example showing that [in the usecase of this project](apps/example/README.md). That is why it doesn't exit the process while running the example. 
-
-**Note** that your class needs to implement the interface `SafetyNet`.
+The custom strategy must implement the interface [`SafetyNet`](libs/eventstore-interconnect/src/safety-net/safety-net.service.interface.ts) In can see in the example app [a custom implementation of it](apps/example/src/custom-safety-net/custom-safety-net.ts)
 
 ## Auto kill
 
