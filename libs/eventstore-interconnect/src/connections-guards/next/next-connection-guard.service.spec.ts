@@ -1,10 +1,10 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { NextConnectionGuardService } from "./next-connection-guard.service";
-import { Client } from "@eventstore/db-client/dist/Client";
-import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../constants";
-import { setTimeout } from "timers/promises";
-import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from "../connection-guard.constants";
-import { ConnectionConfiguration } from "../../interconnection-configuration";
+import { Test, TestingModule } from '@nestjs/testing';
+import { NextConnectionGuardService } from './next-connection-guard.service';
+import { Client } from '@eventstore/db-client/dist/Client';
+import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
+import { setTimeout } from 'timers/promises';
+import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
+import { ConnectionConfiguration } from '../../interconnection-configuration';
 import { Logger } from '@nestjs/common';
 import spyOn = jest.spyOn;
 
@@ -41,6 +41,7 @@ describe('NextConnectionGuardService', () => {
   });
 
   afterEach(() => {
+    jest.clearAllTimers();
     jest.resetAllMocks();
     jest.useRealTimers();
   });
@@ -101,14 +102,29 @@ describe('NextConnectionGuardService', () => {
     jest.useFakeTimers();
     spyOn(service, 'startConnectionLinkPinger');
 
-    service
-      .startConnectionLinkPinger(connection, connectionConfiguration)
-      .then(() => {
-        // Do nothing
-      });
+    const promise = service.startConnectionLinkPinger(
+      connection,
+      connectionConfiguration,
+    );
 
     jest.advanceTimersByTime(CONNECTION_LINK_CHECK_INTERVAL_IN_MS);
 
     expect(service.startConnectionLinkPinger).toHaveBeenCalledTimes(2);
+    await promise;
+  });
+
+  it(`should check connection link every ${CONNECTION_LINK_CHECK_INTERVAL_IN_MS} seconds`, async () => {
+    jest.useFakeTimers();
+    spyOn(service, 'startConnectionLinkPinger');
+
+    const promise = service.startConnectionLinkPinger(
+      connection,
+      connectionConfiguration,
+    );
+
+    jest.advanceTimersByTime(CONNECTION_LINK_CHECK_INTERVAL_IN_MS);
+
+    expect(service.startConnectionLinkPinger).toHaveBeenCalledTimes(2);
+    await promise;
   });
 });

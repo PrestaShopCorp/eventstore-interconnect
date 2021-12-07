@@ -1,14 +1,24 @@
-import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { Driver } from "../../driver";
-import { ANY } from "nestjs-geteventstore-next";
-import { CONNECTION_CONFIGURATION, CREDENTIALS, EVENT_WRITER_TIMEOUT_IN_MS } from "../../../constants";
-import { ConnectionConfiguration, Credentials } from "../../../interconnection-configuration";
-import { jsonEvent } from "@eventstore/db-client";
-import { SAFETY_NET, SafetyNet } from "../../../safety-net";
-import { FormattedEvent } from "../../../formatter";
-import { EventData } from "@eventstore/db-client/dist/types/events";
-import { Client } from "@eventstore/db-client/dist/Client";
-import { GRPC_CONNECTION_INITIALIZER, GrpcConnectionInitializer } from "../../../connections-initializers";
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Driver } from '../../driver';
+import { ANY } from 'nestjs-geteventstore-next';
+import {
+  CONNECTION_CONFIGURATION,
+  CREDENTIALS,
+  EVENT_WRITER_TIMEOUT_IN_MS,
+} from '../../../constants';
+import {
+  ConnectionConfiguration,
+  Credentials,
+} from '../../../interconnection-configuration';
+import { jsonEvent } from '@eventstore/db-client';
+import { SAFETY_NET, SafetyNet } from '../../../safety-net';
+import { FormattedEvent } from '../../../formatter';
+import { EventData } from '@eventstore/db-client/dist/types/events';
+import { Client } from '@eventstore/db-client/dist/Client';
+import {
+  GRPC_CONNECTION_INITIALIZER,
+  GrpcConnectionInitializer,
+} from '../../../connections-initializers';
 
 @Injectable()
 export class GrpcDriverService implements Driver, OnModuleInit {
@@ -56,7 +66,7 @@ export class GrpcDriverService implements Driver, OnModuleInit {
   private async appendEventToStreamteEvent(
     event: FormattedEvent,
   ): Promise<void> {
-    this.logger.log(
+    this.logger.debug(
       `Trying to write ${event.metadata.eventType} (id: ${event.metadata.eventId}) on stream ${event.metadata.eventStreamId}`,
     );
     const { data, metadata } = event;
@@ -74,6 +84,6 @@ export class GrpcDriverService implements Driver, OnModuleInit {
       expectedRevision: ANY,
       credentials: this.credentials,
     });
-    this.logger.log(`Event (id: ${event.metadata.eventId}) written`);
+    this.logger.debug(`Event (id: ${event.metadata.eventId}) written`);
   }
 }

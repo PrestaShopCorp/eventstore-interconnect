@@ -15,5 +15,7 @@ export const nextSubscriptions: IPersistentSubscriptionConfig[] = [
       },
     },
     onError: (err: Error) => console.log(`An error occurred : ${err.message}`),
+    onSubscriptionDropped: () =>
+      console.log(`The persistent subscription were dropped`),
   },
 ];

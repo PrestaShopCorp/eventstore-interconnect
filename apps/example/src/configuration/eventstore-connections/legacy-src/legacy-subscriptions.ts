@@ -20,6 +20,8 @@ export const legacySubscriptions: IEventStorePersistentSubscriptionConfig[] = [
     onSubscriptionStart: () => {
       console.log('sub hero started');
     },
-    onSubscriptionDropped: () => {},
+    onSubscriptionDropped: () => {
+      console.log('sub hero dropped');
+    },
   },
 ];

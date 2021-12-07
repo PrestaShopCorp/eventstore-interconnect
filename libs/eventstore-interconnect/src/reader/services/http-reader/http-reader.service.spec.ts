@@ -1,14 +1,12 @@
-import { HttpReaderService } from "./http-reader.service";
+import { HttpReaderService } from './http-reader.service';
 import { Logger } from '@nestjs/common';
-import {
-  IEventStorePersistentSubscriptionConfig
-} from "nestjs-geteventstore-legacy/dist/interfaces/subscription.interface";
-import { EventHandler } from "../../../event-handler";
-import { ConnectionConfiguration } from "../../../interconnection-configuration";
+import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
+import { EventHandler } from '../../../event-handler';
+import { ConnectionConfiguration } from '../../../interconnection-configuration';
 import {
   HttpClientsConnectionInitializer,
-  TCPEventstoreClientsConnectionInitializer
-} from "../../../connections-initializers";
+  TCPEventstoreClientsConnectionInitializer,
+} from '../../../connections-initializers';
 import spyOn = jest.spyOn;
 
 describe('HttpReaderService', () => {
@@ -30,12 +28,13 @@ describe('HttpReaderService', () => {
   };
 
   const persubConnectionSpy = jest.fn();
+  const connectedClientMock = {
+    connectToPersistentSubscription: persubConnectionSpy,
+  };
   const eventstoreClientsConnectionInitializer: TCPEventstoreClientsConnectionInitializer =
     {
       init: jest.fn(),
-      getConnectedClient: () => {
-        return { connectToPersistentSubscription: persubConnectionSpy };
-      },
+      getConnectedClient: () => connectedClientMock,
     } as any as TCPEventstoreClientsConnectionInitializer;
   const eventHandlerMock: EventHandler = {
     handle: () => {
@@ -119,5 +118,13 @@ describe('HttpReaderService', () => {
     );
 
     expect(eventHandlerMock.handle).toHaveBeenCalled();
+  });
+
+  it(`should trigger the 'on persistent subscription dropped' hook when persistent subscription is dropped`, async () => {
+    await service.onModuleInit();
+
+    expect(persubConnectionSpy.mock.calls[0][3]).toEqual(
+      subscriptions[0].onSubscriptionDropped,
+    );
   });
 });

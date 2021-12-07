@@ -1,12 +1,18 @@
-import { ExpectedVersion } from "nestjs-geteventstore-legacy";
-import { HttpDriverService } from "./http-driver.service";
-import { createJsonEventData, EventStoreNodeConnection } from "node-eventstore-client";
-import { ConnectionConfiguration, Credentials } from "../../../interconnection-configuration";
-import { SafetyNet } from "../../../safety-net";
+import { ExpectedVersion } from 'nestjs-geteventstore-legacy';
+import { HttpDriverService } from './http-driver.service';
+import {
+  createJsonEventData,
+  EventStoreNodeConnection,
+} from 'node-eventstore-client';
+import {
+  ConnectionConfiguration,
+  Credentials,
+} from '../../../interconnection-configuration';
+import { SafetyNet } from '../../../safety-net';
 import { Logger } from '@nestjs/common';
-import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../../constants";
-import { setTimeout } from "timers/promises";
-import { FormattedEvent } from "../../../formatter";
+import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
+import { setTimeout } from 'timers/promises';
+import { FormattedEvent } from '../../../formatter';
 import spyOn = jest.spyOn;
 
 describe('HttpDriverService', () => {
@@ -24,7 +30,11 @@ describe('HttpDriverService', () => {
     hook: jest.fn(),
     cannotWriteEventHook: jest.fn(),
   } as any as SafetyNet;
-  const logger: Logger = { log: jest.fn(), error: jest.fn() } as any as Logger;
+  const logger: Logger = {
+    log: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
+  } as any as Logger;
 
   const eventId = 'a4817909-c6d6-4a0b-bc54-467a2dfad4ab';
 
@@ -60,6 +70,7 @@ describe('HttpDriverService', () => {
   });
 
   afterEach(() => {
+    jest.clearAllTimers();
     jest.resetAllMocks();
     jest.useRealTimers();
   });
@@ -118,9 +129,7 @@ describe('HttpDriverService', () => {
       },
     );
 
-    service.writeEvent(event).then(() => {
-      // Do nothing
-    });
+    const promise = service.writeEvent(event);
 
     jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS);
 
@@ -130,5 +139,6 @@ describe('HttpDriverService', () => {
       EVENT_WRITER_TIMEOUT_IN_MS,
     );
     expect(safetyNet.cannotWriteEventHook).toHaveBeenCalledWith(event);
+    await promise;
   });
 });

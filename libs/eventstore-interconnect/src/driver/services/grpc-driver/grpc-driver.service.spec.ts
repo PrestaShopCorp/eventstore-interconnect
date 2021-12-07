@@ -1,11 +1,14 @@
-import { GrpcDriverService } from "./grpc-driver.service";
-import { ANY } from "nestjs-geteventstore-next";
-import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../../constants";
+import { GrpcDriverService } from './grpc-driver.service';
+import { ANY } from 'nestjs-geteventstore-next';
+import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
 import { Logger } from '@nestjs/common';
-import { ConnectionConfiguration, Credentials } from "../../../interconnection-configuration";
-import { SafetyNet } from "../../../safety-net";
-import { setTimeout } from "timers/promises";
-import { FormattedEvent } from "../../../formatter";
+import {
+  ConnectionConfiguration,
+  Credentials,
+} from '../../../interconnection-configuration';
+import { SafetyNet } from '../../../safety-net';
+import { setTimeout } from 'timers/promises';
+import { FormattedEvent } from '../../../formatter';
 import spyOn = jest.spyOn;
 
 describe('GrpcDriverService', () => {
@@ -24,7 +27,11 @@ describe('GrpcDriverService', () => {
     hook: jest.fn(),
     cannotWriteEventHook: jest.fn(),
   } as any as SafetyNet;
-  const logger: Logger = { error: jest.fn(), log: jest.fn() } as any as Logger;
+  const logger: Logger = {
+    error: jest.fn(),
+    log: jest.fn(),
+    debug: jest.fn(),
+  } as any as Logger;
 
   const event: FormattedEvent = {
     data: {},
@@ -58,6 +65,7 @@ describe('GrpcDriverService', () => {
   });
 
   afterEach(() => {
+    jest.clearAllTimers();
     jest.resetAllMocks();
     jest.useRealTimers();
   });
@@ -140,12 +148,11 @@ describe('GrpcDriverService', () => {
       },
     });
 
-    driver.writeEvent(event).then(() => {
-      // Do nothing
-    });
+    const promise = driver.writeEvent(event);
+
     jest.advanceTimersByTime(EVENT_WRITER_TIMEOUT_IN_MS);
 
     expect(safetyNet.cannotWriteEventHook).toHaveBeenCalledWith(event);
-    jest.runAllTimers();
+    await promise;
   });
 });

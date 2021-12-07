@@ -1,15 +1,25 @@
-import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { Driver } from "../../driver";
-import { ExpectedVersion } from "nestjs-geteventstore-legacy";
-import { createJsonEventData, EventStoreNodeConnection } from "node-eventstore-client";
-import { CONNECTION_CONFIGURATION, CREDENTIALS, EVENT_WRITER_TIMEOUT_IN_MS } from "../../../constants";
-import { ConnectionConfiguration, Credentials } from "../../../interconnection-configuration";
-import { SAFETY_NET, SafetyNet } from "../../../safety-net";
-import { FormattedEvent } from "../../../formatter";
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Driver } from '../../driver';
+import { ExpectedVersion } from 'nestjs-geteventstore-legacy';
+import {
+  createJsonEventData,
+  EventStoreNodeConnection,
+} from 'node-eventstore-client';
+import {
+  CONNECTION_CONFIGURATION,
+  CREDENTIALS,
+  EVENT_WRITER_TIMEOUT_IN_MS,
+} from '../../../constants';
+import {
+  ConnectionConfiguration,
+  Credentials,
+} from '../../../interconnection-configuration';
+import { SAFETY_NET, SafetyNet } from '../../../safety-net';
+import { FormattedEvent } from '../../../formatter';
 import {
   TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
-  TCPEventstoreClientsConnectionInitializer
-} from "../../../connections-initializers";
+  TCPEventstoreClientsConnectionInitializer,
+} from '../../../connections-initializers';
 
 @Injectable()
 export class HttpDriverService implements Driver, OnModuleInit {
@@ -57,7 +67,7 @@ export class HttpDriverService implements Driver, OnModuleInit {
   private async appendEventToStreamteEvent(
     event: FormattedEvent,
   ): Promise<any> {
-    this.logger.log(
+    this.logger.debug(
       `Trying to write ${event.metadata.eventType} (id: ${event.metadata.eventId}) on stream ${event.metadata.eventStreamId}`,
     );
     const jsonFormattedEvent = createJsonEventData(
@@ -75,6 +85,6 @@ export class HttpDriverService implements Driver, OnModuleInit {
       jsonFormattedEvent,
       this.credentials,
     );
-    this.logger.log(`Event (id: ${event.metadata.eventId}) written`);
+    this.logger.debug(`Event (id: ${event.metadata.eventId}) written`);
   }
 }

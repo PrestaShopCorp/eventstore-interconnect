@@ -44,6 +44,7 @@ describe('NextEventsValidatorService', () => {
   });
 
   afterEach(() => {
+    jest.clearAllTimers();
     jest.resetAllMocks();
   });
 

@@ -1,11 +1,14 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { LegacyConnectionGuardService } from "./legacy-connection-guard.service";
+import { Test, TestingModule } from '@nestjs/testing';
+import { LegacyConnectionGuardService } from './legacy-connection-guard.service';
 import { Logger } from '@nestjs/common';
-import { EventStoreNodeConnection } from "node-eventstore-client";
-import { ConnectionConfiguration, Credentials } from "../../interconnection-configuration";
-import { setTimeout } from "timers/promises";
-import { EVENT_WRITER_TIMEOUT_IN_MS } from "../../constants";
-import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from "../connection-guard.constants";
+import { EventStoreNodeConnection } from 'node-eventstore-client';
+import {
+  ConnectionConfiguration,
+  Credentials,
+} from '../../interconnection-configuration';
+import { setTimeout } from 'timers/promises';
+import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
+import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
 import spyOn = jest.spyOn;
 
 describe('LegacyConnectionGuardService', () => {
@@ -50,6 +53,7 @@ describe('LegacyConnectionGuardService', () => {
   });
 
   afterEach(() => {
+    jest.clearAllTimers();
     jest.resetAllMocks();
     jest.useRealTimers();
   });

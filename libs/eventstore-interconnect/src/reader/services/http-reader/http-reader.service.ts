@@ -1,20 +1,24 @@
-import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { Reader } from "../reader";
-import { ConnectionConfiguration } from "../../../interconnection-configuration";
-import { SUBSCRIPTIONS } from "../constants";
-import { HTTPClient, PersistentSubscriptionOptions } from "geteventstore-promise";
-import { EventStoreNodeConnection, ResolvedEvent } from "node-eventstore-client";
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Reader } from '../reader';
+import { ConnectionConfiguration } from '../../../interconnection-configuration';
+import { SUBSCRIPTIONS } from '../constants';
 import {
-  IEventStorePersistentSubscriptionConfig
-} from "nestjs-geteventstore-legacy/dist/interfaces/subscription.interface";
-import { CONNECTION_CONFIGURATION } from "../../../constants";
-import { EVENT_HANDLER, EventHandler } from "../../../event-handler";
+  HTTPClient,
+  PersistentSubscriptionOptions,
+} from 'geteventstore-promise';
+import {
+  EventStoreNodeConnection,
+  ResolvedEvent,
+} from 'node-eventstore-client';
+import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
+import { CONNECTION_CONFIGURATION } from '../../../constants';
+import { EVENT_HANDLER, EventHandler } from '../../../event-handler';
 import {
   HTTP_CLIENT_CONNECTION_INITIALIZER,
   HttpClientsConnectionInitializer,
   TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
-  TCPEventstoreClientsConnectionInitializer
-} from "../../../connections-initializers";
+  TCPEventstoreClientsConnectionInitializer,
+} from '../../../connections-initializers';
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {
@@ -85,9 +89,7 @@ export class HttpReaderService implements Reader, OnModuleInit {
         });
         subscription.acknowledge(event);
       },
-      (sub, reason, error) => {
-        subscription.onSubscriptionDropped(sub, reason, error.message);
-      },
+      subscription.onSubscriptionDropped as any,
       this.configuration.credentials,
       subscription.bufferSize,
       subscription.autoAck,
