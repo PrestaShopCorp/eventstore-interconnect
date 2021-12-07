@@ -1,5 +1,5 @@
-import { DefaultSafetyNetService } from "./default-safety-net.service";
-import { Logger } from "@nestjs/common";
+import { DefaultSafetyNetService } from './default-safety-net.service';
+import { Logger } from '@nestjs/common';
 
 describe('DefaultSafetyNetService', () => {
   let hook: DefaultSafetyNetService;

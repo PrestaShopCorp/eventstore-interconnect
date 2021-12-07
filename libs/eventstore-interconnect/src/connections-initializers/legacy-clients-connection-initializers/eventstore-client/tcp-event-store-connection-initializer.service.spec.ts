@@ -1,11 +1,14 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
-import { ConnectionConfiguration } from "../../../interconnection-configuration";
-import { CONNECTION_CONFIGURATION } from "../../../constants";
-import { ConnectionGuard, EVENTSTORE_CONNECTION_GUARD } from "../../../connections-guards";
-import { createConnection } from "node-eventstore-client";
-import * as geteventstorePromise from "geteventstore-promise";
-import { TCPEventStoreConnectionInitializerService } from "./tcp-event-store-connection-initializer.service";
+import { ConnectionConfiguration } from '../../../interconnection-configuration';
+import { CONNECTION_CONFIGURATION } from '../../../constants';
+import {
+  ConnectionGuard,
+  EVENTSTORE_CONNECTION_GUARD,
+} from '../../../connections-guards';
+import { createConnection } from 'node-eventstore-client';
+import * as geteventstorePromise from 'geteventstore-promise';
+import { TCPEventStoreConnectionInitializerService } from './tcp-event-store-connection-initializer.service';
 
 jest.mock('geteventstore-promise');
 jest.mock('node-eventstore-client');

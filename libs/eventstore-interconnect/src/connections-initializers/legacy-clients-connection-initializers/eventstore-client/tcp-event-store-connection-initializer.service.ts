@@ -1,10 +1,20 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
-import { ConnectionSettings, createConnection, EventStoreNodeConnection } from "node-eventstore-client";
-import { nanoid } from "nanoid";
-import { ConnectionConfiguration } from "../../../interconnection-configuration";
-import { CONNECTION_CONFIGURATION, INTERCONNECTION_CONNECTION_DEFAULT_NAME } from "../../../constants";
-import { ConnectionGuard, EVENTSTORE_CONNECTION_GUARD } from "../../../connections-guards";
-import { TCPEventstoreClientsConnectionInitializer } from "./tcp-eventstore-clients-connection-initializer";
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  ConnectionSettings,
+  createConnection,
+  EventStoreNodeConnection,
+} from 'node-eventstore-client';
+import { nanoid } from 'nanoid';
+import { ConnectionConfiguration } from '../../../interconnection-configuration';
+import {
+  CONNECTION_CONFIGURATION,
+  INTERCONNECTION_CONNECTION_DEFAULT_NAME,
+} from '../../../constants';
+import {
+  ConnectionGuard,
+  EVENTSTORE_CONNECTION_GUARD,
+} from '../../../connections-guards';
+import { TCPEventstoreClientsConnectionInitializer } from './tcp-eventstore-clients-connection-initializer';
 
 @Injectable()
 export class TCPEventStoreConnectionInitializerService

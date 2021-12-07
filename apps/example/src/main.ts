@@ -1,6 +1,6 @@
-import { createStackdriverLoggerTool, Logger } from "nestjs-pino-stackdriver";
-import { NestFactory } from "@nestjs/core";
-import { UsecaseModule } from "./usecase.module";
+import { createStackdriverLoggerTool, Logger } from 'nestjs-pino-stackdriver';
+import { NestFactory } from '@nestjs/core';
+import { UsecaseModule } from './usecase.module';
 
 async function bootstrap() {
   const logger = new Logger();

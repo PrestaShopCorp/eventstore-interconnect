@@ -1,8 +1,8 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
-import { ConnectionConfiguration } from "../../../../interconnection-configuration";
-import { CONNECTION_CONFIGURATION } from "../../../../constants";
-import { HttpClientConnectionInitializerService } from "./http-client-connection-initializer.service";
+import { ConnectionConfiguration } from '../../../../interconnection-configuration';
+import { CONNECTION_CONFIGURATION } from '../../../../constants';
+import { HttpClientConnectionInitializerService } from './http-client-connection-initializer.service';
 
 describe('HttpClientConnectionInitializerService', () => {
   let service: HttpClientConnectionInitializerService;
