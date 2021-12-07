@@ -2,7 +2,7 @@ import { HttpReaderService } from './http-reader.service';
 import { Logger } from '@nestjs/common';
 import { IEventStorePersistentSubscriptionConfig } from 'nestjs-geteventstore-legacy/dist/interfaces/subscription.interface';
 import { EventHandler } from '../../../event-handler';
-import { ConnectionConfiguration } from '../../../interconnection-configuration';
+import { ConnectionConfiguration } from '../../../model';
 import {
   HttpClientsConnectionInitializer,
   TCPEventstoreClientsConnectionInitializer,

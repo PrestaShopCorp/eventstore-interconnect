@@ -1,15 +1,11 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Driver } from '../../driver';
-import { ANY } from 'nestjs-geteventstore-next';
 import {
   CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENT_WRITER_TIMEOUT_IN_MS,
 } from '../../../constants';
-import {
-  ConnectionConfiguration,
-  Credentials,
-} from '../../../interconnection-configuration';
+import { ConnectionConfiguration, Credentials } from '../../../model';
 import { jsonEvent } from '@eventstore/db-client';
 import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { FormattedEvent } from '../../../formatter';
@@ -19,6 +15,7 @@ import {
   GRPC_CONNECTION_INITIALIZER,
   GrpcConnectionInitializer,
 } from '../../../connections-initializers';
+import { ANY } from '../../constants';
 
 @Injectable()
 export class GrpcDriverService implements Driver, OnModuleInit {

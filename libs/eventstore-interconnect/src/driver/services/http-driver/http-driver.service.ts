@@ -10,10 +10,7 @@ import {
   CREDENTIALS,
   EVENT_WRITER_TIMEOUT_IN_MS,
 } from '../../../constants';
-import {
-  ConnectionConfiguration,
-  Credentials,
-} from '../../../interconnection-configuration';
+import { ConnectionConfiguration, Credentials } from '../../../model/';
 import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { FormattedEvent } from '../../../formatter';
 import {

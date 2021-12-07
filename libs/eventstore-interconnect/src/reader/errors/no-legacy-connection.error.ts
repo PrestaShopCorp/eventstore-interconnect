@@ -1,4 +1,4 @@
-import { ProtocolConf } from '../../interconnection-configuration';
+import { ProtocolConf } from '../../model';
 
 export class NoLegacyConnectionError extends Error {
   constructor(message: string, tcpEndPoint: ProtocolConf) {

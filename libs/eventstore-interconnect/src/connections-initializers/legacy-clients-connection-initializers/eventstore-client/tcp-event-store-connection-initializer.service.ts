@@ -5,7 +5,7 @@ import {
   EventStoreNodeConnection,
 } from 'node-eventstore-client';
 import { nanoid } from 'nanoid';
-import { ConnectionConfiguration } from '../../../interconnection-configuration';
+import { ConnectionConfiguration } from '../../../model';
 import {
   CONNECTION_CONFIGURATION,
   INTERCONNECTION_CONNECTION_DEFAULT_NAME,

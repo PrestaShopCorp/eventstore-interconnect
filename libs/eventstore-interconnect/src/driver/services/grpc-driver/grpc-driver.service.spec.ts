@@ -1,15 +1,12 @@
 import { GrpcDriverService } from './grpc-driver.service';
-import { ANY } from 'nestjs-geteventstore-next';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../../constants';
 import { Logger } from '@nestjs/common';
-import {
-  ConnectionConfiguration,
-  Credentials,
-} from '../../../interconnection-configuration';
 import { SafetyNet } from '../../../safety-net';
 import { setTimeout } from 'timers/promises';
 import { FormattedEvent } from '../../../formatter';
 import spyOn = jest.spyOn;
+import { ConnectionConfiguration, Credentials } from '../../../model';
+import { ANY } from '../../constants';
 
 describe('GrpcDriverService', () => {
   let driver: GrpcDriverService;

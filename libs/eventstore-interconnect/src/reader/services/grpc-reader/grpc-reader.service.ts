@@ -7,21 +7,23 @@ import {
 } from '@eventstore/db-client';
 import { isNil } from '@nestjs/common/utils/shared.utils';
 import { Client } from '@eventstore/db-client/dist/Client';
-import { SUBSCRIPTIONS } from '../constants';
-import { ConnectionConfiguration } from '../../../interconnection-configuration';
-import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
+import {
+  PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE,
+  SUBSCRIPTIONS,
+} from '../constants';
 import {
   CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
 } from '../../../constants';
-import { PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE } from 'nestjs-geteventstore-next/dist/event-store/services/errors.constant';
 import {
+  ConnectionConfiguration,
   ConnectionGuard,
   EVENT_HANDLER,
   EventHandler,
   EVENTSTORE_CONNECTION_GUARD,
   GRPC_CONNECTION_INITIALIZER,
   GrpcConnectionInitializer,
+  IPersistentSubscriptionConfig,
   Reader,
 } from '../../../';
 

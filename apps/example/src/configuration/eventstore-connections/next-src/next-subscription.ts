@@ -1,4 +1,4 @@
-import { IPersistentSubscriptionConfig } from 'nestjs-geteventstore-next';
+import { IPersistentSubscriptionConfig } from '@eventstore-interconnect';
 
 export const nextSubscriptions: IPersistentSubscriptionConfig[] = [
   {

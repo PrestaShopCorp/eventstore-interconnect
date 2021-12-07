@@ -1,1 +1,2 @@
 export const SUBSCRIPTIONS = Symbol();
+export const PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE = 6;

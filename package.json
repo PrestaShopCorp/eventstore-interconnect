@@ -62,7 +62,6 @@
     "nanoid": "^3.1.30",
     "nestjs-context": "0.12.0",
     "nestjs-geteventstore-legacy": "npm:nestjs-geteventstore@1.6.4",
-    "nestjs-geteventstore-next": "npm:nestjs-geteventstore@5.0.2",
     "nestjs-pino-stackdriver": "^2.1.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
-import { ConnectionConfiguration } from '../../../../interconnection-configuration';
+import { ConnectionConfiguration } from '../../../../model';
 import { CONNECTION_CONFIGURATION } from '../../../../constants';
 import { HttpClientConnectionInitializerService } from './http-client-connection-initializer.service';
 

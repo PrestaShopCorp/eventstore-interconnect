@@ -4,12 +4,12 @@ import {
   CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
 } from '../../constants';
-import { ConnectionConfiguration } from '../../interconnection-configuration';
 import {
   ConnectionGuard,
   EVENTSTORE_CONNECTION_GUARD,
 } from '../../connections-guards';
 import { GrpcConnectionInitializer } from './grpc-connection-initializer';
+import { ConnectionConfiguration } from '../../model';
 
 @Injectable()
 export class GrpcConnectionInitializerService

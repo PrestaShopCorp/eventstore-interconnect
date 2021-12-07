@@ -1,4 +1,4 @@
-import { ConnectionConfiguration } from '../interconnection-configuration';
+import { ConnectionConfiguration } from '../model';
 
 export const isLegacyConf = (
   configuration: ConnectionConfiguration,

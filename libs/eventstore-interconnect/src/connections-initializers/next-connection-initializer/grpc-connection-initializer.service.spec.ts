@@ -4,7 +4,7 @@ import {
   CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
 } from '../../constants';
-import { ConnectionConfiguration } from '../../interconnection-configuration';
+import { ConnectionConfiguration } from '../../model';
 import { Logger } from '@nestjs/common';
 import { EVENTSTORE_CONNECTION_GUARD } from '../../connections-guards';
 

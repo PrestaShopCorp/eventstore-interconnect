@@ -1,10 +1,10 @@
 import { GrpcReaderService } from './grpc-reader.service';
 import { Logger } from '@nestjs/common';
 import { EventHandler } from '../../../event-handler';
-import { ConnectionConfiguration } from '../../../interconnection-configuration';
-import { PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE } from 'nestjs-geteventstore-next/dist/event-store/services/errors.constant';
 import { ConnectionGuard } from '../../../connections-guards';
 import spyOn = jest.spyOn;
+import { ConnectionConfiguration } from '../../../model';
+import { PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE } from '../constants';
 
 describe('GrpcReaderService', () => {
   let service: GrpcReaderService;

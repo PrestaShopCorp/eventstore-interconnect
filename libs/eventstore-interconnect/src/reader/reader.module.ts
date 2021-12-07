@@ -1,5 +1,5 @@
 import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
-import { InterconnectionConfiguration } from '../interconnection-configuration';
+import { InterconnectionConfiguration } from '../model';
 import { READER } from './services/reader';
 import { isLegacyConf } from '../helpers';
 import { HttpReaderService } from './services/http-reader/http-reader.service';

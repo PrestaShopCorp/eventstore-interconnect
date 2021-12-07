@@ -1,5 +1,5 @@
 import { DynamicModule, Module, Type } from '@nestjs/common';
-import { InterconnectionConfiguration } from './interconnection-configuration';
+import { InterconnectionConfiguration } from './model';
 import { ReaderModule } from './reader';
 import { SafetyNet } from './safety-net';
 
