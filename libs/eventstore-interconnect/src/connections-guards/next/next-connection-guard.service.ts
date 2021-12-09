@@ -22,14 +22,8 @@ export class NextConnectionGuardService implements ConnectionGuard {
       process.exit(1);
     }, EVENT_WRITER_TIMEOUT_IN_MS);
 
-    this.logger.debug(
-      `Checking connection on ${connectionConfiguration.connectionString}...`,
-    );
     await connection.getStreamMetadata('$all');
     clearTimeout(timer);
-    this.logger.debug(
-      `Connection on ${connectionConfiguration.connectionString} is OK`,
-    );
   }
 
   private loadNextPing(

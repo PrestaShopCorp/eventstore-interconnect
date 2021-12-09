@@ -34,17 +34,9 @@ export class LegacyConnectionGuardService implements ConnectionGuard {
     connection: EventStoreNodeConnection,
     connectionConfiguration: ConnectionConfiguration,
   ): Promise<void> {
-    this.logger.debug(
-      `Checking connection to ${connectionConfiguration.tcp.host} on port ${connectionConfiguration.tcp.port}...`,
-    );
-
     await connection.getStreamMetadataRaw(
       '$all',
       connectionConfiguration.credentials,
-    );
-
-    this.logger.debug(
-      `Connection on ${connectionConfiguration.tcp.host}:${connectionConfiguration.tcp.port} is OK`,
     );
   }
 }
