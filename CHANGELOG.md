@@ -1,5 +1,12 @@
 # Major evlolutions of the project
 
+### 1.0.30
+- remove debug temporarily for guards
+
+### 1.0.29
+- improve documentation
+- improve architecture and remove coupling with heavy third party libs
+
 ### 1.0.28
 - fix issue with connection drop behavior
 - add some formatting with logs
