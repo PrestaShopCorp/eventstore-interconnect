@@ -7,7 +7,7 @@ import { ConnectionConfiguration } from '../../model';
 
 @Injectable()
 export class NextConnectionGuardService implements ConnectionGuard {
-  constructor(private readonly logger: Logger) {}
+  private readonly logger = new Logger(NextConnectionGuardService.name);
 
   public async startConnectionLinkPinger(
     connection: Client,

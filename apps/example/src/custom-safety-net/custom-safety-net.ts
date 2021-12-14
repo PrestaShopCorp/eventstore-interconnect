@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class CustomSafetyNet implements SafetyNet {
-  constructor(private readonly logger: Logger) {}
+  private readonly logger = new Logger(CustomSafetyNet.name);
 
   public cannotWriteEventHook(event: any, eventWritten?: boolean): void {
     this.logger.log('OVERRIDE SAFETY NET, DO NOTHING');

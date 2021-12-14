@@ -24,6 +24,8 @@ import {
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {
+  private readonly logger = new Logger(HttpReaderService.name);
+
   constructor(
     @Inject(CONNECTION_CONFIGURATION)
     private readonly configuration: ConnectionConfiguration,
@@ -35,7 +37,6 @@ export class HttpReaderService implements Reader, OnModuleInit {
     private readonly httpClientProvider: HttpClientsConnectionInitializer,
     @Inject(TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER)
     private readonly esClientInitializer: TCPEventstoreClientsConnectionInitializer,
-    private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<void> {

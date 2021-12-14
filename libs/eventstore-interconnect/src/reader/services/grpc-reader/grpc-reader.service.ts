@@ -30,6 +30,7 @@ import {
 @Injectable()
 export class GrpcReaderService implements Reader, OnModuleInit {
   private client: Client;
+  private readonly logger = new Logger(GrpcReaderService.name);
 
   constructor(
     @Inject(CONNECTION_CONFIGURATION)
@@ -44,7 +45,6 @@ export class GrpcReaderService implements Reader, OnModuleInit {
     private readonly grpcConnectionInitializer: GrpcConnectionInitializer,
     @Inject(EVENTSTORE_CONNECTION_GUARD)
     private readonly connectionGuard: ConnectionGuard,
-    private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<any> {

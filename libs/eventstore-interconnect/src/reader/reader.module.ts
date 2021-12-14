@@ -1,4 +1,4 @@
-import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
+import { DynamicModule, Module, Type } from '@nestjs/common';
 import { InterconnectionConfiguration } from '../model';
 import { READER } from './services/reader';
 import { isLegacyConf } from '../helpers';
@@ -68,7 +68,6 @@ export class ReaderModule {
           provide: EVENT_HANDLER,
           useClass: EventHandlerService,
         },
-        Logger,
       ],
     };
   }
