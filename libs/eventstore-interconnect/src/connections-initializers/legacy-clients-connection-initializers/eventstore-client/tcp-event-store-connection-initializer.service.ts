@@ -21,15 +21,13 @@ export class TCPEventStoreConnectionInitializerService
   implements TCPEventstoreClientsConnectionInitializer
 {
   private eventStoreNodeConnection: EventStoreNodeConnection;
-  private readonly logger = new Logger(
-    TCPEventStoreConnectionInitializerService.name,
-  );
 
   constructor(
     @Inject(CONNECTION_CONFIGURATION)
     private readonly configuration: ConnectionConfiguration,
     @Inject(EVENTSTORE_CONNECTION_GUARD)
     private readonly connectionGuard: ConnectionGuard,
+    private readonly logger: Logger,
   ) {}
 
   public async init(): Promise<void> {

@@ -19,7 +19,6 @@ import { ANY } from '../../constants';
 
 @Injectable()
 export class GrpcDriverService implements Driver, OnModuleInit {
-  private readonly logger = new Logger(GrpcDriverService.name);
   constructor(
     @Inject(CONNECTION_CONFIGURATION)
     private readonly connectionConfiguration: ConnectionConfiguration,
@@ -28,6 +27,7 @@ export class GrpcDriverService implements Driver, OnModuleInit {
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
     @Inject(SAFETY_NET) protected readonly safetyNet: SafetyNet,
+    private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<void> {

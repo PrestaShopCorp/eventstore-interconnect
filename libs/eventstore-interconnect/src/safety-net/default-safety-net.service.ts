@@ -3,7 +3,7 @@ import { SafetyNet } from './safety-net.service.interface';
 
 @Injectable()
 export class DefaultSafetyNetService implements SafetyNet {
-  private readonly logger = new Logger(DefaultSafetyNetService.name);
+  constructor(private readonly logger: Logger) {}
 
   public cannotWriteEventHook(event: any): void {
     this.logger.error(

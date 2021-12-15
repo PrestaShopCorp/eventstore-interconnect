@@ -23,7 +23,6 @@ import {
 
 @Injectable()
 export class HttpDriverService implements Driver, OnModuleInit {
-  private readonly logger = new Logger(HttpDriverService.name);
   constructor(
     @Inject(CONNECTION_CONFIGURATION)
     private readonly connectionConfiguration: ConnectionConfiguration,
@@ -32,6 +31,7 @@ export class HttpDriverService implements Driver, OnModuleInit {
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
     @Inject(SAFETY_NET) protected readonly safetyNet: SafetyNet,
+    private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<void> {

@@ -7,7 +7,7 @@ import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.consta
 
 @Injectable()
 export class LegacyConnectionGuardService implements ConnectionGuard {
-  private readonly logger = new Logger(LegacyConnectionGuardService.name);
+  constructor(private readonly logger: Logger) {}
 
   public async startConnectionLinkPinger(
     connection: EventStoreNodeConnection,

@@ -1,9 +1,5 @@
 # Major evlolutions of the project
 
-### 1.0.31
-- improving logger (easily overridable)
-- add debug log for guards again
-
 ### 1.0.30
 - remove debug temporarily for guards
 

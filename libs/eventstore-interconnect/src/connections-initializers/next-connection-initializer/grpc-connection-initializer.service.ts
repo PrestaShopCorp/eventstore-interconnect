@@ -16,7 +16,6 @@ export class GrpcConnectionInitializerService
   implements GrpcConnectionInitializer
 {
   private client: Client;
-  private readonly logger = new Logger(GrpcConnectionInitializerService.name);
 
   constructor(
     @Inject(CONNECTION_CONFIGURATION)
@@ -25,6 +24,7 @@ export class GrpcConnectionInitializerService
     private readonly connectionGuard: ConnectionGuard,
     @Inject(EVENTSTORE_DB_CLIENT)
     private readonly eventStoreDBClient: any,
+    private readonly logger: Logger,
   ) {}
 
   public async init(): Promise<void> {

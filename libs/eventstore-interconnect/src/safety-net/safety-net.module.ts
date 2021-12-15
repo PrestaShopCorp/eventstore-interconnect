@@ -1,4 +1,4 @@
-import { DynamicModule, Module, Type } from '@nestjs/common';
+import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { DefaultSafetyNetService, SAFETY_NET, SafetyNet } from '.';
 
 @Module({})
@@ -11,8 +11,9 @@ export class SafetyNetModule {
           provide: SAFETY_NET,
           useClass: customStrategy ?? DefaultSafetyNetService,
         },
+        Logger,
       ],
-      exports: [SAFETY_NET],
+      exports: [SAFETY_NET, Logger],
     };
   }
 }
