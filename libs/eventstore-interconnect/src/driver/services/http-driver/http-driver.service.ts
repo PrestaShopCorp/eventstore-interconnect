@@ -8,6 +8,7 @@ import {
   CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENT_WRITER_TIMEOUT_IN_MS,
+  LOGGER,
 } from '../../../constants';
 import {
   ConnectionConfiguration,
@@ -31,7 +32,7 @@ export class HttpDriverService implements Driver, OnModuleInit {
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
     @Inject(SAFETY_NET) protected readonly safetyNet: SafetyNet,
-    private readonly logger: Logger,
+    @Inject(LOGGER) private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<void> {

@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@nestjs/common';
 import { ConnectionConfiguration } from '../../../model';
-import { CONNECTION_CONFIGURATION } from '../../../constants';
+import { CONNECTION_CONFIGURATION, LOGGER } from '../../../constants';
 import {
   ConnectionGuard,
   EVENTSTORE_CONNECTION_GUARD,
@@ -44,7 +43,7 @@ describe('TCPEventStoreConnectionInitializerService', () => {
       providers: [
         TCPEventStoreConnectionInitializerService,
         {
-          provide: Logger,
+          provide: LOGGER,
           useValue: loggerMock,
         },
         {

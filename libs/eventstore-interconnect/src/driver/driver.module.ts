@@ -1,4 +1,4 @@
-import { DynamicModule, Module, Type } from '@nestjs/common';
+import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import {
   EVENTSTORE_CONNECTION_GUARD,
@@ -17,6 +17,7 @@ import {
   CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENTSTORE_DB_CLIENT,
+  LOGGER,
 } from '../constants';
 import { SafetyNetModule } from '../safety-net';
 import { LegacyConnectionGuardService } from '../connections-guards';
@@ -36,7 +37,13 @@ export class DriverModule {
     return {
       module: DriverModule,
       imports: [SafetyNetModule.use(customSafetyNetStrategy)],
-      providers: [...driverProviders],
+      providers: [
+        ...driverProviders,
+        {
+          provide: LOGGER,
+          useValue: new Logger(),
+        },
+      ],
       exports: [...driverProviders, SafetyNetModule],
     };
   }

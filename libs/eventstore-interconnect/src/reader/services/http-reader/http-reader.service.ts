@@ -9,7 +9,7 @@ import {
   EventStoreNodeConnection,
   ResolvedEvent,
 } from 'node-eventstore-client';
-import { CONNECTION_CONFIGURATION } from '../../../constants';
+import { CONNECTION_CONFIGURATION, LOGGER } from '../../../constants';
 import { EVENT_HANDLER, EventHandler } from '../../../event-handler';
 import {
   HTTP_CLIENT_CONNECTION_INITIALIZER,
@@ -35,7 +35,7 @@ export class HttpReaderService implements Reader, OnModuleInit {
     private readonly httpClientProvider: HttpClientsConnectionInitializer,
     @Inject(TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER)
     private readonly esClientInitializer: TCPEventstoreClientsConnectionInitializer,
-    private readonly logger: Logger,
+    @Inject(LOGGER) private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<void> {

@@ -1,17 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NextConnectionGuardService } from './next-connection-guard.service';
-import { Client } from '@eventstore/db-client/dist/Client';
-import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
+import { EVENT_WRITER_TIMEOUT_IN_MS, LOGGER } from '../../constants';
 import { setTimeout } from 'timers/promises';
 import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
 import { ConnectionConfiguration } from '../../model';
-import { Logger } from '@nestjs/common';
 import spyOn = jest.spyOn;
 
 describe('NextConnectionGuardService', () => {
   let service: NextConnectionGuardService;
 
-  const connection = { getStreamMetadata: jest.fn() } as any as Client;
+  const connection = { getStreamMetadata: jest.fn() } as any;
 
   const connectionConfiguration: ConnectionConfiguration = {
     credentials: undefined,
@@ -29,7 +27,7 @@ describe('NextConnectionGuardService', () => {
       providers: [
         NextConnectionGuardService,
         {
-          provide: Logger,
+          provide: LOGGER,
           useValue: loggerMock,
         },
       ],

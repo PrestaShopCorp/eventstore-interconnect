@@ -1,13 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConnectionGuard } from '../connection-guard';
 import { Client } from '@eventstore/db-client/dist/Client';
-import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
+import { EVENT_WRITER_TIMEOUT_IN_MS, LOGGER } from '../../constants';
 import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
 import { ConnectionConfiguration } from '../../model';
 
 @Injectable()
 export class NextConnectionGuardService implements ConnectionGuard {
-  constructor(private readonly logger: Logger) {}
+  constructor(@Inject(LOGGER) private readonly logger: Logger) {}
 
   public async startConnectionLinkPinger(
     connection: Client,

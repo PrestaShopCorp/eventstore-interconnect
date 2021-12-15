@@ -1,9 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SafetyNet } from './safety-net.service.interface';
+import { LOGGER } from '../constants';
 
 @Injectable()
 export class DefaultSafetyNetService implements SafetyNet {
-  constructor(private readonly logger: Logger) {}
+  constructor(@Inject(LOGGER) private readonly logger: Logger) {}
 
   public cannotWriteEventHook(event: any): void {
     this.logger.error(

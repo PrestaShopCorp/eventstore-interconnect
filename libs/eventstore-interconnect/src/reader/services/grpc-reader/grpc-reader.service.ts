@@ -14,6 +14,7 @@ import {
 import {
   CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
+  LOGGER,
 } from '../../../constants';
 import {
   ConnectionConfiguration,
@@ -44,7 +45,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
     private readonly grpcConnectionInitializer: GrpcConnectionInitializer,
     @Inject(EVENTSTORE_CONNECTION_GUARD)
     private readonly connectionGuard: ConnectionGuard,
-    private readonly logger: Logger,
+    @Inject(LOGGER) private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<any> {

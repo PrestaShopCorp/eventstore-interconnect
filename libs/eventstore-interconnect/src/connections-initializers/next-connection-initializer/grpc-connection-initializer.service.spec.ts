@@ -3,9 +3,9 @@ import { GrpcConnectionInitializerService } from './grpc-connection-initializer.
 import {
   CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
+  LOGGER,
 } from '../../constants';
 import { ConnectionConfiguration } from '../../model';
-import { Logger } from '@nestjs/common';
 import { EVENTSTORE_CONNECTION_GUARD } from '../../connections-guards';
 
 describe('GrpcConnectionInitializerService', () => {
@@ -36,7 +36,7 @@ describe('GrpcConnectionInitializerService', () => {
       providers: [
         GrpcConnectionInitializerService,
         {
-          provide: Logger,
+          provide: LOGGER,
           useValue: loggerMock,
         },
         {

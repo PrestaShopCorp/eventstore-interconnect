@@ -10,6 +10,7 @@ import {
   CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENTSTORE_DB_CLIENT,
+  LOGGER,
 } from '../constants';
 import {
   LegacyEventsValidatorService,
@@ -68,7 +69,10 @@ export class ReaderModule {
           provide: EVENT_HANDLER,
           useClass: EventHandlerService,
         },
-        Logger,
+        {
+          provide: LOGGER,
+          useValue: new Logger(),
+        },
       ],
     };
   }

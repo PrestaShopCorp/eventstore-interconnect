@@ -1,9 +1,10 @@
 import { SafetyNet } from '@eventstore-interconnect';
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { LOGGER } from '@eventstore-interconnect/constants';
 
 @Injectable()
 export class CustomSafetyNet implements SafetyNet {
-  constructor(private readonly logger: Logger) {}
+  constructor(@Inject(LOGGER) private readonly logger: Logger) {}
 
   public cannotWriteEventHook(event: any, eventWritten?: boolean): void {
     this.logger.log('OVERRIDE SAFETY NET, DO NOTHING');

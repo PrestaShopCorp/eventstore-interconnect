@@ -9,6 +9,7 @@ import { ConnectionConfiguration } from '../../../model';
 import {
   CONNECTION_CONFIGURATION,
   INTERCONNECTION_CONNECTION_DEFAULT_NAME,
+  LOGGER,
 } from '../../../constants';
 import {
   ConnectionGuard,
@@ -27,7 +28,7 @@ export class TCPEventStoreConnectionInitializerService
     private readonly configuration: ConnectionConfiguration,
     @Inject(EVENTSTORE_CONNECTION_GUARD)
     private readonly connectionGuard: ConnectionGuard,
-    private readonly logger: Logger,
+    @Inject(LOGGER) private readonly logger: Logger,
   ) {}
 
   public async init(): Promise<void> {

@@ -3,6 +3,7 @@ import { Client } from '@eventstore/db-client/dist/Client';
 import {
   CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
+  LOGGER,
 } from '../../constants';
 import {
   ConnectionGuard,
@@ -24,7 +25,7 @@ export class GrpcConnectionInitializerService
     private readonly connectionGuard: ConnectionGuard,
     @Inject(EVENTSTORE_DB_CLIENT)
     private readonly eventStoreDBClient: any,
-    private readonly logger: Logger,
+    @Inject(LOGGER) private readonly logger: Logger,
   ) {}
 
   public async init(): Promise<void> {
