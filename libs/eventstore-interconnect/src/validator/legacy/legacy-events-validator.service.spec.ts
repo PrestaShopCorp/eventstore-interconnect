@@ -9,6 +9,7 @@ import { InvalidEventError } from '../errors/invalid-event.error';
 import { NotAllowedEventError } from '../errors/not-allowed-event.error';
 import { SAFETY_NET } from '../../safety-net';
 import spyOn = jest.spyOn;
+import { ValidableMetadataEvent } from '../next/mocks/validable-metadata.event';
 
 describe('LegacyEventsValidatorService', () => {
   let service: LegacyEventsValidatorService;
@@ -16,6 +17,13 @@ describe('LegacyEventsValidatorService', () => {
   const safetynetMock = {
     cannotWriteEventHook: jest.fn(),
     invalidEventHook: jest.fn(),
+  };
+
+  const allowedEvents = {
+    Dumb1Event,
+    Dumb2Event,
+    Dumb3Event,
+    ValidableMetadataEvent,
   };
 
   beforeEach(async () => {
@@ -28,11 +36,7 @@ describe('LegacyEventsValidatorService', () => {
         },
         {
           provide: ALLOWED_EVENTS,
-          useValue: {
-            Dumb1Event,
-            Dumb2Event,
-            Dumb3Event,
-          },
+          useValue: allowedEvents,
         },
       ],
     }).compile();
@@ -79,11 +83,9 @@ describe('LegacyEventsValidatorService', () => {
 
   it('should throw an NotAllowedEventError when the event is not part of the allowed events', async () => {
     expect.assertions(1);
-    const expectedError: NotAllowedEventError = new NotAllowedEventError({
-      Dumb1Event,
-      Dumb2Event,
-      Dumb3Event,
-    });
+    const expectedError: NotAllowedEventError = new NotAllowedEventError(
+      allowedEvents,
+    );
     try {
       const notAllowedEvent = getEvent(false, 5);
       await service.validate(notAllowedEvent);
@@ -121,5 +123,32 @@ describe('LegacyEventsValidatorService', () => {
     expect(safetynetMock.invalidEventHook).toHaveBeenCalledWith(
       notAllowedEvent,
     );
+  });
+
+  it('should only validate the event data, not the metadata', async () => {
+    const classValidatorMock = jest.fn();
+    require('class-validator').validate = classValidatorMock;
+    classValidatorMock.mockResolvedValue([]);
+    const validableMetadataEvent = {
+      event: {
+        data: Buffer.from(JSON.stringify({})),
+        metadata: Buffer.from(
+          JSON.stringify({
+            isOk: 123,
+          }),
+        ),
+        eventType: 'ValidableMetadataEvent',
+      },
+    };
+    let errorRaised = false;
+    try {
+      await service.validate(validableMetadataEvent);
+    } catch (e) {
+      console.log('e : ', e);
+
+      errorRaised = true;
+    }
+
+    expect(errorRaised).toBeFalsy();
   });
 });

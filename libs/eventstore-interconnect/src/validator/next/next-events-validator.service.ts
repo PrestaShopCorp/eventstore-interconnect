@@ -19,7 +19,9 @@ export class NextEventsValidatorService implements Validator {
   public async validate(event: any): Promise<void> {
     const eventInstance = this.tryToInstantiateEvent(event.event);
 
-    const concatErrors: ValidationError[] = await validate(eventInstance);
+    const concatErrors: ValidationError[] = await validate(
+      eventInstance['data'],
+    );
     if (concatErrors.length > 0) {
       this.safetyNet.invalidEventHook(event);
       throw new InvalidEventError(JSON.stringify(concatErrors));

@@ -20,7 +20,9 @@ export class LegacyEventsValidatorService implements Validator {
     const datas = JSON.parse(eventAsPayload.event.data.toString());
     const eventInstance = this.tryToInstantiateEvent(eventAsPayload, datas);
 
-    const concatErrors: ValidationError[] = await validate(eventInstance);
+    const concatErrors: ValidationError[] = await validate(
+      eventInstance['data'],
+    );
 
     if (concatErrors.length > 0) {
       this.safetyNet.invalidEventHook(eventAsPayload);

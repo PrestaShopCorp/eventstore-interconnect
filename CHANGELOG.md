@@ -1,5 +1,8 @@
 # Major evlolutions of the project
 
+### 1.0.33
+- fix a bug making the metadata to be validated whereas it shoud not
+
 ### 1.0.32
 - improving logger (easily overridable and testable)
 

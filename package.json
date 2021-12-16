@@ -1,6 +1,6 @@
 {
   "name": "eventstore-interconnect",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "description": "Eventstore interconnector",
   "author": "Alexandre Decollas <alexandre.decollas.pro@gmail.com>",
   "keywords": [
@@ -30,10 +30,6 @@
     "start:usecase:srcLegDestNext": "CASE='LEGNEXT' yarn start:cmd",
     "start:usecase:srcNextDestLeg": "CASE='NEXTLEG' yarn start:cmd",
     "start:usecase:srcNextDestNext": "CASE='NEXTNEXT' yarn start:cmd",
-    "start:usecase:srcLegDestLeg:debug": "CASE='LEGLEG' yarn start:cmd:debug",
-    "start:usecase:srcLegDestNext:debug": "CASE='LEGNEXT' yarn start:cmd:debug",
-    "start:usecase:srcNextDestLeg:debug": "CASE='NEXTLEG' yarn start:cmd:debug",
-    "start:usecase:srcNextDestNext:debug": "CASE='NEXTNEXT' yarn start:cmd:debug",
     "start:cmd": "env-cmd -f .env nest start example",
     "start:cmd:debug": "env-cmd -f .env node --inspect-brk -r ts-node/register -r tsconfig-paths/register apps/example/src/main.ts",
     "start:dev": "nest start --watch",

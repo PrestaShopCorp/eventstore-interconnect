@@ -9,6 +9,7 @@ import { getEvent } from './mocks/helper';
 import { InvalidEventError } from '../errors/invalid-event.error';
 import { NotAllowedEventError } from '../errors/not-allowed-event.error';
 import { SAFETY_NET } from '../../safety-net';
+import { ValidableMetadataEvent } from './mocks/validable-metadata.event';
 import spyOn = jest.spyOn;
 
 describe('NextEventsValidatorService', () => {
@@ -17,6 +18,13 @@ describe('NextEventsValidatorService', () => {
   const safetynetMock = {
     cannotWriteEventHook: jest.fn(),
     invalidEventHook: jest.fn(),
+  };
+
+  const allowedEvents = {
+    Dumb1Event,
+    Dumb2Event,
+    Dumb3Event,
+    ValidableMetadataEvent,
   };
 
   beforeEach(async () => {
@@ -29,11 +37,7 @@ describe('NextEventsValidatorService', () => {
         },
         {
           provide: ALLOWED_EVENTS,
-          useValue: {
-            Dumb1Event,
-            Dumb2Event,
-            Dumb3Event,
-          },
+          useValue: allowedEvents,
         },
       ],
     }).compile();
@@ -77,11 +81,9 @@ describe('NextEventsValidatorService', () => {
 
   it('should throw an NotAllowedEventError when the event is not part of the allowed events', async () => {
     expect.assertions(1);
-    const expectedError: NotAllowedEventError = new NotAllowedEventError({
-      Dumb1Event,
-      Dumb2Event,
-      Dumb3Event,
-    });
+    const expectedError: NotAllowedEventError = new NotAllowedEventError(
+      allowedEvents,
+    );
     try {
       const notAllowedEvent: ResolvedEvent = getEvent(false, 5);
       await service.validate(notAllowedEvent);
@@ -125,5 +127,37 @@ describe('NextEventsValidatorService', () => {
     expect(safetynetMock.invalidEventHook.mock.calls[0][0].metadata).toEqual(
       notAllowedEvent.event.metadata,
     );
+  });
+
+  it('should only validate the event data, not the metadata', async () => {
+    const classTransformerMock = jest.fn();
+    require('class-transformer').plainToClass = classTransformerMock;
+    classTransformerMock.mockImplementation(() => {
+      return {
+        ...new ValidableMetadataEvent({}, { isOk: true }),
+        metadata: { isOk: 123 },
+      };
+    });
+    const classValidatorMock = jest.fn();
+    require('class-validator').validate = classValidatorMock;
+    classValidatorMock.mockResolvedValue([]);
+    const validableMetadataEvent = {
+      event: {
+        data: {},
+        metadata: {
+          isOk: 123,
+        },
+        type: 'ValidableMetadataEvent',
+      },
+    };
+    let errorRaised = false;
+    try {
+      await service.validate(validableMetadataEvent);
+    } catch (e) {
+      console.log('e : ', e);
+      errorRaised = true;
+    }
+
+    expect(errorRaised).toBeFalsy();
   });
 });
