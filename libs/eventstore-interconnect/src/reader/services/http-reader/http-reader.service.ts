@@ -86,7 +86,9 @@ export class HttpReaderService implements Reader, OnModuleInit {
         await this.eventHandler.handle(event).catch((e) => {
           subscription.fail(event, 3, 'An error occurred');
           this.logger.error(
-            `Unexpected error while handling an event... Details : ${e.message}`,
+            `Unexpected error while handling an event (${JSON.stringify(
+              event,
+            )})... Details : ${e.message}`,
           );
         });
         subscription.acknowledge(event);

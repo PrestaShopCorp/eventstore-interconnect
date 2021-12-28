@@ -5,7 +5,8 @@ import { InvalidEventError } from '../errors/invalid-event.error';
 import { NotAllowedEventError } from '../errors/not-allowed-event.error';
 import { Validator } from '../validator';
 import { SAFETY_NET, SafetyNet } from '../../safety-net';
-import { plainToClass } from 'class-transformer';
+import { plainToClassFromExist } from 'class-transformer';
+import { ResolvedEvent } from '@eventstore/db-client';
 
 @Injectable()
 export class LegacyEventsValidatorService implements Validator {
@@ -16,7 +17,7 @@ export class LegacyEventsValidatorService implements Validator {
     private readonly safetyNet: SafetyNet,
   ) {}
 
-  public async validate(eventAsPayload: any): Promise<void> {
+  public async validate(eventAsPayload: ResolvedEvent): Promise<void> {
     const datas = JSON.parse(eventAsPayload.event.data.toString());
     const eventInstance = this.tryToInstantiateEvent(eventAsPayload, datas);
 
@@ -26,17 +27,17 @@ export class LegacyEventsValidatorService implements Validator {
 
     if (concatErrors.length > 0) {
       this.safetyNet.invalidEventHook(eventAsPayload);
-      throw new InvalidEventError(JSON.stringify(concatErrors));
+      throw new InvalidEventError(eventAsPayload, JSON.stringify(concatErrors));
     }
   }
 
-  private tryToInstantiateEvent(eventAsPayload: any, data) {
+  private tryToInstantiateEvent(eventAsPayload: ResolvedEvent, data) {
     try {
-      const instance = new this.allowedEvents[eventAsPayload.event.eventType](
-        data,
-      );
-      return plainToClass(
-        this.allowedEvents[eventAsPayload.event.eventType],
+      const instance = new this.allowedEvents[
+        eventAsPayload.event['eventType']
+      ](data);
+      return plainToClassFromExist(
+        this.allowedEvents[eventAsPayload.event['eventType']],
         instance,
       );
     } catch (e) {

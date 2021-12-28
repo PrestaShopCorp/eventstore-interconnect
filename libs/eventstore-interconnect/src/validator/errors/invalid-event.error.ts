@@ -1,5 +1,9 @@
 export class InvalidEventError extends Error {
-  constructor(message: string) {
-    super(`The event is invalid. Details: ${message}`);
+  constructor(eventAsPayload: any, message: string) {
+    super(
+      `The event (${JSON.stringify(
+        eventAsPayload,
+      )}) is invalid. Details: ${message}`,
+    );
   }
 }
