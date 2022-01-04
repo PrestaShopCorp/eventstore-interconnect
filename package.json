@@ -24,7 +24,7 @@
   "readmeFilename": "README.md",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "rimraf dist && tsc -p libs/eventstore-interconnect/tsconfig.lib.json",
+    "build": "rimraf dist && tsc -p libs/eventstore-interconnect/tsconfig.json",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "yarn start:cmd",
     "start:cmd": "env-cmd -f .env nest start example",
