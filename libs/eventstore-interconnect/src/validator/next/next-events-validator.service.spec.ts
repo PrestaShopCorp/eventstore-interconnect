@@ -11,6 +11,7 @@ import { NotAllowedEventError } from '../errors/not-allowed-event.error';
 import { SAFETY_NET } from '../../safety-net';
 import { ValidableMetadataEvent } from './mocks/validable-metadata.event';
 import spyOn = jest.spyOn;
+import { plainToClassFromExist } from 'class-transformer';
 
 describe('NextEventsValidatorService', () => {
   let service: NextEventsValidatorService;
@@ -47,16 +48,17 @@ describe('NextEventsValidatorService', () => {
     );
   });
 
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllTimers();
     jest.resetAllMocks();
   });
 
   it('should throw an InvalidEventError when event is invalid', async () => {
     expect.assertions(1);
-    const expectedError: InvalidEventError = new InvalidEventError('');
+    let expectedError: InvalidEventError;
     try {
       const invalidEvent: ResolvedEvent = getEvent(false, 1);
+      expectedError = new InvalidEventError(invalidEvent, '');
       await service.validate(invalidEvent);
     } catch (e) {
       expect(e.message.indexOf(expectedError.message)).not.toEqual(-1);
@@ -109,9 +111,8 @@ describe('NextEventsValidatorService', () => {
   });
 
   it('should trigger the safety hook for invalid invent when event is not allowed', async () => {
-    spyOn(safetynetMock, 'invalidEventHook');
     const classTransformerMock = jest.fn();
-    require('class-transformer').plainToClass = classTransformerMock;
+    require('class-transformer').plainToClassFromExist = classTransformerMock;
     classTransformerMock.mockImplementation(() => {
       throw Error();
     });
@@ -131,7 +132,7 @@ describe('NextEventsValidatorService', () => {
 
   it('should only validate the event data, not the metadata', async () => {
     const classTransformerMock = jest.fn();
-    require('class-transformer').plainToClass = classTransformerMock;
+    require('class-transformer').plainToClassFromExist = classTransformerMock;
     classTransformerMock.mockImplementation(() => {
       return {
         ...new ValidableMetadataEvent({}, { isOk: true }),

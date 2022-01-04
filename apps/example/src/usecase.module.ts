@@ -9,7 +9,7 @@ import { nextSrcNextDestConfiguration } from './configuration/eventstore-connect
 import { nextSrcLegDestConfiguration } from './configuration/eventstore-connections/next-src/legacy-dest/next-src-leg-dest.configuration';
 import { CustomSafetyNet } from './custom-safety-net/custom-safety-net';
 import { Example1Event } from './events/example1.event';
-import { Example3Event } from './events/example3.event';
+import { JobEndedEventT, JobStartedEventT } from './events/example3.event';
 import { Example2Event } from './events/example2.event';
 
 let configuration: InterconnectionConfiguration;
@@ -32,7 +32,8 @@ switch (process.env.CASE) {
 const allowedEvents: any = {
   Example1Event,
   Example2Event,
-  Example3Event,
+  JobStartedEventT,
+  JobEndedEventT,
 };
 
 @Module({

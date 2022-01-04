@@ -55,9 +55,10 @@ describe('LegacyEventsValidatorService', () => {
     const classValidatorMock = jest.fn();
     require('class-validator').validate = classValidatorMock;
     classValidatorMock.mockResolvedValue([{}]);
-    const expectedError: InvalidEventError = new InvalidEventError('');
+    let expectedError: InvalidEventError;
     try {
       const invalidEvent = getEvent(false, 1);
+      expectedError = new InvalidEventError(invalidEvent, '');
       await service.validate(invalidEvent);
     } catch (e) {
       expect(e.message.indexOf(expectedError.message)).not.toEqual(-1);

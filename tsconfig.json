@@ -20,7 +20,8 @@
     "noFallthroughCasesInSwitch": false,
   },
   "include": [
-    "libs/eventstore-interconnect/**/*"
+    "libs",
+    "apps",
   ],
   "exclude": [
     "node_modules",

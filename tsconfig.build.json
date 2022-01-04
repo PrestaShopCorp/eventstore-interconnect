@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "test", "apps", "dist", "**/*spec.ts"]
+  "exclude": ["node_modules", "test", "apps", "dist", "**/*spec.ts"],
+  "include": [
+    "libs/eventstore-interconnect/**/*"
+  ]
 }
