@@ -6,7 +6,12 @@ import { FormattedEvent } from '../formatted-event';
 export class LegacyEventFormatterService implements Formatter {
   public format(readonlyEvent: any): FormattedEvent {
     const data = JSON.parse(readonlyEvent.event.data.toString());
-    const metadata = JSON.parse(readonlyEvent.event.metadata.toString());
+    let metadata: any;
+    try {
+      metadata = JSON.parse(readonlyEvent.event.metadata.toString());
+    } catch (e: any) {
+      metadata = {};
+    }
     return {
       data,
       metadata: {

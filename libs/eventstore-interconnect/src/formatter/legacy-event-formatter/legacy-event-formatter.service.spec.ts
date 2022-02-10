@@ -49,4 +49,27 @@ describe('LegacyEventFormatterService', () => {
       },
     });
   });
+
+  it('should handle an event with no metadata', () => {
+    const data = {};
+
+    const metadata: FormattedMetadata = {
+      eventId: '123',
+      eventStreamId: 'toto',
+      eventType: 'tutu',
+    };
+
+    const formatedEvent: FormattedEvent = service.format({
+      event: {
+        ...metadata,
+        id: 'toto',
+        data: Buffer.from(JSON.stringify(data), 'utf-8'),
+        metadata: Buffer.from('', 'utf-8'),
+      },
+    });
+    expect(formatedEvent).toEqual({
+      data,
+      metadata,
+    });
+  });
 });
