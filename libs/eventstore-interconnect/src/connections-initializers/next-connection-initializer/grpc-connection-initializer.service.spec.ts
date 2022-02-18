@@ -3,10 +3,10 @@ import { GrpcConnectionInitializerService } from './grpc-connection-initializer.
 import {
   CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
-  LOGGER,
 } from '../../constants';
 import { ConnectionConfiguration } from '../../model';
 import { EVENTSTORE_CONNECTION_GUARD } from '../../connections-guards';
+import { LOGGER } from '../../logger';
 
 describe('GrpcConnectionInitializerService', () => {
   let service: GrpcConnectionInitializerService;

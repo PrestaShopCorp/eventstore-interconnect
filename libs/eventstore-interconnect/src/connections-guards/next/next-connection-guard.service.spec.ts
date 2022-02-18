@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NextConnectionGuardService } from './next-connection-guard.service';
-import { EVENT_WRITER_TIMEOUT_IN_MS, LOGGER } from '../../constants';
+import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
 import { setTimeout } from 'timers/promises';
 import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
 import { ConnectionConfiguration } from '../../model';
 import spyOn = jest.spyOn;
+import { LOGGER } from '../../logger';
 
 describe('NextConnectionGuardService', () => {
   let service: NextConnectionGuardService;

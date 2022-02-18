@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConnectionConfiguration } from '../../../model';
-import { CONNECTION_CONFIGURATION, LOGGER } from '../../../constants';
+import { CONNECTION_CONFIGURATION } from '../../../constants';
 import {
   ConnectionGuard,
   EVENTSTORE_CONNECTION_GUARD,
@@ -8,6 +8,7 @@ import {
 import { createConnection } from 'node-eventstore-client';
 import * as geteventstorePromise from 'geteventstore-promise';
 import { TCPEventStoreConnectionInitializerService } from './tcp-event-store-connection-initializer.service';
+import { LOGGER } from '../../../logger';
 
 jest.mock('geteventstore-promise');
 jest.mock('node-eventstore-client');

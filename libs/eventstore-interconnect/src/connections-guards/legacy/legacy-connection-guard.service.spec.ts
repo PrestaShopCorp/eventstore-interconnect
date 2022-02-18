@@ -3,9 +3,10 @@ import { LegacyConnectionGuardService } from './legacy-connection-guard.service'
 import { EventStoreNodeConnection } from 'node-eventstore-client';
 import { ConnectionConfiguration, Credentials } from '../../model';
 import { setTimeout } from 'timers/promises';
-import { EVENT_WRITER_TIMEOUT_IN_MS, LOGGER } from '../../constants';
+import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
 import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
 import spyOn = jest.spyOn;
+import { LOGGER } from '../../logger';
 
 describe('LegacyConnectionGuardService', () => {
   let service: LegacyConnectionGuardService;
