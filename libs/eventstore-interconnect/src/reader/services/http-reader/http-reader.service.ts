@@ -9,7 +9,7 @@ import {
   EventStoreNodeConnection,
   ResolvedEvent,
 } from 'node-eventstore-client';
-import { CONNECTION_CONFIGURATION, LOGGER } from '../../../constants';
+import { CONNECTION_CONFIGURATION } from '../../../constants';
 import { EVENT_HANDLER, EventHandler } from '../../../event-handler';
 import {
   HTTP_CLIENT_CONNECTION_INITIALIZER,
@@ -21,6 +21,7 @@ import {
   ConnectionConfiguration,
   IEventStorePersistentSubscriptionConfig,
 } from '../../../model';
+import { LOGGER } from '../../../logger';
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {

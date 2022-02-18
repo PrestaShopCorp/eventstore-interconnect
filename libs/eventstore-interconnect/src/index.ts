@@ -4,6 +4,7 @@ export * from './driver';
 export * from './event-handler';
 export * from './formatter';
 export * from './helpers';
+export * from './logger';
 export * from './model';
 export * from './reader';
 export * from './safety-net';

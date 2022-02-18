@@ -6,5 +6,3 @@ export const INTERCONNECTION_CONNECTION_DEFAULT_NAME =
   'interco-module-connection';
 export const CONNECTION_CONFIGURATION = Symbol();
 export const EVENTSTORE_DB_CLIENT = Symbol();
-
-export const LOGGER = Symbol();

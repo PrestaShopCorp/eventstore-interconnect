@@ -8,7 +8,6 @@ import {
   CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENT_WRITER_TIMEOUT_IN_MS,
-  LOGGER,
 } from '../../../constants';
 import {
   ConnectionConfiguration,
@@ -21,6 +20,7 @@ import {
   TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
   TCPEventstoreClientsConnectionInitializer,
 } from '../../../connections-initializers';
+import { LOGGER } from '../../../logger';
 
 @Injectable()
 export class HttpDriverService implements Driver, OnModuleInit {

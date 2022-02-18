@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SafetyNet } from './safety-net.service.interface';
-import { LOGGER } from '../constants';
+import { LOGGER } from '../logger';
 
 @Injectable()
 export class DefaultSafetyNetService implements SafetyNet {

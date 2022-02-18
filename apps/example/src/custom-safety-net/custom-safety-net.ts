@@ -1,6 +1,6 @@
 import { SafetyNet } from '@eventstore-interconnect';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { LOGGER } from '@eventstore-interconnect/constants';
+import { LOGGER } from '@eventstore-interconnect';
 
 @Injectable()
 export class CustomSafetyNet implements SafetyNet {

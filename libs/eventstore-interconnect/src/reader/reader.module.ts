@@ -1,4 +1,4 @@
-import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
+import { DynamicModule, Module, Type } from '@nestjs/common';
 import { InterconnectionConfiguration } from '../model';
 import { READER } from './services/reader';
 import { isLegacyConf } from '../helpers';
@@ -10,7 +10,6 @@ import {
   CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENTSTORE_DB_CLIENT,
-  LOGGER,
 } from '../constants';
 import {
   LegacyEventsValidatorService,
@@ -40,6 +39,7 @@ import {
   LegacyConnectionGuardService,
   NextConnectionGuardService,
 } from '../connections-guards';
+import { LoggerModule } from '../logger';
 
 @Module({})
 export class ReaderModule {
@@ -53,7 +53,7 @@ export class ReaderModule {
       : ReaderModule.getNextReaderProviders(configuration);
     return {
       module: ReaderModule,
-      imports: [DriverModule.get(configuration, customStrategy)],
+      imports: [DriverModule.get(configuration, customStrategy), LoggerModule],
       exports: [DriverModule],
       providers: [
         ...providersForReader,
@@ -68,10 +68,6 @@ export class ReaderModule {
         {
           provide: EVENT_HANDLER,
           useClass: EventHandlerService,
-        },
-        {
-          provide: LOGGER,
-          useValue: new Logger(),
         },
       ],
     };

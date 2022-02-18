@@ -3,7 +3,6 @@ import { Client } from '@eventstore/db-client/dist/Client';
 import {
   CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
-  LOGGER,
 } from '../../constants';
 import {
   ConnectionGuard,
@@ -11,6 +10,7 @@ import {
 } from '../../connections-guards';
 import { GrpcConnectionInitializer } from './grpc-connection-initializer';
 import { ConnectionConfiguration } from '../../model';
+import { LOGGER } from '../../logger';
 
 @Injectable()
 export class GrpcConnectionInitializerService

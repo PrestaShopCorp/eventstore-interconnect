@@ -9,13 +9,13 @@ import { ConnectionConfiguration } from '../../../model';
 import {
   CONNECTION_CONFIGURATION,
   INTERCONNECTION_CONNECTION_DEFAULT_NAME,
-  LOGGER,
 } from '../../../constants';
 import {
   ConnectionGuard,
   EVENTSTORE_CONNECTION_GUARD,
 } from '../../../connections-guards';
 import { TCPEventstoreClientsConnectionInitializer } from './tcp-eventstore-clients-connection-initializer';
+import { LOGGER } from '../../../logger';
 
 @Injectable()
 export class TCPEventStoreConnectionInitializerService

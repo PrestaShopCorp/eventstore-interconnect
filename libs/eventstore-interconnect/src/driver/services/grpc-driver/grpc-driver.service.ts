@@ -4,7 +4,6 @@ import {
   CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENT_WRITER_TIMEOUT_IN_MS,
-  LOGGER,
 } from '../../../constants';
 import { ConnectionConfiguration, Credentials } from '../../../model';
 import { jsonEvent } from '@eventstore/db-client';
@@ -17,6 +16,7 @@ import {
   GrpcConnectionInitializer,
 } from '../../../connections-initializers';
 import { ANY } from '../../constants';
+import { LOGGER } from '../../../logger';
 
 @Injectable()
 export class GrpcDriverService implements Driver, OnModuleInit {

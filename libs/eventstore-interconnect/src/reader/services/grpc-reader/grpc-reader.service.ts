@@ -14,7 +14,6 @@ import {
 import {
   CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
-  LOGGER,
 } from '../../../constants';
 import {
   ConnectionConfiguration,
@@ -27,6 +26,7 @@ import {
   IPersistentSubscriptionConfig,
   Reader,
 } from '../../../';
+import { LOGGER } from '../../../logger';
 
 @Injectable()
 export class GrpcReaderService implements Reader, OnModuleInit {
