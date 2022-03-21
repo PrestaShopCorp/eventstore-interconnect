@@ -1,3 +1,4 @@
+import { EventStoreDBClient } from '@eventstore/db-client';
 import { DynamicModule, Module, Type } from '@nestjs/common';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import {
@@ -5,24 +6,22 @@ import {
   GrpcConnectionInitializerService,
   InterconnectionConfiguration,
   isLegacyConf,
-  LoggerModule,
   NextConnectionGuardService,
   SafetyNet,
-  TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
   TCPEventStoreConnectionInitializerService,
+  TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
 } from '..';
-import { DRIVER } from './driver';
-import { HttpDriverService } from './services/http-driver/http-driver.service';
-import { GrpcDriverService } from './services/grpc-driver/grpc-driver.service';
+import { LegacyConnectionGuardService } from '../connections-guards';
+import { GRPC_CONNECTION_INITIALIZER } from '../connections-initializers';
 import {
   CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENTSTORE_DB_CLIENT,
 } from '../constants';
 import { SafetyNetModule } from '../safety-net';
-import { LegacyConnectionGuardService } from '../connections-guards';
-import { EventStoreDBClient } from '@eventstore/db-client';
-import { GRPC_CONNECTION_INITIALIZER } from '../connections-initializers';
+import { DRIVER } from './driver';
+import { GrpcDriverService } from './services/grpc-driver/grpc-driver.service';
+import { HttpDriverService } from './services/http-driver/http-driver.service';
 
 @Module({})
 export class DriverModule {
@@ -36,7 +35,7 @@ export class DriverModule {
 
     return {
       module: DriverModule,
-      imports: [SafetyNetModule.use(customSafetyNetStrategy), LoggerModule],
+      imports: [SafetyNetModule.use(customSafetyNetStrategy)],
       providers: [...driverProviders],
       exports: [...driverProviders, SafetyNetModule],
     };

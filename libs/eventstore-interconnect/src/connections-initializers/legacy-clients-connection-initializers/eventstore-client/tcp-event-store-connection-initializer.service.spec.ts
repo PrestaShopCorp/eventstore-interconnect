@@ -1,14 +1,14 @@
+import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConnectionConfiguration } from '../../../model';
-import { CONNECTION_CONFIGURATION } from '../../../constants';
+import * as geteventstorePromise from 'geteventstore-promise';
+import { createConnection } from 'node-eventstore-client';
 import {
   ConnectionGuard,
   EVENTSTORE_CONNECTION_GUARD,
 } from '../../../connections-guards';
-import { createConnection } from 'node-eventstore-client';
-import * as geteventstorePromise from 'geteventstore-promise';
+import { CONNECTION_CONFIGURATION } from '../../../constants';
+import { ConnectionConfiguration } from '../../../model';
 import { TCPEventStoreConnectionInitializerService } from './tcp-event-store-connection-initializer.service';
-import { LOGGER } from '../../../logger';
 
 jest.mock('geteventstore-promise');
 jest.mock('node-eventstore-client');
@@ -44,7 +44,7 @@ describe('TCPEventStoreConnectionInitializerService', () => {
       providers: [
         TCPEventStoreConnectionInitializerService,
         {
-          provide: LOGGER,
+          provide: Logger,
           useValue: loggerMock,
         },
         {

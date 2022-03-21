@@ -1,12 +1,12 @@
+import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyConnectionGuardService } from './legacy-connection-guard.service';
 import { EventStoreNodeConnection } from 'node-eventstore-client';
-import { ConnectionConfiguration, Credentials } from '../../model';
 import { setTimeout } from 'timers/promises';
 import { EVENT_WRITER_TIMEOUT_IN_MS } from '../../constants';
+import { ConnectionConfiguration, Credentials } from '../../model';
 import { CONNECTION_LINK_CHECK_INTERVAL_IN_MS } from '../connection-guard.constants';
+import { LegacyConnectionGuardService } from './legacy-connection-guard.service';
 import spyOn = jest.spyOn;
-import { LOGGER } from '../../logger';
 
 describe('LegacyConnectionGuardService', () => {
   let service: LegacyConnectionGuardService;
@@ -38,7 +38,7 @@ describe('LegacyConnectionGuardService', () => {
       providers: [
         LegacyConnectionGuardService,
         {
-          provide: LOGGER,
+          provide: Logger,
           useValue: loggerMock,
         },
       ],

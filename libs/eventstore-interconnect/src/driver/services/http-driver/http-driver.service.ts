@@ -1,26 +1,25 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { Driver } from '../../driver';
 import {
   createJsonEventData,
   EventStoreNodeConnection,
 } from 'node-eventstore-client';
 import {
+  TCPEventstoreClientsConnectionInitializer,
+  TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
+} from '../../../connections-initializers';
+import {
   CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENT_WRITER_TIMEOUT_IN_MS,
 } from '../../../constants';
+import { FormattedEvent } from '../../../formatter';
 import {
   ConnectionConfiguration,
   Credentials,
   ExpectedVersion,
 } from '../../../model/';
-import { SAFETY_NET, SafetyNet } from '../../../safety-net';
-import { FormattedEvent } from '../../../formatter';
-import {
-  TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
-  TCPEventstoreClientsConnectionInitializer,
-} from '../../../connections-initializers';
-import { LOGGER } from '../../../logger';
+import { SafetyNet, SAFETY_NET } from '../../../safety-net';
+import { Driver } from '../../driver';
 
 @Injectable()
 export class HttpDriverService implements Driver, OnModuleInit {
@@ -32,7 +31,7 @@ export class HttpDriverService implements Driver, OnModuleInit {
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
     @Inject(SAFETY_NET) protected readonly safetyNet: SafetyNet,
-    @Inject(LOGGER) private readonly logger: Logger,
+    private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<void> {
