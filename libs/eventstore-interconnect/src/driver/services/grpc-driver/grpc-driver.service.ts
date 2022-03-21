@@ -1,22 +1,21 @@
+import { jsonEvent } from '@eventstore/db-client';
+import { Client } from '@eventstore/db-client/dist/Client';
+import { EventData } from '@eventstore/db-client/dist/types/events';
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { Driver } from '../../driver';
+import {
+  GrpcConnectionInitializer,
+  GRPC_CONNECTION_INITIALIZER,
+} from '../../../connections-initializers';
 import {
   CONNECTION_CONFIGURATION,
   CREDENTIALS,
   EVENT_WRITER_TIMEOUT_IN_MS,
 } from '../../../constants';
-import { ConnectionConfiguration, Credentials } from '../../../model';
-import { jsonEvent } from '@eventstore/db-client';
-import { SAFETY_NET, SafetyNet } from '../../../safety-net';
 import { FormattedEvent } from '../../../formatter';
-import { EventData } from '@eventstore/db-client/dist/types/events';
-import { Client } from '@eventstore/db-client/dist/Client';
-import {
-  GRPC_CONNECTION_INITIALIZER,
-  GrpcConnectionInitializer,
-} from '../../../connections-initializers';
+import { ConnectionConfiguration, Credentials } from '../../../model';
+import { SafetyNet, SAFETY_NET } from '../../../safety-net';
 import { ANY } from '../../constants';
-import { LOGGER } from '../../../logger';
+import { Driver } from '../../driver';
 
 @Injectable()
 export class GrpcDriverService implements Driver, OnModuleInit {
@@ -28,7 +27,7 @@ export class GrpcDriverService implements Driver, OnModuleInit {
     @Inject(CREDENTIALS)
     private readonly credentials: Credentials,
     @Inject(SAFETY_NET) protected readonly safetyNet: SafetyNet,
-    @Inject(LOGGER) private readonly logger: Logger,
+    private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<void> {

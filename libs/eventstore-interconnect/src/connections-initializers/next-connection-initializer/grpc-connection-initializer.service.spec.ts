@@ -1,12 +1,12 @@
+import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { GrpcConnectionInitializerService } from './grpc-connection-initializer.service';
+import { EVENTSTORE_CONNECTION_GUARD } from '../../connections-guards';
 import {
   CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
 } from '../../constants';
 import { ConnectionConfiguration } from '../../model';
-import { EVENTSTORE_CONNECTION_GUARD } from '../../connections-guards';
-import { LOGGER } from '../../logger';
+import { GrpcConnectionInitializerService } from './grpc-connection-initializer.service';
 
 describe('GrpcConnectionInitializerService', () => {
   let service: GrpcConnectionInitializerService;
@@ -36,7 +36,7 @@ describe('GrpcConnectionInitializerService', () => {
       providers: [
         GrpcConnectionInitializerService,
         {
-          provide: LOGGER,
+          provide: Logger,
           useValue: loggerMock,
         },
         {

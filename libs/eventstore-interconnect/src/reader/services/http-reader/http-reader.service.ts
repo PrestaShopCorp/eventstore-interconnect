@@ -1,6 +1,4 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { Reader } from '../reader';
-import { SUBSCRIPTIONS } from '../constants';
 import {
   HTTPClient,
   PersistentSubscriptionOptions,
@@ -9,19 +7,20 @@ import {
   EventStoreNodeConnection,
   ResolvedEvent,
 } from 'node-eventstore-client';
-import { CONNECTION_CONFIGURATION } from '../../../constants';
-import { EVENT_HANDLER, EventHandler } from '../../../event-handler';
 import {
-  HTTP_CLIENT_CONNECTION_INITIALIZER,
   HttpClientsConnectionInitializer,
-  TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
+  HTTP_CLIENT_CONNECTION_INITIALIZER,
   TCPEventstoreClientsConnectionInitializer,
+  TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER,
 } from '../../../connections-initializers';
+import { CONNECTION_CONFIGURATION } from '../../../constants';
+import { EventHandler, EVENT_HANDLER } from '../../../event-handler';
 import {
   ConnectionConfiguration,
   IEventStorePersistentSubscriptionConfig,
 } from '../../../model';
-import { LOGGER } from '../../../logger';
+import { SUBSCRIPTIONS } from '../constants';
+import { Reader } from '../reader';
 
 @Injectable()
 export class HttpReaderService implements Reader, OnModuleInit {
@@ -36,7 +35,7 @@ export class HttpReaderService implements Reader, OnModuleInit {
     private readonly httpClientProvider: HttpClientsConnectionInitializer,
     @Inject(TCP_EVENTSTORE_CLIENT_CONNECTION_INITIALIZER)
     private readonly esClientInitializer: TCPEventstoreClientsConnectionInitializer,
-    @Inject(LOGGER) private readonly logger: Logger,
+    private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<void> {

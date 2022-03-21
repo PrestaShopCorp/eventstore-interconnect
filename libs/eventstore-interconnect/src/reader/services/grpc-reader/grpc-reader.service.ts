@@ -1,32 +1,31 @@
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import {
   EventType,
   PersistentSubscription,
   persistentSubscriptionSettingsFromDefaults,
   ResolvedEvent,
 } from '@eventstore/db-client';
-import { isNil } from '@nestjs/common/utils/shared.utils';
 import { Client } from '@eventstore/db-client/dist/Client';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { isNil } from '@nestjs/common/utils/shared.utils';
 import {
-  PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE,
-  SUBSCRIPTIONS,
-} from '../constants';
+  ConnectionConfiguration,
+  ConnectionGuard,
+  EventHandler,
+  EVENTSTORE_CONNECTION_GUARD,
+  EVENT_HANDLER,
+  GrpcConnectionInitializer,
+  GRPC_CONNECTION_INITIALIZER,
+  IPersistentSubscriptionConfig,
+  Reader,
+} from '../../../';
 import {
   CONNECTION_CONFIGURATION,
   EVENTSTORE_DB_CLIENT,
 } from '../../../constants';
 import {
-  ConnectionConfiguration,
-  ConnectionGuard,
-  EVENT_HANDLER,
-  EventHandler,
-  EVENTSTORE_CONNECTION_GUARD,
-  GRPC_CONNECTION_INITIALIZER,
-  GrpcConnectionInitializer,
-  IPersistentSubscriptionConfig,
-  Reader,
-} from '../../../';
-import { LOGGER } from '../../../logger';
+  PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE,
+  SUBSCRIPTIONS,
+} from '../constants';
 
 @Injectable()
 export class GrpcReaderService implements Reader, OnModuleInit {
@@ -45,7 +44,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
     private readonly grpcConnectionInitializer: GrpcConnectionInitializer,
     @Inject(EVENTSTORE_CONNECTION_GUARD)
     private readonly connectionGuard: ConnectionGuard,
-    @Inject(LOGGER) private readonly logger: Logger,
+    private readonly logger: Logger,
   ) {}
 
   public async onModuleInit(): Promise<any> {
