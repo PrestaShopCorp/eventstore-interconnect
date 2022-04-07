@@ -1,5 +1,8 @@
 # Major evlolutions of the project
 
+### 1.0.41
+- Add debug logs switch feature. You can now enable or desable them by passing boolean in the configuration.
+
 ### 1.0.33
 - fix a bug making the metadata to be validated whereas it shoud not
 

@@ -1,6 +1,6 @@
 {
   "name": "eventstore-interconnect",
-  "version": "1.0.40",
+  "version": "1.0.41",
   "description": "Eventstore interconnector",
   "author": "Alexandre Decollas <alexandre.decollas.pro@gmail.com>",
   "keywords": [

@@ -4,9 +4,7 @@ import { ReaderModule } from './reader';
 import { SafetyNet } from './safety-net';
 import { LoggerModule } from './logger';
 
-@Module({
-  imports: [LoggerModule],
-})
+@Module({})
 export class EventstoreInterconnectModule {
   public static connectToSrcAndDest(
     configuration: InterconnectionConfiguration,
@@ -15,7 +13,10 @@ export class EventstoreInterconnectModule {
   ): DynamicModule {
     return {
       module: EventstoreInterconnectModule,
-      imports: [ReaderModule.get(configuration, allowedEvents, customStrategy)],
+      imports: [
+        ReaderModule.get(configuration, allowedEvents, customStrategy),
+        LoggerModule.forRoot(configuration.showDebugLogs),
+      ],
     };
   }
 }

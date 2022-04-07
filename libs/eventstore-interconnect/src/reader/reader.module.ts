@@ -53,7 +53,7 @@ export class ReaderModule {
       : ReaderModule.getNextReaderProviders(configuration);
     return {
       module: ReaderModule,
-      imports: [DriverModule.get(configuration, customStrategy), LoggerModule],
+      imports: [DriverModule.get(configuration, customStrategy)],
       exports: [DriverModule],
       providers: [
         ...providersForReader,

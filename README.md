@@ -91,3 +91,8 @@ The custom strategy must implement the interface [`SafetyNet`](libs/eventstore-i
 
 Every 10 seconds by default, the lib will check the connection to source and dest is ok. If the connection does not respond in this time lapse, process will exit with 1 (the timeout here is the same as the one for writting an event (`EVENTSTORE_INTERCO_EVENT_WRITER_TIMEOUT_IN_MS`)).
 You can change the value of 10 seconds by changing the env variable `CONNECTION_LINK_CHECK_INTERVAL_IN_MS`
+
+
+## Debug logs
+
+You can switch debug logs by passing the boolean showDebugLogs in the configuration

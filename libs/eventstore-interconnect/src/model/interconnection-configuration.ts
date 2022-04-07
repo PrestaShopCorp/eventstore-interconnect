@@ -7,6 +7,8 @@ export interface InterconnectionConfiguration {
   destination: ConnectionConfiguration;
   eventStoreSubsystems?: IEventStoreSubsystems;
   eventStoreBusConfig?: IEventStoreBusConfig;
+
+  showDebugLogs?: boolean;
 }
 
 export interface Credentials {

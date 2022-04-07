@@ -39,7 +39,7 @@ const allowedEvents: any = {
 @Module({
   imports: [
     EventstoreInterconnectModule.connectToSrcAndDest(
-      configuration,
+      { ...configuration, showDebugLogs: false },
       allowedEvents,
       CustomSafetyNet,
     ),

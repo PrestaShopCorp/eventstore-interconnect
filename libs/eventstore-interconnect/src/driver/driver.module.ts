@@ -36,7 +36,7 @@ export class DriverModule {
 
     return {
       module: DriverModule,
-      imports: [SafetyNetModule.use(customSafetyNetStrategy), LoggerModule],
+      imports: [SafetyNetModule.use(customSafetyNetStrategy)],
       providers: [...driverProviders],
       exports: [...driverProviders, SafetyNetModule],
     };
