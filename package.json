@@ -50,7 +50,7 @@
     "@ntegral/nestjs-sentry": "1.0.4",
     "@sentry/node": "^6.13.3",
     "class-transformer": "^0.4.0",
-    "class-validator": "0.13.1",
+    "class-validator": "0.14.0",
     "geteventstore-promise": "3.2.5",
     "nanoid": "^3.1.30",
     "nestjs-context": "0.12.0",
