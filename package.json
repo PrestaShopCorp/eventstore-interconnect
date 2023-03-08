@@ -43,7 +43,7 @@
     "@eventstore/db-client": "2.1.1",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "1.0.2",
-    "@nestjs/core": "^8.0.0",
+    "@nestjs/core": "^9.0.5",
     "@nestjs/cqrs": "7.0.0",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/terminus": "8.0.1",
