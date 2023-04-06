@@ -11,6 +11,9 @@ import {
 import { GrpcConnectionInitializer } from './grpc-connection-initializer';
 import { ConnectionConfiguration } from '../../model';
 import { LOGGER } from '../../logger';
+import {EventStoreDBClient} from "@eventstore/db-client";
+import {ConnectionOptions} from "@eventstore/db-client/dist/Client/parseConnectionString";
+import {EndPoint} from "@eventstore/db-client/dist/types";
 
 @Injectable()
 export class GrpcConnectionInitializerService
@@ -36,8 +39,8 @@ export class GrpcConnectionInitializerService
       `Starting to ping connection on ${this.connectionConfiguration.connectionString}...`,
     );
     await this.connectionGuard.startConnectionLinkPinger(
-      this.client,
-      this.connectionConfiguration,
+        this.client,
+        this.connectionConfiguration
     );
   }
 

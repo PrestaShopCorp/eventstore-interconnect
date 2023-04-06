@@ -118,6 +118,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
               }
             },
           );
+
           if (!isNil(subscription.onSubscriptionStart)) {
             persistentSubscription.on(
               'confirmation',
