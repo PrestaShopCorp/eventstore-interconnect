@@ -1,18 +1,20 @@
 /// <reference types="node" />
 import { DuplexOptions } from 'stream';
-import { PersistentSubscriptionSettings } from '@eventstore/db-client/dist/utils';
-import { ConnectToPersistentSubscriptionOptions } from '@eventstore/db-client/dist/persistentSubscription';
-import { BaseOptions } from '@eventstore/db-client/dist/types';
+import {
+  SubscribeToPersistentSubscriptionToStreamOptions,
+  PersistentSubscriptionToStreamSettings,
+  BaseOptions
+} from '@eventstore/db-client';
 
 export interface IPersistentSubscriptionConfig {
   stream: string;
   group: string;
   optionsForConnection?: {
-    subscriptionConnectionOptions?: Partial<ConnectToPersistentSubscriptionOptions>;
+    subscriptionConnectionOptions?: Partial<SubscribeToPersistentSubscriptionToStreamOptions>;
     duplexOptions?: Partial<DuplexOptions>;
   };
   settingsForCreation?: {
-    subscriptionSettings?: Partial<PersistentSubscriptionSettings>;
+    subscriptionSettings?: Partial<PersistentSubscriptionToStreamSettings>;
     baseOptions?: Partial<BaseOptions>;
   };
   onSubscriptionStart?: () => void | undefined;

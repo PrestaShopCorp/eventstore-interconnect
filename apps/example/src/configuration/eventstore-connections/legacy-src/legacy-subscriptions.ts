@@ -29,7 +29,7 @@ export const legacySubscriptions: IEventStorePersistentSubscriptionConfig[] = [
     group: 'debug-interco-test',
     autoAck: true,
     options: {
-      startFrom: 6347365,
+      startFrom: 0,
       resolveLinkTos: true,
       minCheckPointCount: 1,
       readBatchSize: 10,
@@ -43,7 +43,7 @@ export const legacySubscriptions: IEventStorePersistentSubscriptionConfig[] = [
     group: 'debug-interco-test',
     autoAck: true,
     options: {
-      startFrom: 6324288,
+      startFrom: 0,
       resolveLinkTos: true,
       minCheckPointCount: 1,
       readBatchSize: 10,

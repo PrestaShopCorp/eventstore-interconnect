@@ -12,6 +12,8 @@ export const nextSubscriptions: IPersistentSubscriptionConfig[] = [
       subscriptionSettings: {
         liveBufferSize: 1,
         resolveLinkTos: true,
+        startFrom: "start",
+        readBatchSize: 1
       },
     },
     onError: (err: Error) => console.log(`An error occurred : ${err.message}`),

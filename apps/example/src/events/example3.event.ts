@@ -58,7 +58,7 @@ export abstract class AcknowledgeableEventStoreEvent
   abstract ack(): Promise<void>;
   abstract nack(action: any, reason: string): Promise<void>;
 }
-export class JobStartedEventT extends AcknowledgeableEventStoreEvent {
+export class JobStartedEvent extends AcknowledgeableEventStoreEvent {
   constructor(
     public readonly data: {
       chargebeePlanId: string;
@@ -93,14 +93,19 @@ export type jobEndedEventDataType = {
   shopHealthCode: number;
 };
 
-export class JobEndedEventT extends AcknowledgeableEventStoreEvent {
+export class JobEndedEvent extends AcknowledgeableEventStoreEvent {
   constructor(
     public readonly data: jobEndedEventDataType,
     options?: IEventStoreEventOptions,
   ) {
     super(data, options);
-    this.metadata.$correlationId = `${data.jobId}`;
-    this.metadata.host = hostname();
+    this.metadata = {
+      ...this.metadata,
+      $correlationId: `${data.jobId}`,
+      host : hostname()
+    }
+    // this.metadata.$correlationId = `${data.jobId}`;
+    // this.metadata.host = hostname();
   }
 
   public ack(): Promise<void> {
