@@ -1,14 +1,4 @@
 import { hostname } from 'os';
-import { Type } from 'class-transformer';
-import {
-  IsNumber,
-  IsObject,
-  IsOptional,
-  IsString,
-  Length,
-  ValidateNested,
-} from 'class-validator';
-import 'reflect-metadata';
 
 export enum ExpectedVersion {
   StreamExists = -4,
@@ -124,44 +114,5 @@ export class JobEndedEvent extends AcknowledgeableEventStoreEvent {
 
   public nack(action: any, reason: string): Promise<void> {
     return Promise.resolve(undefined);
-  }
-}
-
-class FacebookCatalogSyncAskedData {
-  @IsString()
-  externalBusinessId: string;
-
-  @IsNumber()
-  accountUpdatedAt: number;
-
-  @IsObject()
-  @IsOptional()
-  fbe?: any;
-
-  @IsNumber()
-  accountCreatedAt: number;
-
-  @IsString()
-  @Length(28)
-  shopId: string;
-
-  @IsObject()
-  @IsOptional()
-  appAccessTokens?: any;
-
-  constructor(data: Partial<FacebookCatalogSyncAskedData>) {
-    Object.assign(this, data);
-  }
-}
-
-export class FacebookCatalogSyncAskedEvent {
-  @ValidateNested()
-  @Type(() => FacebookCatalogSyncAskedData)
-  public readonly data: FacebookCatalogSyncAskedData;
-  public readonly metadata: any;
-
-  constructor(data: FacebookCatalogSyncAskedData, metadata: any = {}) {
-    this.data = new FacebookCatalogSyncAskedData(data);
-    this.metadata = metadata;
   }
 }
