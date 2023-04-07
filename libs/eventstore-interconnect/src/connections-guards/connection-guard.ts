@@ -8,6 +8,5 @@ export interface ConnectionGuard {
   startConnectionLinkPinger(
     connection: EventStoreNodeConnection | Client,
     connectionConfiguration?: ConnectionConfiguration,
-    tryCount?: number
   ): Promise<void>;
 }

@@ -9,7 +9,7 @@ import { nextSrcNextDestConfiguration } from './configuration/eventstore-connect
 import { nextSrcLegDestConfiguration } from './configuration/eventstore-connections/next-src/legacy-dest/next-src-leg-dest.configuration';
 import { CustomSafetyNet } from './custom-safety-net/custom-safety-net';
 import { Example1Event } from './events/example1.event';
-import {FacebookCatalogSyncAskedEvent, JobEndedEvent, JobStartedEvent} from './events/example3.event';
+import { JobEndedEvent, JobStartedEvent} from './events/example3.event';
 import { Example2Event } from './events/example2.event';
 
 let configuration: InterconnectionConfiguration;
@@ -34,7 +34,6 @@ const allowedEvents: any = {
   Example2Event,
   JobStartedEvent,
   JobEndedEvent,
-  FacebookCatalogSyncAskedEvent
 };
 
 @Module({
