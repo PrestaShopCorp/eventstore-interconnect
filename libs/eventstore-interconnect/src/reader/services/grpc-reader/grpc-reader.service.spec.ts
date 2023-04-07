@@ -27,10 +27,10 @@ describe('GrpcReaderService', () => {
   } as any as ConnectionGuard;
 
   const eventstoreClientMock = {
-    getStreamMetadata: jest.fn(),
-    createPersistentSubscription: jest.fn(),
-    connectToPersistentSubscription: jest.fn(),
-    updatePersistentSubscription: jest.fn(),
+    listAllPersistentSubscriptions: jest.fn(),
+    createPersistentSubscriptionToStream: jest.fn(),
+    subscribeToPersistentSubscriptionToStream: jest.fn(),
+    updatePersistentSubscriptionToStream: jest.fn(),
   };
 
   const connectionInitializerMock = {
@@ -83,10 +83,10 @@ describe('GrpcReaderService', () => {
     jest
       .spyOn(connectionInitializerMock, 'getConnectedClient')
       .mockReturnValue(eventstoreClientMock);
-    spyOn(eventstoreClientMock, 'createPersistentSubscription');
+    spyOn(eventstoreClientMock, 'createPersistentSubscriptionToStream');
     spyOn(
       eventstoreClientMock,
-      'connectToPersistentSubscription',
+      'subscribeToPersistentSubscriptionToStream',
     ).mockReturnValue({
       on: jest.fn(),
     });
@@ -102,7 +102,7 @@ describe('GrpcReaderService', () => {
       .mockReturnValue(eventstoreClientMock);
     spyOn(
       eventstoreClientMock,
-      'connectToPersistentSubscription',
+      'subscribeToPersistentSubscriptionToStream',
     ).mockReturnValue({
       on: jest.fn(),
     });
@@ -117,12 +117,12 @@ describe('GrpcReaderService', () => {
       .spyOn(connectionInitializerMock, 'getConnectedClient')
       .mockReturnValue(eventstoreClientMock);
     jest
-      .spyOn(eventstoreClientMock, 'getStreamMetadata')
+      .spyOn(eventstoreClientMock, 'listAllPersistentSubscriptions')
       .mockResolvedValue(null);
     spyOn(service, 'upsertPersistantSubscriptions');
     spyOn(
       eventstoreClientMock,
-      'connectToPersistentSubscription',
+      'subscribeToPersistentSubscriptionToStream',
     ).mockReturnValue({
       on: jest.fn(),
     });
@@ -130,7 +130,7 @@ describe('GrpcReaderService', () => {
     await service.onModuleInit();
 
     expect(
-      eventstoreClientMock.createPersistentSubscription,
+      eventstoreClientMock.createPersistentSubscriptionToStream,
     ).toHaveBeenCalledTimes(2);
   });
 
@@ -139,10 +139,10 @@ describe('GrpcReaderService', () => {
       .spyOn(connectionInitializerMock, 'getConnectedClient')
       .mockReturnValue(eventstoreClientMock);
     jest
-      .spyOn(eventstoreClientMock, 'getStreamMetadata')
+      .spyOn(eventstoreClientMock, 'listAllPersistentSubscriptions')
       .mockResolvedValue(null);
     jest
-      .spyOn(eventstoreClientMock, 'createPersistentSubscription')
+      .spyOn(eventstoreClientMock, 'createPersistentSubscriptionToStream')
       .mockImplementation(() => {
         const error: Error = new Error();
         error['code'] = PERSISTENT_SUBSCRIPTION_ALREADY_EXIST_ERROR_CODE;
@@ -151,7 +151,7 @@ describe('GrpcReaderService', () => {
     spyOn(service, 'upsertPersistantSubscriptions');
     spyOn(
       eventstoreClientMock,
-      'connectToPersistentSubscription',
+      'subscribeToPersistentSubscriptionToStream',
     ).mockReturnValue({
       on: jest.fn(),
     });
@@ -159,7 +159,7 @@ describe('GrpcReaderService', () => {
     await service.onModuleInit();
 
     expect(
-      eventstoreClientMock.updatePersistentSubscription,
+      eventstoreClientMock.updatePersistentSubscriptionToStream,
     ).toHaveBeenCalledTimes(2);
   });
 });

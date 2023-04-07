@@ -10,7 +10,7 @@ import { LOGGER } from '../../logger';
 describe('NextConnectionGuardService', () => {
   let service: NextConnectionGuardService;
 
-  const connection = { getStreamMetadata: jest.fn() } as any;
+  const connection = { listAllPersistentSubscriptions: jest.fn() } as any;
 
   const connectionConfiguration: ConnectionConfiguration = {
     credentials: undefined,
@@ -50,23 +50,25 @@ describe('NextConnectionGuardService', () => {
   });
 
   it('should check the connection link when pinger starts', async () => {
-    spyOn(connection, 'getStreamMetadata');
+    spyOn(connection, 'listAllPersistentSubscriptions');
 
     await service.startConnectionLinkPinger(
       connection,
       connectionConfiguration,
     );
 
-    expect(connection.getStreamMetadata).toHaveBeenCalledWith('$all');
+    expect(connection.listAllPersistentSubscriptions).toHaveBeenCalled();
   });
 
   it('should process exit 1 when connection is timed out', async () => {
     jest.useFakeTimers();
     spyOn(process, 'exit').mockReturnValue(null as never);
 
-    spyOn(connection, 'getStreamMetadata').mockImplementation(async () => {
-      return await setTimeout(EVENT_WRITER_TIMEOUT_IN_MS + 100);
-    });
+    spyOn(connection, 'listAllPersistentSubscriptions').mockImplementation(
+      async () => {
+        return await setTimeout(EVENT_WRITER_TIMEOUT_IN_MS + 100);
+      },
+    );
 
     service
       .startConnectionLinkPinger(connection, connectionConfiguration)
@@ -83,7 +85,7 @@ describe('NextConnectionGuardService', () => {
     jest.useFakeTimers();
     spyOn(process, 'exit').mockReturnValue(null as never);
 
-    spyOn(connection, 'getStreamMetadata').mockResolvedValue(null);
+    spyOn(connection, 'listAllPersistentSubscriptions').mockResolvedValue(null);
 
     const req = service.startConnectionLinkPinger(
       connection,
