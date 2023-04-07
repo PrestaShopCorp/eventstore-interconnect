@@ -11,9 +11,6 @@ import {
 import { GrpcConnectionInitializer } from './grpc-connection-initializer';
 import { ConnectionConfiguration } from '../../model';
 import { LOGGER } from '../../logger';
-import {EventStoreDBClient} from "@eventstore/db-client";
-import {ConnectionOptions} from "@eventstore/db-client/dist/Client/parseConnectionString";
-import {EndPoint} from "@eventstore/db-client/dist/types";
 
 @Injectable()
 export class GrpcConnectionInitializerService
