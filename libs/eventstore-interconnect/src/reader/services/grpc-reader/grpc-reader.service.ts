@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import {
   EventType,
-  PersistentSubscription,
-  persistentSubscriptionSettingsFromDefaults,
+  PersistentSubscriptionToStream,
+  persistentSubscriptionToStreamSettingsFromDefaults,
   ResolvedEvent,
 } from '@eventstore/db-client';
 import { isNil } from '@nestjs/common/utils/shared.utils';
@@ -86,19 +86,19 @@ export class GrpcReaderService implements Reader, OnModuleInit {
   public async subscribeToPersistentSubscriptions(
     subscriptions: IPersistentSubscriptionConfig[] = [],
     onEvent: (event: any) => void,
-  ): Promise<PersistentSubscription[]> {
+  ): Promise<PersistentSubscriptionToStream[]> {
     await this.upsertPersistentSubscriptions(subscriptions);
 
     return Promise.all(
       subscriptions.map(
         (
           subscription: IPersistentSubscriptionConfig,
-        ): PersistentSubscription => {
+        ): PersistentSubscriptionToStream => {
           this.logger.log(
             `Connecting to persistent subscription "${subscription.group}" on stream "${subscription.stream}"...`,
           );
-          const persistentSubscription: PersistentSubscription =
-            this.client.connectToPersistentSubscription(
+          const persistentSubscription: PersistentSubscriptionToStream =
+            this.client.subscribeToPersistentSubscriptionToStream(
               subscription.stream,
               subscription.group,
             );
@@ -118,6 +118,7 @@ export class GrpcReaderService implements Reader, OnModuleInit {
               }
             },
           );
+
           if (!isNil(subscription.onSubscriptionStart)) {
             persistentSubscription.on(
               'confirmation',
@@ -155,11 +156,11 @@ export class GrpcReaderService implements Reader, OnModuleInit {
     subscription: IPersistentSubscriptionConfig,
   ): Promise<void> {
     try {
-      await this.client.createPersistentSubscription(
+      await this.client.createPersistentSubscriptionToStream(
         subscription.stream,
         subscription.group,
         {
-          ...persistentSubscriptionSettingsFromDefaults(),
+          ...persistentSubscriptionToStreamSettingsFromDefaults(),
           ...subscription.settingsForCreation?.subscriptionSettings,
           liveBufferSize: 1,
         },
@@ -173,14 +174,14 @@ export class GrpcReaderService implements Reader, OnModuleInit {
         this.logger.error('Subscription creation try : ', e);
         throw new Error(e);
       }
-      await this.client.updatePersistentSubscription(
+      await this.client.updatePersistentSubscriptionToStream(
         subscription.stream,
         subscription.group,
         {
-          ...persistentSubscriptionSettingsFromDefaults(),
-          ...subscription.settingsForCreation.subscriptionSettings,
+          ...persistentSubscriptionToStreamSettingsFromDefaults(),
+          ...subscription.settingsForCreation?.subscriptionSettings,
         },
-        subscription.settingsForCreation.baseOptions,
+        subscription.settingsForCreation?.baseOptions,
       );
     }
   }

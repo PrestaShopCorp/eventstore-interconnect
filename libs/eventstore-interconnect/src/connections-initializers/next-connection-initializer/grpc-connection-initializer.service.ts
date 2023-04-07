@@ -36,8 +36,8 @@ export class GrpcConnectionInitializerService
       `Starting to ping connection on ${this.connectionConfiguration.connectionString}...`,
     );
     await this.connectionGuard.startConnectionLinkPinger(
-      this.client,
-      this.connectionConfiguration,
+        this.client,
+        this.connectionConfiguration
     );
   }
 

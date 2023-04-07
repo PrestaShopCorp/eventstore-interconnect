@@ -18,7 +18,6 @@ export class NextEventsValidatorService implements Validator {
 
   public async validate(event: any): Promise<void> {
     const eventInstance = this.tryToInstantiateEvent(event.event);
-
     const concatErrors: ValidationError[] = await validate(
       eventInstance['data'],
     );
