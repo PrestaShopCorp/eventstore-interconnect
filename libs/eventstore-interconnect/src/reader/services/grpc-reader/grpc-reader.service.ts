@@ -132,9 +132,14 @@ export class GrpcReaderService implements Reader, OnModuleInit {
             );
           }
 
-          persistentSubscription.on('error', subscription.onError);
+          persistentSubscription.on('error', (error) => {
+            if (subscription.onError) {
+              subscription.onError(error);
+            } else {
+              this.logger.error(error);
+            }
+          });
 
-          persistentSubscription.on('error', async (): Promise<void> => {});
           this.logger.log(
             `Connected to "${subscription.group}" on stream ${subscription.stream}.`,
           );
