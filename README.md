@@ -1,3 +1,5 @@
+> Disclaimer: this package is no longer maintained. Use it at your own risk.
+
 # EventstoreInterconnect
 
 The main purpose of the lib is to copy/paste an event from an eventstore to another one. The versions allowed are : v5.0.1 and v21.2.0 (also working with 2 eventstores with same version)
